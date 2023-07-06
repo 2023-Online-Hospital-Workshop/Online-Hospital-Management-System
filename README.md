@@ -1,2 +1,24 @@
-# Online-Hospital-Management-System
-This system is a school hospital access management system, which can not only realize the complete access function, but also display the information of surrounding hospitals' consultation rooms, so as to improve the access process.
+# demo
+
+## Project setup
+```
+npm install
+```
+
+### Compiles and hot-reloads for development
+```
+npm run serve
+```
+
+### Compiles and minifies for production
+```
+npm run build
+```
+
+### Lints and fixes files
+```
+npm run lint
+```
+
+### Customize configuration
+See [Configuration Reference](https://cli.vuejs.org/config/).
