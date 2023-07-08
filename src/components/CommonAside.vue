@@ -6,7 +6,7 @@
     class="el-menu-vertical-demo"
     :unique-opened="true"
     :collapse="isCollapse"
-    background-color="#7675e0"
+    background-color="#002fa7"
     text-color="#fff"
     active-text-color="#000"
   >
@@ -98,7 +98,7 @@ export default {
   watch: {
     menu: {
       handler(new_val, old_val) {
-        // console.log(new_val, old_val);
+        console.log(new_val, old_val);
       },
 
       immediate: true,

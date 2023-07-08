@@ -19,7 +19,7 @@ export default {
   name: "CommonFooter",
   data() {
     return {
-      MsgCopyright: "Copyright @ 2022",
+      MsgCopyright: "OHMS @ 2022",
       TextLinkData: [
         {
           text: "关于",

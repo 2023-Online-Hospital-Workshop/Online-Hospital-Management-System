@@ -47,6 +47,6 @@ body,
 }
 .el-autocomplete-suggestion {
   width: auto!important;
-  
+
 }
 </style>

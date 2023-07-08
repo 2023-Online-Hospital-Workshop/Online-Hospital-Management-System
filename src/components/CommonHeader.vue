@@ -11,11 +11,11 @@
       ></el-button>
 
       <span class="header-logo-box">
-        <img
-          :src="require('../assets/Img/CommonHeader/logo.png')"
-          alt="ImgError"
-          class="header-logo"
-        />
+<!--        <img-->
+<!--          :src="require('../assets/Img/CommonHeader/logo.png')"-->
+<!--          alt="ImgError"-->
+<!--          class="header-logo"-->
+<!--        />-->
       </span>
     </div>
 

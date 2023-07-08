@@ -6,6 +6,8 @@ import VueCookies from 'vue-cookies'
 
 // // 引入element样式文件
 import 'element-ui/lib/theme-chalk/index.css'
+import ElementUI from 'element-ui';
+Vue.use(ElementUI);
 
 // 按需引入Element-ui
 import {
@@ -89,7 +91,6 @@ Vue.use(Upload);
 Vue.use(CollapseItem);
 Vue.use(Collapse);
 Vue.use(Loading.directive);
-
 
 Vue.use(VueCookies)
 Vue.prototype.$message = Message;
