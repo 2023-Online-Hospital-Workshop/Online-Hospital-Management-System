@@ -1,67 +1,47 @@
-<!-- Main是用户平台的框架，包含左侧导航栏、顶部、主体部分、页脚 -->
 <template>
-  <div class="views">
+  <SideBar></SideBar>
+  <h1>ssss</h1>
+  <div class="views" style="background-color: #002fa7;">
     <el-container>
       <el-aside class="aside" width="auto">
         <!-- 自定义aside组件 -->
-        <common-aside></common-aside>
+        <SideBar>1</SideBar>
       </el-aside>
-
-      <el-container
-        :class="{
-          'right-main-box-fold': true,
-          'right-main-box-unfold': isCollapse,
-        }"
-      >
-        <el-header class="header">
-          <!-- 自定义header组件 -->
-          <common-header></common-header>
-        </el-header>
-
-        <!-- <el-main class="main" style="height:610px;flex-grow:1;"> -->
-        <el-main :style="{ minHeight: Height + 'px' }">
-          <!-- 路由视图 -->
-          <router-view></router-view>
-        </el-main>
-
-        <el-footer class="footer" height="">
-          <!-- 自定义footer组件,默认height 60px -->
-          <common-footer></common-footer>
-        </el-footer>
-      </el-container>
     </el-container>
   </div>
 </template>
 
+
 <script>
-import CommonAside from "../components/CommonAside.vue";
-import CommonHeader from "../components/CommonHeader.vue";
-import CommonFooter from "../components/CommonFooter.vue";
+import {ref, computed, onMounted} from 'vue';
+import SideBar from "@/components/SideBar.vue";
+import {useStore} from 'vuex';
+
 export default {
-  name: "Care",
-  components: { CommonAside, CommonHeader, CommonFooter },
-  data() {
-    return {
-      Height: 1000,
-    };
+  name: "HomePage",
+  components: {
+    SideBar
   },
-  computed: {
-    isCollapse() {
-      return this.$store.state.aside.isCollapse;
-    },
-  },
-  mounted() {
-    //动态设置内容高度 让footer始终居底
-    this.Height = document.documentElement.clientHeight - 100;
-    //监听浏览器窗口变化
-    window.onresize = () => {
-      this.Height = document.documentElement.clientHeight - 100;
-    };
-  },
+  setup() {
+    const store = useStore();
+    const Height = ref(1000);
+
+    const isCollapse = computed(() => store.state.aside.isCollapse);
+
+    onMounted(() => {
+      //动态设置内容高度 让footer始终居底
+      Height.value = document.documentElement.clientHeight - 100;
+      //监听浏览器窗口变化
+      window.addEventListener('resize', () => {
+        Height.value = document.documentElement.clientHeight - 100;
+      });
+    });
+
+    return {Height, isCollapse};
+  }
 };
 </script>
 
-// lang选择less语法，scoped限制该样式只在本文件使用，不影响其他组件
 <style lang="less" scoped>
 .views {
   //Header
@@ -75,8 +55,8 @@ export default {
     display: block;
     position: relative;
     margin-left: 200px;
-
   }
+
   .right-main-box-unfold {
     display: block;
     position: relative;
@@ -95,11 +75,4 @@ export default {
     margin-left: -8px;
   }
 }
-</style>>
-
-
-
-
-
-
-
+</style>

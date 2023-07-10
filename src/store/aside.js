@@ -1,6 +1,3 @@
-// 7-30修改医生的主页面侧边栏
-
-// 左侧导航栏数据
 export default {
   state: {
     aside_data: [
@@ -8,47 +5,40 @@ export default {
           path: '/home',
           name: 'Home',
           label: '首页',
-          icon: 's-home',
+          icon: 'House',
           url: '/home'
         },
         {
           path: '/callService',
           name: 'CallService',
           label: '校医院就诊流程',
-          icon: 'setting',
+          icon: 'Guide',
           url: '/callService'
         },
         {
           path: '/CareServiceMine',
           name: 'CareServiceMine',
           label: '预约挂号',
-          icon: 'discover',
+          icon: 'Edit',
           url: '/care/CareServiceMine',
         },
         {
           path: '/CareServiceMine',
           name: 'CareServiceMine',
           label: '常见病信息',
-          icon: 'discover',
-          url: '/care/CareServiceMine',
-        },
-        {
-          path: '/CareServiceMine',
-          name: 'CareServiceMine',
-          label: '科室医生信息',
-          icon: 'discover',
+          icon: 'Help',
           url: '/care/CareServiceMine',
         },
         {
           path: '/CareServiceMine',
           name: 'CareServiceMine',
           label: '药品信息',
-          icon: 'discover',
+          icon: 'View',
           url: '/care/CareServiceMine',
         },
         {
           label: '就诊历史',
-          icon: 'discover',
+          icon: 'Help',
           path: '/medical',
           children: [
             {
