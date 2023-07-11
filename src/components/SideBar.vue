@@ -116,4 +116,8 @@ export default {
   margin-bottom: 20px;
 }
 
+* {
+  font-family: 'SF Pro Display', sans-serif; /* 应用字体 */
+}
+
 </style>
