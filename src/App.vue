@@ -23,4 +23,5 @@ export default {
 .router-view {
   margin-left: 200px;
 }
+
 </style>
