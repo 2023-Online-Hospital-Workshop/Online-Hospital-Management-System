@@ -1,11 +1,16 @@
 <template>
   <div id="app">
+<<<<<<< HEAD
     <SideBar/>
+=======
+    <SideBar />
+>>>>>>> 044ab82871435c6474b4d0164120ca6aade7b78a
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+<<<<<<< HEAD
 import SideBar from './components/SideBar.vue'
 import axios from 'axios'
 
@@ -19,6 +24,9 @@ axios.get('http://124.223.143.21:4999/WenhaoYan_test')
         console.log(error);
       });
 
+=======
+import SideBar from './components/SideBar.vue';
+>>>>>>> 044ab82871435c6474b4d0164120ca6aade7b78a
 export default {
   components: {
     SideBar,
