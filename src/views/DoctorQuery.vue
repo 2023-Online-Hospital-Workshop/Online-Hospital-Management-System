@@ -2,17 +2,16 @@
 <script>
 import axios from 'axios';
 // import doctorList from '../components/DoctorList.vue'
-import SearchBox from '../components/SearchBox.vue'
+// import SearchBox from '../components/SearchBox.vue'
 
 export default {
   components: {
     // doctorList,
-    SearchBox
+    // SearchBox
   },
   methods: {
-    handleSearchValue(value) {
-      console.log(value);
-
+    search() {
+      console.log(this.searchKeyword);
       axios.get('http://124.223.143.21:4999/Instructor')
       .then((response) => {
         console.log(response);
@@ -22,6 +21,7 @@ export default {
       .catch((error) => {
         console.log(error);
       });
+      this.filterDoctors();
     },
     updateSubDepartments() {
       // 根据选择的一级科室，更新二级科室列表
@@ -29,19 +29,20 @@ export default {
       // 重置已选择的二级科室
       this.selectedSubDepartment = '';
     },
-    filteredDoctors() {
+    filterDoctors() {
       // 根据选择的科室和搜索关键词过滤医生列表
       const selectedDepartment = this.selectedDepartment;
       const selectedSubDepartment = this.selectedSubDepartment;
-      // const searchKeyword = this.searchKeyword.toLowerCase();
+      const searchKeyword = this.searchKeyword;
 
-      return this.doctors.filter(doctor => {
-        const departmentMatch = !selectedDepartment || doctor.department.localeCompare(selectedDepartment, "zh-CN");
-        const subDepartmentMatch = !selectedSubDepartment || doctor.subDepartment.localeCompare(selectedSubDepartment, "zh-CN");
-        // const searchMatch = !searchKeyword || doctor.name.toLowerCase().includes(searchKeyword) || doctor.expertise.toLowerCase().includes(searchKeyword);
-        return departmentMatch && subDepartmentMatch; 
-        // && searchMatch;
+      var res = this.doctors.filter(doctor => {
+        const departmentMatch = !selectedDepartment || !doctor.department.localeCompare(selectedDepartment, "zh-CN");
+        const subDepartmentMatch = !selectedSubDepartment || !doctor.subDepartment.localeCompare(selectedSubDepartment, "zh-CN");
+        const searchMatch = !searchKeyword || !doctor.name.localeCompare(searchKeyword, "zh-CN");
+        return departmentMatch && subDepartmentMatch && searchMatch;
       });
+      console.log(res);
+      this.filteredDoctors = res;
     }
   },
   data() {
@@ -50,7 +51,7 @@ export default {
         // {'name': 'undefined', 'description': 'undefined', 'img_link': ''}
       ],
       title_visible: false,
-      inputData: [], // 用于接收搜索框的数据
+      searchKeyword: '', // 用于接收搜索框的数据
       inputWidth: '800px',
       selection: [], // 用于接收筛选框的选项
       departments: ["内科", "外科", "医技"],  // 一级科室列表
@@ -65,21 +66,36 @@ export default {
       },
       doctors: [
         { 
-          name: '宾睦',
+          name: '沈璐',
           department: '内科', 
-          subDepartment: '消化内科', 
-          expertise: '胃肠病优化治疗', 
-          photoUrl: 'https://faculty.tongji.edu.cn/_resources/group1/M00/00/03/wKhyGGCWAWiAWN0vAACDLAAhQ28337.png' 
+          subDepartment: '神经内科', 
+          expertise: '神经退行性疾病特别是老年期痴呆的基础与临床研究', 
+          photoUrl: 'https://www.xiangya.com.cn/upload/images/2021/11/8cd959b5a3921b1d.png' 
         },
         { 
-          name: '江晴石',
+          name: '雷光华',
           department: '外科',
           subDepartment: '骨科', 
-          expertise: '粉碎性骨折诊疗', 
-          photoUrl: 'https://faculty.tongji.edu.cn/_resources/group1/M00/00/20/wKhyGGGu-q6AcFlTAAG0hrBfcAo492.png' 
+          expertise: '擅长人工关节置换、翻修和关节镜微创手术', 
+          photoUrl: 'https://www.xiangya.com.cn/upload/images/2021/9/aa61543ee1181e57.jpeg' 
+        },
+        { 
+          name: '祖雄兵',
+          department: '外科',
+          subDepartment: '泌尿外科', 
+          expertise: '肾癌、膀胱癌、前列腺疾病、泌尿外科微创技术', 
+          photoUrl: 'https://www.xiangya.com.cn/upload/images/2022/1/2e1d7ff02e9b5c49.jpg' 
+        },
+        { 
+          name: '易斌',
+          department: '医技',
+          subDepartment: '检验科', 
+          expertise: '肿瘤生化免疫实验诊断、临床实验室质量管理及自动化仪器应用', 
+          photoUrl: 'https://www.xiangya.com.cn/upload/images/2021/1/661f25095b0c0100.png' 
         },
         // 其他医生信息
-      ]
+      ],
+      filteredDoctors: [],
     };
   },
 }
@@ -102,10 +118,16 @@ export default {
       <va-card class="department-card">
       
       <div class="flex flex-row">
-        <SearchBox 
+        <!-- <SearchBox 
           :input_width="inputWidth" :input_data="inputData" 
           @SearchBoxValueToParent="handleSearchValue">
-        </SearchBox>
+        </SearchBox> -->
+        <va-card class="search-card">
+          <div class="search-container">
+            <va-input v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
+            <va-button color="primary" @click="search">搜索</va-button>
+          </div>
+        </va-card>
       </div>
 
       <div class="department-selectors">
@@ -154,7 +176,6 @@ export default {
 </template>
 
 <style scoped>
-
 .department-card {
   margin-bottom: 20px;
   padding: 20px;
