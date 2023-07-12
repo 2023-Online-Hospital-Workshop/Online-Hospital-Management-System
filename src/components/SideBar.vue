@@ -85,7 +85,7 @@ export default {
   color: white;
   display: flex;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   padding-left: 20px;
 }
 
@@ -102,18 +102,18 @@ export default {
 }
 
 .sidebar {
-  width: 300px;
+  width: 200px;
   height: 100vh;
-  font-weight: bold;
+  font-weight: semi-bold;
   position: fixed;
   z-index: 1000;
   left: 0;
   top: 0;
-  background-color: #002fa7;
+  background-color: #002fb0;
 }
 
 .el-menu-item {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 * {
