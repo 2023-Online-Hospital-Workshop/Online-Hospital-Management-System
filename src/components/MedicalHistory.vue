@@ -65,15 +65,22 @@ export default {
   },
   methods: {
     cancelAppointment(person) {
+      console.log(person.status)
       // 取消挂号逻辑
     },
     viewPrescription(person) {
+      console.log(person.status)
+
       // 查看处方逻辑
     },
     makePayment(person) {
+      console.log(person.status)
+
       // 缴费逻辑
     },
     giveFeedback(person) {
+      console.log(person.status)
+
       // 反馈评价逻辑
     }
   }
