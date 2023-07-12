@@ -1,12 +1,15 @@
 <template>
   <div id="app">
-    <SideBar/>
+    <SideBar />
+    <PatientInfo />
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+
 import SideBar from './components/SideBar.vue'
+import PatientInfo from './components/Info/PatientInfo.vue';
 // import axios from 'axios'
 
 // axios.get('http://124.223.143.21:4999/WenhaoYan_test')
@@ -22,6 +25,7 @@ import SideBar from './components/SideBar.vue'
 export default {
   components: {
     SideBar,
+    PatientInfo
   }
 }
 </script>
@@ -39,5 +43,4 @@ export default {
 .router-view {
   margin-left: 200px;
 }
-
 </style>
