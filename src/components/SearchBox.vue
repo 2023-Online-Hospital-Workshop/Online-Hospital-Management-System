@@ -60,9 +60,12 @@ editor:刘一飞
     },
     props:{
       input_data:{
-        //js
         type: Array,
         required: true,
+      },
+      input_width: {
+        type: String,
+        default: '100%',
       }
     }
   }
@@ -72,4 +75,10 @@ editor:刘一飞
 & /deep/ .my-kqoption {
     width: 200%!important; 
 }
-</style>>
+</style>
+
+<style scoped>
+.inline-input {
+  width: input_width;
+}
+</style>

@@ -8,6 +8,7 @@ import 'element-plus/dist/index.css'
 import * as ElIcons from '@element-plus/icons-vue'
 import { createVuestic } from "vuestic-ui";
 import "vuestic-ui/css";
+import 'material-icons/iconfont/material-icons.css';
 
 const store = createStore({
     state: aside,
