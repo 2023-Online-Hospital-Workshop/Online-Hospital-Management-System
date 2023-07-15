@@ -4374,17 +4374,15 @@ make-dir@^3.0.2, make-dir@^3.1.0:
   dependencies:
     semver "^6.0.0"
 
-<<<<<<< HEAD
-material-icons@^1.13.8:
-  version "1.13.8"
-  resolved "https://registry.npmmirror.com/material-icons/-/material-icons-1.13.8.tgz#709155361dde2cee60446a0056518d841f915c7a"
-  integrity sha512-vnLGXKa/AwFUxUgkiX39EpYVFttPhDQcKdVylIqmUUqz+Eo/O9A3BkdPCU3/G5cJOTezHi5B/b8sEpKYgUNAwQ==
-=======
 material-design-icons-iconfont@^6.7.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/material-design-icons-iconfont/-/material-design-icons-iconfont-6.7.0.tgz#55cf0f3d7e4c76e032855b7e810b6e30535eff3c"
   integrity sha512-lSj71DgVv20kO0kGbs42icDzbRot61gEDBLQACzkUuznRQBUYmbxzEkGU6dNBb5fRWHMaScYlAXX96HQ4/cJWA==
->>>>>>> 044ab82871435c6474b4d0164120ca6aade7b78a
+
+material-icons@^1.13.8:
+  version "1.13.8"
+  resolved "https://registry.npmmirror.com/material-icons/-/material-icons-1.13.8.tgz#709155361dde2cee60446a0056518d841f915c7a"
+  integrity sha512-vnLGXKa/AwFUxUgkiX39EpYVFttPhDQcKdVylIqmUUqz+Eo/O9A3BkdPCU3/G5cJOTezHi5B/b8sEpKYgUNAwQ==
 
 mdn-data@2.0.14:
   version "2.0.14"
