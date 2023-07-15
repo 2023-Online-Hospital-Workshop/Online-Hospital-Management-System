@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import DoctorQuery from '../views/DoctorQuery.vue'
+
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
 
@@ -21,6 +22,7 @@ const routes = [
     name: 'MedicalHistory',
     component: MedicalHistory,
   },
+
 ]
 
 const router = createRouter({
