@@ -5,7 +5,7 @@ import DoctorQuery from '../views/DoctorQuery.vue'
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
 
-import RegisterVue from '@/views/Register.vue'
+import DoctorAppointment from '../views/DoctorAppointment.vue'
 
 // 路由配置项
 const routes = [
@@ -25,9 +25,9 @@ const routes = [
     component: MedicalHistory,
   },
   {
-    path: '/register',
-    name: 'Register',
-    component: RegisterVue,
+    path: '/doctor-appointment',
+    name: 'DoctorAppointment',
+    component: DoctorAppointment,
   },
 ]
 

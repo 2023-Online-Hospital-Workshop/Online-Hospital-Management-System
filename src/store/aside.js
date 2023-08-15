@@ -16,11 +16,11 @@ export default {
           url: '/callService'
         },
         {
-          path: '/CareServiceMine',
-          name: 'CareServiceMine',
+          path: '/DoctorAppointment',
+          name: 'DoctorAppointment',
           label: '预约挂号',
           icon: 'Edit',
-          url: '/care/CareServiceMine',
+          url: '/DoctorAppointment',
         },
         {
           path: '/CareServiceMine',

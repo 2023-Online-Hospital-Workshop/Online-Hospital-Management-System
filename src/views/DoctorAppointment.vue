@@ -5,7 +5,7 @@
     <div>
      
       <va-card color="primary" gradient class="parent-box">
-      <img class="image-left" src="./assets/yuyue.png">
+      <img class="image-left" src="../assets/yuyue.png">
 
       <div class="text">
       <va-card-content>预约科室   {{ section }}</va-card-content>
@@ -82,7 +82,8 @@
               alert('无可预约位置，预约失败');
             }
            }
-        })
+        });
+        this.$router.push('/doctor-query');
       },
       isWeekend(date) {
       const dayOfWeek = new Date(date).getDay(); // 0: Sunday, 6: Saturday
