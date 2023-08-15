@@ -5,6 +5,8 @@ import DoctorQuery from '../views/DoctorQuery.vue'
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
 
+import RegisterVue from '@/views/Register.vue'
+
 // 路由配置项
 const routes = [
   {
@@ -22,7 +24,11 @@ const routes = [
     name: 'MedicalHistory',
     component: MedicalHistory,
   },
-
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterVue,
+  },
 ]
 
 const router = createRouter({
