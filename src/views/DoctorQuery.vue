@@ -47,7 +47,7 @@ export default {
     doctorCardClicked(selectedName) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
       console.log(selectedName);
       this.$emit('doctor-selected', selectedName);
-      this.$router.push('/appointment-success');
+      // this.$router.push('/appointment-success');
     },
   },
   data() {
@@ -157,15 +157,29 @@ export default {
 
       <div class="doctors-list">
         <va-card v-for="doctor in filteredDoctors" :key="doctor.name" class="doctor-card" @click="doctorCardClicked(doctor.name)">
-          <div class="doctor-photo">
-            <img :src="doctor.photoUrl" alt="Doctor Photo">
-          </div>
+          
           <div class="doctor-details">
             <h3>{{ doctor.name }}</h3>
             <p>科室: {{ doctor.subDepartment }}</p>
             <p>擅长领域: {{ doctor.expertise }}</p>
           </div>
+          <div class="doctor-photo">
+            <img :src="doctor.photoUrl" alt="Doctor Photo">
+          </div>
         </va-card>
+
+        <!-- <va-card v-for="doctor in filteredDoctors" :key="doctor.name" class="doctor-card" @click="doctorCardClicked(doctor.name)">
+          <div class="doctor-details">
+            <h3>{{ doctor.name }}</h3>
+            <p>科室: {{ doctor.subDepartment }}</p>
+            <p>擅长领域: {{ doctor.expertise }}</p>
+          </div>
+          <div class="doctor-photo">
+            <img src="doctor.photoUrl" alt="Doctor Photo"/>
+          </div>
+        </va-card> -->
+
+
       </div>
     </va-card>
 
@@ -211,14 +225,17 @@ export default {
 
 .doctor-card {
   cursor: pointer;
-  width: 200px;
+  width: 500px;
+  height: 100px;
   margin-right: 20px;
   margin-bottom: 20px;
+  flex-wrap: nowrap;
+  display: flex;
 }
 
 .doctor-photo img {
-  width: 100%;
-  height: auto;
+  width: auto;
+  height: 100px;
 }
 
 .doctor-details h3 {

@@ -1,10 +1,14 @@
-<template class="appointment-success">
+<template>
     <div id="mainPage" class="parent-box">
-        <p>
-            预约 {{ doctorName }} 成功！
-        </p>
+      <div>
+        <va-card color="primary" gradient class="parent-box">
+            <div class="text">
+                预约 {{ doctorName }} 成功！
+            </div>
+        </va-card>
+      </div>       
     </div>
-</template>
+  </template>
 
 <script>
     export default {
@@ -15,3 +19,14 @@
         }
     }
 </script>
+
+<style scoped>
+.parent-box {
+  width:100%;
+  height:200px;
+}
+.text{
+  font-weight: bold;
+  font-size: larger;
+}
+</style>

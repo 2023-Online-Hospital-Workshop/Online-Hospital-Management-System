@@ -30,6 +30,7 @@ export default {
   methods: {
     handleDoctorSelected(selectedName) {
       // 将成功信息传递给挂号历史界面
+      console.log(selectedName);
       this.$router.push({ query: { selectedName } });
     }
   }
