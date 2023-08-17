@@ -2,7 +2,7 @@
   <div id="app">
     <SideBar />
     <PatientInfo />
-    <router-view></router-view>
+    <router-view @doctor-selected="handleDoctorSelected"></router-view>
   </div>
 </template>
 
@@ -26,6 +26,12 @@ export default {
   components: {
     SideBar,
     PatientInfo
+  },
+  methods: {
+    handleDoctorSelected(selectedName) {
+      // 将成功信息传递给挂号历史界面
+      this.$router.push({ query: { selectedName } });
+    }
   }
 }
 </script>

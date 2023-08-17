@@ -46,13 +46,9 @@ export default {
     },
     doctorCardClicked(selectedName) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
       console.log(selectedName);
-      this.$store.commit('returnDoctorName', selectedName);
-      this.$router.push('/');
+      this.$emit('doctor-selected', selectedName);
+      this.$router.push('/appointment-success');
     },
-  },
-  beforeRouteLeave (to, from, next) {
-    console.log(to.path);
-    next();
   },
   data() {
     return {

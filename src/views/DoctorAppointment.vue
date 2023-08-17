@@ -50,25 +50,16 @@
         model:"two",
       };
     },
-   
+    
+    returnDoctor(name) {
+      alert("预约"+name+"成功！");
+    },
+
     mounted() {
-    this.getCurrentDate();
-    this.generateNextDates();
-    this.options=this.options.concat(this.nextDates.map(date => ({ label: date, value: date })));
+      this.getCurrentDate();
+      this.generateNextDates();
+      this.options=this.options.concat(this.nextDates.map(date => ({ label: date, value: date })));
      },
-     
-      watch: {
-        '$route' (to, from) {
-          if (from.path === '/doctor-query') {
-            alert("预约"+this.selectedDoctorVal()+"成功！");
-          }
-        }
-      },
-      computed: {
-        selectedDoctorVal() {
-          return this.$store.state.selectedDoctor;
-        }
-      },
     methods: {
       getCurrentDate() {
         const now = new Date();
