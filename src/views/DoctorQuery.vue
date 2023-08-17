@@ -43,7 +43,16 @@ export default {
       });
       console.log(res);
       this.filteredDoctors = res;
-    }
+    },
+    doctorCardClicked(selectedName) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
+      console.log(selectedName);
+      this.$store.commit('returnDoctorName', selectedName);
+      this.$router.push('/');
+    },
+  },
+  beforeRouteLeave (to, from, next) {
+    console.log(to.path);
+    next();
   },
   data() {
     return {
@@ -96,7 +105,7 @@ export default {
         // 其他医生信息
       ],
       filteredDoctors: [],
-    };
+    }; 
   },
 }
 
@@ -151,7 +160,7 @@ export default {
       </div>
 
       <div class="doctors-list">
-        <va-card v-for="doctor in filteredDoctors" :key="doctor.name" class="doctor-card">
+        <va-card v-for="doctor in filteredDoctors" :key="doctor.name" class="doctor-card" @click="doctorCardClicked(doctor.name)">
           <div class="doctor-photo">
             <img :src="doctor.photoUrl" alt="Doctor Photo">
           </div>
@@ -205,6 +214,7 @@ export default {
 }
 
 .doctor-card {
+  cursor: pointer;
   width: 200px;
   margin-right: 20px;
   margin-bottom: 20px;

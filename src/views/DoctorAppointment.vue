@@ -35,6 +35,8 @@
 </template>
 
 <script >
+// import { sliderButtonEmits } from 'element-plus/es/components/slider/src/button';
+
  
   /*import axios from 'axios'*/
   export default {
@@ -54,6 +56,19 @@
     this.generateNextDates();
     this.options=this.options.concat(this.nextDates.map(date => ({ label: date, value: date })));
      },
+     
+      watch: {
+        '$route' (to, from) {
+          if (from.path === '/doctor-query') {
+            alert("预约"+this.selectedDoctorVal()+"成功！");
+          }
+        }
+      },
+      computed: {
+        selectedDoctorVal() {
+          return this.$store.state.selectedDoctor;
+        }
+      },
     methods: {
       getCurrentDate() {
         const now = new Date();
@@ -76,7 +91,7 @@
         .then((ok) => {
           if (ok) {
             if (this.number[num] < 10) {
-              alert('预约成功');
+              // alert('预约成功');
               this.sendData();
             } else {
               alert('无可预约位置，预约失败');
