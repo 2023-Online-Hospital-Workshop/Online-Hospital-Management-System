@@ -1,20 +1,17 @@
 
 <template>
-  <div id="mainPage" class="parent-box">
-    <div class="hide">kongge</div>
+<div id="main-page" class="parent-box">
+    <h1 class="va-h3">门诊预约挂号</h1>
     <div>
-     
-      <va-card color="primary" gradient class="parent-box">
-      <img class="image-left" src="./assets/yuyue.png">
-
-      <div class="text">
-      <va-card-content>预约科室   {{ section }}</va-card-content>
-      <va-card-content>同济大学校医院  {{doctor}}医生</va-card-content>
-      </div>
-      </va-card>
+     <va-card color="primary" class="card" id="kp">
+       <img class="image-left" src="../assets/yuyue.png">
+       <div class="text">
+       <va-card-content>预约科室 :   {{ section }}</va-card-content>
+       <va-card-content>同济大学校医院  {{doctor}}医生</va-card-content>
+       </div>
+     </va-card>
     </div>
-
-   
+    
     <div class="button-group">
     <va-button-toggle size="large" v-model="model" preset="secondary" border-color="primary" @click="fetchData(model)" :options="options"></va-button-toggle>
     </div>
@@ -30,8 +27,7 @@
     <button id="time7" class="time-slot" @click="onButtonClick(6)"><span style="margin-right: 100px;">16:00-17:00</span>{{number[6]}}/10</button>  
     </va-button-group>
     
-    
-  </div>
+</div>
 </template>
 
 <script >
@@ -93,15 +89,16 @@
       fetchData(date) {
         var self = this; // 存储当前对象的引用
         self.number = [0, 0, 0, 0, 0, 0, 0];
+        date='20';
   
-        const formattedDate = `2023-07-${date}`;
+        const formattedDate = `2023-08-${date}`;
         console.log(formattedDate);
-  
-        fetch(`http://124.223.143.21:4999/Registration?date=2023-07-13`)
+        
+        fetch(`http://124.223.143.21:4999/Registration?date=${formattedDate}`)
           .then(response => response.json())
           .then(data => {
             self.fetchedData = data;
-            console.log(self.fetchData);
+            console.log(self.fetchedData);
             for (let i = 0; i < self.fetchedData.length; i++) {
               self.number[i] = self.fetchedData[i].Count;
             }
@@ -110,6 +107,7 @@
             console.error('Error:', error);
           });
       },
+      
 
       /*sendData(){
           const newData = {
@@ -130,28 +128,30 @@
                console.error('插入数据时出现错误:', error);
             }); 
         },*/
+        
         sendData() {
-            const url = "http://124.223.143.21/Registration";
+            const url =  'http://124.223.143.21:4999/Registration/regist';
             const data = {
-              PatientId: "2151895",
-              DoctorId: "54321",
-              AppointmentTime: "2023-07-11",
-              Period: 3
+              "PatientId": "2151895",
+              "DoctorId": "23001",
+              "Time": "2023-02-20T07:22:13.624Z",
+              "Period": 1
             };
-            const jsonData = JSON.stringify(data);
-            console.log(JSON.stringify(data))
+            
             fetch(url, {
                 method: 'POST',
                 headers: {
-                   /* 'Content-Type': 'text/plain',*/
-                    
+                  'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ data: JSON.parse(jsonData) })
+                body: JSON.stringify(data)
             })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('HTTP error ' + response.status);
                     }
+                })
+                .then(data=>{
+                  console.log('Success:',data);
                 })
                 .catch(function (error) {
                     console.error('Error:', error);
@@ -159,22 +159,30 @@
         }
     },
   };
-  
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.parent-box {
-  width:100%;
-  height:200px;
-  
+
+#main-page {
+  margin-left: 14%;
+  margin-right: 14%;
 }
+#kp{
+  display:flex;
+}
+.card{
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
 .image-left {
+  flex: 0 0 auto;
   width:140px;
   height:100px;
-  
 }
 .text{
+  flex: 1 1 auto;
   font-weight: bold;
   font-size: larger;
 }
@@ -186,9 +194,7 @@
   align-items: center;
   margin:20px;
 }
-.button{
-  width:100%
-}
+
 .hide{
   color:transparent
 }
