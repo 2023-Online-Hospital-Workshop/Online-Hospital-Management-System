@@ -43,7 +43,6 @@ app.use(store)
 app.use(createVuestic())
 app.use(ElementPlus);
 for (const iconName in ElIcons) {
-    console.log(iconName)
     app.component(iconName, ElIcons[iconName])
 }
 
