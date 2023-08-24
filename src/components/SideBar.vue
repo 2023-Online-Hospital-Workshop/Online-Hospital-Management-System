@@ -117,7 +117,7 @@ export default {
 }
 
 * {
-  font-family: 'SF Pro Display', sans-serif; /* 应用字体 */
+  font-family: AliRegular; /* 应用字体 */
 }
 
 </style>

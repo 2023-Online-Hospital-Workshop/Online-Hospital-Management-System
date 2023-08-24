@@ -259,9 +259,8 @@ header {
   }
 }
 
-@import url('https://fonts.cdnfonts.com/css/sf-pro-display'); /* 引入远程字体 */
 body {
-  font-family: 'SF Pro Display', sans-serif; /* 应用字体 */
+  font-family: AliMedium; /* 应用字体 */
 }
 
 </style>
