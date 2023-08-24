@@ -1,12 +1,27 @@
 <template>
   <div>
-    <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(person, index) in displayedPeople"
-      :key="index">
+    <div
+      class="row justify-center"
+      cols="12"
+      sm="6"
+      md="4"
+      lg="3"
+      v-for="(person, index) in displayedPeople"
+      :key="index"
+    >
       <va-card class="person-card" elevation="10" color="#ECF0F1">
         <!-- 第一行 -->
         <!-- (标题) -->
         <va-card-title class="first-row">
-          <div class="row justify-start"><span class="title-status" :style="{ color: person.status === '待就诊' ? '#3498db' : '#e74c3c' }">{{ person.status }}</span></div>
+          <div class="row justify-start">
+            <span
+              class="title-status"
+              :style="{
+                color: person.status === '待就诊' ? '#3498db' : '#e74c3c',
+              }"
+              >{{ person.status }}</span
+            >
+          </div>
           <span class="title-date">{{ person.date }}</span>
           &nbsp;
           <span class="title-dept">{{ person.department }}</span>
@@ -16,7 +31,9 @@
         <va-card-content class="info-row">
           <div class="row justify-start">
             <span class="flex flex-col xs3">预约号码:</span>
-            <span class="flex flex-col xs3">{{ person.appointmentNumber }}</span>
+            <span class="flex flex-col xs3">{{
+              person.appointmentNumber
+            }}</span>
           </div>
         </va-card-content>
         <!-- 第三行 -->
@@ -42,17 +59,36 @@
         </va-card-content>
         <!-- 按钮 -->
         <va-card-content class="button-row">
-          <va-button :disabled="person.status === '已就诊'" color="primary" class="button"
-            @click="cancelAppointment(person)">
+          <va-button
+            :disabled="person.status === '已就诊'"
+            color="primary"
+            class="button"
+            @click="cancelAppointment(person)"
+          >
             取消挂号
           </va-button>
-          <va-button :disabled="person.status === '待就诊'" color="primary" class="button" @click="makePayment(person)">
+          <va-button
+            :disabled="person.status === '待就诊'"
+            color="primary"
+            class="button"
+            @click="makePayment(person)"
+          >
             缴费
           </va-button>
-          <va-button :disabled="person.status === '待就诊'" color="primary" class="button" @click="viewPrescription(person)">
+          <va-button
+            :disabled="person.status === '待就诊'"
+            color="primary"
+            class="button"
+            @click="viewPrescription(person)"
+          >
             查看处方
           </va-button>
-          <va-button :disabled="person.status === '待就诊'" color="primary" class="button" @click="giveFeedback(person)">
+          <va-button
+            :disabled="person.status === '待就诊'"
+            color="primary"
+            class="button"
+            @click="giveFeedback(person)"
+          >
             反馈评价
           </va-button>
         </va-card-content>
@@ -66,14 +102,13 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 export default {
   data() {
     return {
-      people: [
-      ],
+      people: [],
       itemsPerPage: 4,
-      currentPage: 1
+      currentPage: 1,
     };
   },
   computed: {
@@ -86,10 +121,11 @@ export default {
     },
     totalPages() {
       return Math.ceil(this.people.length / this.itemsPerPage);
-    }
+    },
   },
   mounted() {
-    axios.get('http://124.223.143.21:4999/WenhaoYan_test')
+    axios
+      .get("http://124.223.143.21:4999/WenhaoYan_test")
       .then((response) => {
         console.log(response.data);
         const newData = response.data; // 获取响应数据
@@ -103,26 +139,26 @@ export default {
   },
   methods: {
     cancelAppointment(person) {
-      console.log(person.status)
+      console.log(person.status);
       // 取消挂号逻辑
     },
     viewPrescription(person) {
-      console.log(person.status)
+      console.log(person.status);
       // 查看处方逻辑
     },
     makePayment(person) {
-      console.log(person.status)
+      console.log(person.status);
       // 缴费逻辑
     },
     giveFeedback(person) {
-      console.log(person.status)
+      console.log(person.status);
       // 反馈评价逻辑
     },
     changePage(page) {
       // 切换页面
       this.currentPage = page;
-    }
-  }
+    },
+  },
 };
 </script>
 
