@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <SideBar />
-    <PatientInfo />
+    <AdministratorInfo />
     <router-view></router-view>
   </div>
 </template>
@@ -9,7 +9,9 @@
 <script>
 
 import SideBar from './components/SideBar.vue'
-import PatientInfo from './components/Info/PatientInfo.vue';
+// import PatientInfo from './components/Info/PatientInfo.vue';
+// import DoctorInfo from './components/Info/DoctorInfo.vue';
+import AdministratorInfo from './components/Info/AdministratorInfo.vue';
 // import axios from 'axios'
 
 // axios.get('http://124.223.143.21:4999/WenhaoYan_test')
@@ -25,7 +27,9 @@ import PatientInfo from './components/Info/PatientInfo.vue';
 export default {
   components: {
     SideBar,
-    PatientInfo
+    // PatientInfo,
+    //DoctorInfo,
+    AdministratorInfo
   }
 }
 </script>
