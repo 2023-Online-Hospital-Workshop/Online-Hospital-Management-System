@@ -259,8 +259,4 @@ header {
   }
 }
 
-body {
-  font-family: AliMedium; /* 应用字体 */
-}
-
 </style>

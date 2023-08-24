@@ -98,8 +98,7 @@ export default {
           id: item.patientId,
           name: item.name,
           gender: item.gender,
-          birthDate: item.birthDate,
-          contact: item.contact
+          date: item.birthDate,
         }));
         console.log("people");
 
@@ -161,7 +160,7 @@ export default {
 
 <style scoped>
 * {
-  font-family: AliRegular; /* 应用字体 */
+  font-family: SFRegular; /* 应用字体 */
 }
 
 .person-card {
