@@ -25,12 +25,12 @@ const routes = [
     name: 'MedicalHistory',
     component: MedicalHistory,
   },
-   {
+  {
     path: '/doctor-appointment',
     name: 'DoctorAppointment',
     component: DoctorAppointment,
   },
-   {
+  {
     path: '/disease-inquiry',
     name: 'DiseaseInquiry',
     component: DiseaseInquiry,

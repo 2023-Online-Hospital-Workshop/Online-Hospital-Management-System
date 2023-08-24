@@ -1,7 +1,7 @@
 <template>
   <SideBar></SideBar>
   <h1>ssss</h1>
-  <div class="views" style="background-color: #002fa7;">
+  <div class="views" style="background-color: #002fa7">
     <el-container>
       <el-aside class="aside" width="auto">
         <!-- 自定义aside组件 -->
@@ -13,14 +13,14 @@
 
 
 <script>
-import {ref, computed, onMounted} from 'vue';
+import { ref, computed, onMounted } from "vue";
 import SideBar from "@/components/SideBar.vue";
-import {useStore} from 'vuex';
+import { useStore } from "vuex";
 
 export default {
   name: "HomePage",
   components: {
-    SideBar
+    SideBar,
   },
   setup() {
     const store = useStore();
@@ -32,13 +32,13 @@ export default {
       //动态设置内容高度 让footer始终居底
       Height.value = document.documentElement.clientHeight - 100;
       //监听浏览器窗口变化
-      window.addEventListener('resize', () => {
+      window.addEventListener("resize", () => {
         Height.value = document.documentElement.clientHeight - 100;
       });
     });
 
-    return {Height, isCollapse};
-  }
+    return { Height, isCollapse };
+  },
 };
 </script>
 
