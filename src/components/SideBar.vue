@@ -105,6 +105,6 @@ export default {
 }
 
 * {
-  font-family: "SF Pro Display", sans-serif; /* 应用字体 */
+  font-family: SFRegular; /* 应用字体 */
 }
 </style>
