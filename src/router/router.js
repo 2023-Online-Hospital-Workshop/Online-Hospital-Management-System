@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import DoctorQuery from '../views/DoctorQuery.vue'
 import DoctorAppointment from '../views/DoctorAppointment.vue'
 import DiseaseInquiry from '../views/DiseaseInquiry.vue'
+import DoctorOperator from '../views/DoctorOperator.vue'
 
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
@@ -35,6 +36,11 @@ const routes = [
     path: '/disease-inquiry',
     name: 'DiseaseInquiry',
     component: DiseaseInquiry,
+  },
+  {
+    path: '/doctor-operator',
+    name: 'DoctorOperator',
+    component: DoctorOperator,
   },
   {
     path: '/appointment-success',
