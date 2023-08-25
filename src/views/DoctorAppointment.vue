@@ -50,11 +50,6 @@
         model:"two",
       };
     },
-    
-    returnDoctor(name) {
-      alert("预约"+name+"成功！");
-    },
-
     mounted() {
       this.getCurrentDate();
       this.generateNextDates();
@@ -89,7 +84,6 @@
             }
            }
         });
-        this.$router.push('/doctor-query');
       },
       isWeekend(date) {
       const dayOfWeek = new Date(date).getDay(); // 0: Sunday, 6: Saturday
@@ -138,27 +132,30 @@
             }); 
         },*/
         sendData() {
-            const url = "http://124.223.143.21/Registration";
+            console.log("ID: "+this.$route.params.doctorId);
+            const url = "http://124.223.143.21/Registration/regist";
             const data = {
-              PatientId: "2151895",
-              DoctorId: "54321",
-              AppointmentTime: "2023-07-11",
-              Period: 3
+              patientId: "2151895",
+              doctorId: this.$route.params.doctorId,
+              time: "2023-07-11",
+              period: 3
             };
             const jsonData = JSON.stringify(data);
             console.log(JSON.stringify(data))
             fetch(url, {
                 method: 'POST',
                 headers: {
-                   /* 'Content-Type': 'text/plain',*/
+                   'Content-Type': 'application/json',
                     
                 },
-                body: JSON.stringify({ data: JSON.parse(jsonData) })
+                // body: JSON.stringify({ data: JSON.parse(jsonData) })
+                body: jsonData
             })
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('HTTP error ' + response.status);
                     }
+                    console.log(response.data);
                 })
                 .catch(function (error) {
                     console.error('Error:', error);

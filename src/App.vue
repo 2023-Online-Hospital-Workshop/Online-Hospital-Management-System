@@ -2,7 +2,7 @@
   <div id="app">
     <SideBar />
     <PatientInfo />
-    <router-view @doctor-selected="handleDoctorSelected"></router-view>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -28,11 +28,13 @@ export default {
     PatientInfo
   },
   methods: {
-    handleDoctorSelected(selectedName) {
-      // 将成功信息传递给挂号历史界面
-      console.log(selectedName);
-      this.$router.push({ query: { selectedName } });
-    }
+    // handleDoctorSelected(selectedName) {
+    //   // 将成功信息传递给挂号历史界面
+    //   console.log(selectedName);
+    //   alert("预约 "+selectedName+" 医生成功！\n"+"就诊时间：");
+    //   this.$router.push('/');
+    //   // this.$router.push({ query: { selectedName } });
+    // }
   }
 }
 </script>
