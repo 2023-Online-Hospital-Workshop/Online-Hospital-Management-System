@@ -87,7 +87,7 @@ export default {
     // },
     doctorCardClicked(selectedId) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
       console.log("selected: "+selectedId);
-      this.$router.push({name: 'DoctorAppointment', params: {doctorId: selectedId}});
+      this.$router.push({name: 'DoctorAppointment', params: {selectedId: selectedId}});
     },
     mounted() {
       

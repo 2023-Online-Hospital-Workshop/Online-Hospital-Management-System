@@ -6,7 +6,6 @@ import DiseaseInquiry from '../views/DiseaseInquiry.vue'
 
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
-import DoctorAppointment from '../views/DoctorAppointment.vue'
 import AppointmentSuccess from '../views/AppointmentSuccess.vue'
 
 
@@ -28,7 +27,7 @@ const routes = [
     component: MedicalHistory,
   },
   {
-    path: '/doctor-appointment',
+    path: '/doctor-appointment/:selectedId', // 在此处定义参数
     name: 'DoctorAppointment',
     component: DoctorAppointment,
   },
@@ -36,12 +35,6 @@ const routes = [
     path: '/disease-inquiry',
     name: 'DiseaseInquiry',
     component: DiseaseInquiry,
-  },
-
-  {
-    path: '/doctor-appointment',
-    name: 'DoctorAppointment',
-    component: DoctorAppointment,
   },
   {
     path: '/appointment-success',
