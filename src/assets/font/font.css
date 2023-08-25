@@ -1,0 +1,34 @@
+@font-face {
+  font-family: AliRegular;
+  src: url('AlibabaPuHuiTi-2-55-Regular.ttf')
+}
+
+@font-face {
+  font-family: AliMedium;
+  src: url('AlibabaPuHuiTi-2-65-Medium.ttf')
+}
+
+@font-face {
+  font-family: AliHeavy;
+  src: url('AlibabaPuHuiTi-2-105-Heavy.ttf')
+}
+
+@font-face {
+  font-family: SFThin;
+  src: url('SF-Pro-Display-Thin.ttf')
+}
+
+@font-face {
+  font-family: SFRegular;
+  src: url('SF-Pro-Display-Regular.ttf')
+}
+
+@font-face {
+  font-family: SFMedium;
+  src: url('SF-Pro-Display-Medium.ttf')
+}
+
+@font-face {
+  font-family: SFBold;
+  src: url('SF-Pro-Display-Bold.ttf')
+}

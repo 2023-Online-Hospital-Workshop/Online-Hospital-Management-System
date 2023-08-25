@@ -1,15 +1,17 @@
+
 <template>
   <div id="app">
     <SideBar />
-    <PatientInfo />
     <router-view></router-view>
+    <AdministratorInfo />
   </div>
 </template>
 
 <script>
-
-import SideBar from './components/SideBar.vue'
-import PatientInfo from './components/Info/PatientInfo.vue';
+import SideBar from "./components/SideBar.vue";
+// import PatientInfo from './components/Info/PatientInfo.vue';
+// import DoctorInfo from './components/Info/DoctorInfo.vue';
+import AdministratorInfo from "./components/Info/AdministratorInfo.vue";
 // import axios from 'axios'
 
 // axios.get('http://124.223.143.21:4999/WenhaoYan_test')
@@ -25,21 +27,14 @@ import PatientInfo from './components/Info/PatientInfo.vue';
 export default {
   components: {
     SideBar,
-    PatientInfo
+    // PatientInfo,
+    //DoctorInfo,
+    AdministratorInfo,
   },
-  methods: {
-    // handleDoctorSelected(selectedName) {
-    //   // 将成功信息传递给挂号历史界面
-    //   console.log(selectedName);
-    //   alert("预约 "+selectedName+" 医生成功！\n"+"就诊时间：");
-    //   this.$router.push('/');
-    //   // this.$router.push({ query: { selectedName } });
-    // }
-  }
-}
+};
 </script>
 
-<style>
+<style lang="scss">
 #app {
   display: flex;
   flex-direction: column;

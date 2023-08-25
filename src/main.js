@@ -9,6 +9,7 @@ import * as ElIcons from '@element-plus/icons-vue'
 import { createVuestic } from "vuestic-ui";
 import "vuestic-ui/css";
 import 'material-icons/iconfont/material-icons.css';
+import '../src/assets/font/font.css';
 
 
 const store = createStore({
@@ -43,7 +44,6 @@ app.use(store)
 app.use(createVuestic())
 app.use(ElementPlus);
 for (const iconName in ElIcons) {
-    console.log(iconName)
     app.component(iconName, ElIcons[iconName])
 }
 

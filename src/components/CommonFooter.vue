@@ -61,7 +61,7 @@ export default {
     align-items: center;
     justify-content: center;
     margin-bottom: -15px;
-    font-family: Arial;
+    font-family: SFRegular;
     font-weight: bold;
     .text_item {
       letter-spacing: 5px;

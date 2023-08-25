@@ -1,53 +1,35 @@
 <template>
-  <el-menu
-    default-active="1-4-1"
-    class="sidebar"
-    :unique-opened="true"
-    :collapse="isCollapse"
-    background-color="#002fa7"
-    text-color="#fff"
-    active-text-color="#000"
-  >
-    <h3 class="headerText" v-if="!isCollapse">{{ aside_title }}</h3>
-
-    <el-menu-item
-      @click="clickMenu(item)"
-      v-for="item in noChildren"
-      :index="item.path"
-      :key="item.path"
-    >
-      <el-icon>
-       <component :is="item.icon" class="yellowIcon"/>
-      </el-icon>
-      <span class="title">{{ item.label }}</span>
-    </el-menu-item>
-
-    <el-submenu v-for="item in hasChildren" :index="item.path" :key="item.name">
-
-      <template class="title">
-        <i :class="'el-icon-' + item.icon" style="color: #ffc107"></i>
-        <span class="title">{{ item.label }}</span>
-      </template>
-
-      <el-menu-item-group v-for="subItem in item.children" :key="subItem.path">
-        <el-menu-item :index="subItem.path" @click="clickMenu(subItem)">
-          {{ subItem.label }}
-        </el-menu-item>
-      </el-menu-item-group>
-    </el-submenu>
-  </el-menu>
+  <div class="mb-6 h-64 sidebar">
+    <va-sidebar color="primary" gradient minimized-width="64px" width="15rem">
+      <h3 class="headerText" v-if="!isCollapse">{{ aside_title }}</h3>
+      <va-sidebar-item
+        @click="clickMenu(item)"
+        v-for="item in noChildren"
+        :index="item.path"
+        :key="item.path"
+        active-color="backgroundPrimary"
+      >
+        <va-sidebar-item-content>
+          <va-icon :name="item.icon" />
+          <va-sidebar-item-title>
+            {{ item.label }}
+          </va-sidebar-item-title>
+        </va-sidebar-item-content>
+      </va-sidebar-item>
+    </va-sidebar>
+  </div>
 </template>
 
 
 <script>
-import { computed, watch } from 'vue';
-import { useRouter } from 'vue-router';
-import { useStore } from 'vuex'
+import { computed, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
 
 export default {
   name: "SideBar",
   setup() {
-    const store = useStore()
+    const store = useStore();
     const router = useRouter();
 
     const isCollapse = computed(() => store.state.state.isCollapse);
@@ -70,30 +52,36 @@ export default {
       router.push({
         name: item.name,
       });
+      console.log(router);
     };
 
-    watch(menu, (new_val, old_val) => {
-      console.log(new_val, old_val);
-    }, { immediate: true });
-    return { isCollapse, menu, aside_title, noChildren, hasChildren, clickMenu };
-  }
+    watch(
+      menu,
+      (new_val, old_val) => {
+        console.log(new_val, old_val);
+      },
+      { immediate: true }
+    );
+    return {
+      isCollapse,
+      menu,
+      aside_title,
+      noChildren,
+      hasChildren,
+      clickMenu,
+    };
+  },
 };
 </script>
 
 <style scoped>
-.title {
-  color: white;
-  display: flex;
-  justify-content: center;
-  font-size: 16px;
-  padding-left: 20px;
-}
-
 .headerText {
   color: white;
   display: flex;
   justify-content: center;
   font-size: 28px;
+  margin: 10px;
+  margin-bottom: 20px;
 }
 
 .yellowIcon {
@@ -117,7 +105,6 @@ export default {
 }
 
 * {
-  font-family: 'SF Pro Display', sans-serif; /* 应用字体 */
+  font-family: SFRegular; /* 应用字体 */
 }
-
 </style>
