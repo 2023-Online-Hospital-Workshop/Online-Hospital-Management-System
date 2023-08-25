@@ -13,7 +13,7 @@
           <span class="title-dept">{{ person.department }}</span>
         </va-card-title>
 
-        <!-- 第二行 -->
+        <!-- 第二行
         <va-card-content class="info-row">
           <div class="row justify-start">
             <span class="flex flex-col xs3">预约号码:</span>
@@ -21,7 +21,7 @@
               person.appointmentNumber
             }}</span>
           </div>
-        </va-card-content>
+        </va-card-content> -->
         <!-- 第三行 -->
         <va-card-content class="info-row">
           <div class="row justify-start">
@@ -109,19 +109,23 @@ export default {
     },
   },
   mounted() {
-    axios.get('http://124.223.143.21:4999/api/Patient/AllPatients')
+    // const params = {
+    //   patientId: 12345,
+    // }
+    axios.get('http://124.223.143.21:4999/Registration/Patient/12345')
       .then((response) => {
         console.log(response.data);
         const newData = response.data; // 获取响应数据
         // 将新数据转化为 person 对象并添加到 people 数组中
         this.people = newData.map(item => ({
-          id: item.patientId,
-          name: item.name,
-          gender: item.gender,
-          date: item.birthDate,
+          id: 12345,
+          doctor: item.doctor.name,
+          date: item.date.replace('T', ' '),
+          appointmentTime: item.period,
+          waitingCount:item.queueCount,
+
         }));
         console.log("people");
-
         console.log(this.people);
       })
       .catch((error) => {
@@ -156,7 +160,6 @@ export default {
     },
     viewPrescription(person) {
       console.log(person.status)
-      console.log(person.status);
       // 执行查看处方逻辑
       // 跳转到查看处方
       this.$router.push({ name: 'DoctorQuery' }); // 跳转到DoctorQuery页面
