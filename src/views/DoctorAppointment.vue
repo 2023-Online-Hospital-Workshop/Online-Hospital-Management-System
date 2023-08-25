@@ -216,10 +216,10 @@ export default {
       console.log("ID: "+this.$route.params.selectedId);
       const url = "http://124.223.143.21/Registration/regist";
       const data = {
-        PatientId: "2151895",
-        DoctorId: "23001",
+        patientId: "2151895",
+        doctorId: this.$route.params.selectedId,
         Time: "2023-08-30T07:22:13.624Z",
-        Period: 2,
+        period: 2,
       };
       axios
         .post(url, data)
