@@ -1,3 +1,54 @@
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+.parent-box {
+  width:100%;
+  height:200px;
+  
+}
+.image-left {
+  width:140px;
+  height:100px;
+  
+}
+.text{
+  font-weight: bold;
+  font-size: larger;
+}
+.button-group{
+  width: 100%; /* 设置按钮组的宽度为100% */
+  display: flex;
+  height: 50px; /* 设置按钮组的高度为50像素（可根据需要进行调整） */
+  justify-content: center;
+  align-items: center;
+  margin:20px;
+}
+.button{
+  width:100%
+}
+.hide{
+  color:transparent
+}
+.time{
+  width: 100%;
+  display:flex;
+  margin: 20px;
+  flex-wrap: wrap; 
+}
+.time-slot{
+  width: 45%;
+  height: 65px;
+  /*flex-basis: 50%;*/
+  margin:20px;
+  background-color:#f0f4f8;
+  border-color: #89bcef;
+  box-shadow: 0 0px 0px;
+  font-size: large;
+  font-weight: bold;
+  color:#1a5a99
+}
+
+</style>
+
 
 <template>
   <div id="main-page" class="parent-box">
@@ -80,6 +131,7 @@ export default {
   data() {
     return {
       currentDate: "",
+      formattedDate: "",
       nextDates: [],
       fetchedData: [],
       number: [0, 0, 0, 0, 0, 0, 0],
@@ -119,8 +171,8 @@ export default {
       this.$vaModal.confirm("你确定要预约当前时间段吗?").then((ok) => {
         if (ok) {
           if (this.number[num] < 10) {
-            alert("预约成功");
-            this.sendData();
+            // alert("预约成功");
+            this.sendData(num);
           } else {
             alert("无可预约位置，预约失败");
           }
@@ -138,14 +190,18 @@ export default {
       self.number = [0, 0, 0, 0, 0, 0, 0];
       const d=date.getDate();
       const m=date.getMonth()+1;
-      const formattedDate = `2023-${m}-${d}`;
-      console.log(formattedDate);
+      this.formattedDate = `2023-${m}-${d}`;
+      // console.log(formattedDate);
+
+      const formattedMonth = m.toString().padStart(2, '0');
+      const formattedDay = d.toString().padStart(2, '0');
+      this.formattedDate = `2023-${formattedMonth}-${formattedDay}`;
 
       // 新增部分
       axios
         .get("http://124.223.143.21/Registration/GetRegist?", {
           params: {
-            date: formattedDate,
+            date: this.formattedDate,
           },
         })
         .then(function (response) {
@@ -160,15 +216,23 @@ export default {
         });
     },
 
-    sendData() {
-      const url = "http://124.223.143.21:4999/Registration/regist";
+
+    sendData(per) {
+      console.log("TIME: "+this.formattedDate);
+      console.log("PER: "+per);
+      if (this.formattedDate == undefined) {
+        alert("请选择就诊日期！");
+        return;
+      }
+      const url = "http://124.223.143.21/Registration/regist";
       const data = {
-        PatientId: "2151895",
-        DoctorId: "23001",
-        Time: "2023-08-30T07:22:13.624Z",
-        Period: 2,
+        patientId: "2151895",
+        doctorId: this.$route.params.selectedId,
+        // Time: "2023-08-30T07:22:13.624Z",
+        time: this.formattedDate,
+        // period: 2,
+        period: per,
       };
-      // 新增部分
       axios
         .post(url, data)
         .then(function (response) {
@@ -181,7 +245,7 @@ export default {
             console.error("Response status:", error.response.status);
           }
         });
-    },
+      }
   },
 };
 </script>
@@ -189,7 +253,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #main-page {
-  margin-left: 14%;
+  margin-left: 20%;
   margin-right: 20%;
 }
 #kp {

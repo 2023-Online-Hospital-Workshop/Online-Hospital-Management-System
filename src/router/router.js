@@ -7,6 +7,7 @@ import DoctorOperator from '../views/DoctorOperator.vue'
 
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
+import AppointmentSuccess from '../views/AppointmentSuccess.vue'
 
 
 // 路由配置项
@@ -27,7 +28,7 @@ const routes = [
     component: MedicalHistory,
   },
   {
-    path: '/doctor-appointment',
+    path: '/doctor-appointment/:selectedId', // 在此处定义参数
     name: 'DoctorAppointment',
     component: DoctorAppointment,
   },
@@ -41,8 +42,11 @@ const routes = [
     name: 'DoctorOperator',
     component: DoctorOperator,
   },
-
-
+  {
+    path: '/appointment-success',
+    name: 'AppointmentSuccess',
+    component: AppointmentSuccess,
+  }
 ]
 
 const router = createRouter({
