@@ -189,8 +189,8 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #main-page {
-  margin-left: 14%;
-  margin-right: 20%;
+  margin-left: 20%;
+  margin-right: 13%;
 }
 #kp {
   display: flex;
