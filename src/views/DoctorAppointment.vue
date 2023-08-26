@@ -131,6 +131,7 @@ export default {
   data() {
     return {
       currentDate: "",
+      formattedDate: "",
       nextDates: [],
       fetchedData: [],
       number: [0, 0, 0, 0, 0, 0, 0],
@@ -171,7 +172,7 @@ export default {
         if (ok) {
           if (this.number[num] < 10) {
             // alert("预约成功");
-            this.sendData();
+            this.sendData(num);
           } else {
             alert("无可预约位置，预约失败");
           }
@@ -189,14 +190,18 @@ export default {
       self.number = [0, 0, 0, 0, 0, 0, 0];
       const d=date.getDate();
       const m=date.getMonth()+1;
-      const formattedDate = `2023-${m}-${d}`;
-      console.log(formattedDate);
+      this.formattedDate = `2023-${m}-${d}`;
+      // console.log(formattedDate);
+
+      const formattedMonth = m.toString().padStart(2, '0');
+      const formattedDay = d.toString().padStart(2, '0');
+      this.formattedDate = `2023-${formattedMonth}-${formattedDay}`;
 
       // 新增部分
       axios
         .get("http://124.223.143.21/Registration/GetRegist?", {
           params: {
-            date: formattedDate,
+            date: this.formattedDate,
           },
         })
         .then(function (response) {
@@ -212,14 +217,21 @@ export default {
     },
 
 
-    sendData() {
-      console.log("ID: "+this.$route.params.selectedId);
+    sendData(per) {
+      console.log("TIME: "+this.formattedDate);
+      console.log("PER: "+per);
+      if (this.formattedDate == undefined) {
+        alert("请选择就诊日期！");
+        return;
+      }
       const url = "http://124.223.143.21/Registration/regist";
       const data = {
         patientId: "2151895",
         doctorId: this.$route.params.selectedId,
-        Time: "2023-08-30T07:22:13.624Z",
-        period: 2,
+        // Time: "2023-08-30T07:22:13.624Z",
+        time: this.formattedDate,
+        // period: 2,
+        period: per,
       };
       axios
         .post(url, data)
@@ -241,7 +253,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #main-page {
-  margin-left: 14%;
+  margin-left: 20%;
   margin-right: 20%;
 }
 #kp {

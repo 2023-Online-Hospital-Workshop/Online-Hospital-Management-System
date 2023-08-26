@@ -297,7 +297,7 @@ export default {
 }
 
 #main-page {
-  margin-left: 15%;
+  margin-left: 20%;
 }
 
 header {
