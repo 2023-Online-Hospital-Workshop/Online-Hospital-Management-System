@@ -8,16 +8,16 @@
 
         <el-form-item :prop="username" class="input-box" label="账号">
           <el-tooltip class="item" effect="dark" content="账号即为注册时的手机号码" placement="right">
-            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入账号" @blur="inputBlurTrim('username')"></el-input>
+            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入账号"></el-input>
           </el-tooltip>
         </el-form-item>
 
         <el-form-item :prop="password" class="input-box" label="密码">
-          <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="请输入密码" @blur="inputBlurTrim('password')"></el-input>
+          <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
         </el-form-item>
 
         <el-radio-group v-model="roleCheckBox" size="small" class="radio-group">
-          <el-radio-button class="radio-item" v-for="(role_text, role_index) in roles_text" :label="role_text" :key="role_index" @change="roleChange">
+          <el-radio-button class="radio-item" v-for="(role_text, role_index) in roles_text" :label="role_text" :key="role_index" @change="roleChange(role_index)" :class="{ 'is-active': role_index === role_num }">
             {{ role_text }}
           </el-radio-button>
         </el-radio-group>
@@ -40,6 +40,8 @@
 </template>
 
   <script>
+  import axios from "axios";
+
   export default {
     name: "LoginPage",
     data() {
@@ -79,9 +81,10 @@
         //是否保持登录
         isStayLogin: false,
         //身份多选框文字
-        roles_text: ["操作员", "护工管理员", "医生管理员", "老人"],
-        role_checkBox: "操作员",
+        roles_text: ["普通用户", "医生", "管理员"],
+        role_checkBox: "普通用户",
         role_num: "0",
+        administratorId: "23202",
       };
     },
     //回车登录操作
@@ -89,7 +92,36 @@
 
     },
     methods: {
+      login() {
+          let LoginURL = ["PatientLogin", "DoctorLogin", "AdminLogin"]
+          axios
+          .get("http://124.223.143.21:4999/Login/" + LoginURL[this.role_num] + "/", {
+            params: {
+              ID: this.loginForm.username,
+              password: this.loginForm.password,
+            },
+          })
+          .then(response => {
+            console.log(response.data)
+            if (response.data) {
+              // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
+              console.log("登录成功");
+            } else {
+              // 登录失败
+              console.error("登录失败");
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      },
 
+      roleChange(index) {
+        this.role_num = index
+        this.role_checkBox = this.roles_text[index];
+        console.log(this.role_num)
+        console.log(this.role_checkBox)
+      }
     },
   };
   </script>
@@ -183,6 +215,7 @@
         border-color: #002FA7; /* Klein Blue */
         color: white;
       }
+
     }
 
     .button-group {
