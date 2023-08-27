@@ -51,7 +51,7 @@
               <el-col :span="11">
                   <el-text type="text" @click="sendVerificationCode" class="verification-btn">发送验证码</el-text>
               </el-col>
-          </el-row>
+          </el-row>  
         </el-form-item>
         <el-button type="primary" @click="nextStep">下一步</el-button>
       </el-form>
