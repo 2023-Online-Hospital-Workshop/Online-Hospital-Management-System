@@ -254,7 +254,7 @@ export default {
 <style scoped>
 #main-page {
   margin-left: 20%;
-  margin-right: 20%;
+  margin-right: 13%;
 }
 #kp {
   display: flex;
