@@ -4,21 +4,24 @@
     <SideBar />
     <router-view></router-view>
     <DoctorInfo />
+    <Header/>
   </div>
 </template>
 
 <script>
-// import SideBar from "./components/SideBar.vue";
+import SideBar from "./components/SideBar.vue";
+import Header from "./components/Header.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
 // import DoctorInfo from './components/Info/DoctorInfo.vue';
 import DoctorInfo from "./components/Info/DoctorInfo.vue";
 
 export default {
   components: {
-    // SideBar,
+    SideBar,
     // PatientInfo,
     //DoctorInfo,
     DoctorInfo,
+    Header,
   },
 };
 </script>
