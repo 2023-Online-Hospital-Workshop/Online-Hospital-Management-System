@@ -3,8 +3,7 @@
   <div id="app">
     <SideBar />
     <router-view></router-view>
-    <DoctorInfo />
-    <Header/>
+    <Header />
   </div>
 </template>
 
@@ -13,14 +12,13 @@ import SideBar from "./components/SideBar.vue";
 import Header from "./components/Header.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
 // import DoctorInfo from './components/Info/DoctorInfo.vue';
-import DoctorInfo from "./components/Info/DoctorInfo.vue";
+//import DoctorInfo from "./components/Info/DoctorInfo.vue";
 
 export default {
   components: {
     SideBar,
     // PatientInfo,
     //DoctorInfo,
-    DoctorInfo,
     Header,
   },
 };
