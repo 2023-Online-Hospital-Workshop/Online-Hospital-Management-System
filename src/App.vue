@@ -3,22 +3,25 @@
   <div id="app">
     <SideBar />
     <router-view></router-view>
-    <AdministratorInfo />
+    <DoctorInfo />
+    <Header/>
   </div>
 </template>
 
 <script>
 import SideBar from "./components/SideBar.vue";
+import Header from "./components/Header.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
 // import DoctorInfo from './components/Info/DoctorInfo.vue';
-import AdministratorInfo from "./components/Info/AdministratorInfo.vue";
+import DoctorInfo from "./components/Info/DoctorInfo.vue";
 
 export default {
   components: {
     SideBar,
     // PatientInfo,
     //DoctorInfo,
-    AdministratorInfo,
+    DoctorInfo,
+    Header,
   },
 };
 </script>

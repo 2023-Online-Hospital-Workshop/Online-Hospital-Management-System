@@ -1,7 +1,6 @@
 <template>
-  <div class="mb-6 h-64 sidebar">
-    <va-sidebar color="primary" gradient minimized-width="64px" width="15rem">
-      <h3 class="headerText" v-if="!isCollapse">{{ aside_title }}</h3>
+  <div class="mb-6 h-64 sidebar" :style="{ backgroundColor: 'transparent'}">
+    <va-sidebar color="primary" gradient minimized-width="64px" :width="is_expand ? '0px' : '200px'">
       <va-sidebar-item
         @click="clickMenu(item)"
         v-for="item in noChildren"
@@ -22,7 +21,7 @@
 
 
 <script>
-import { computed, watch } from "vue";
+import { computed, watch, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 
@@ -35,6 +34,7 @@ export default {
     const isCollapse = computed(() => store.state.state.isCollapse);
     const menu = computed(() => store.state.state.aside_data);
     const aside_title = computed(() => store.state.state.aside_title);
+    const is_expand = ref(store.state.state.is_expand);
 
     const noChildren = computed(() => {
       return menu.value.filter((item) => {
@@ -60,8 +60,12 @@ export default {
       (new_val, old_val) => {
         console.log(new_val, old_val);
       },
-      { immediate: true }
+      { immediate: true },
     );
+    watch(
+      () => store.state.state.is_expand,
+      (newValue) => {
+        is_expand.value = newValue;})
     return {
       isCollapse,
       menu,
@@ -69,6 +73,7 @@ export default {
       noChildren,
       hasChildren,
       clickMenu,
+      is_expand,
     };
   },
 };
@@ -96,7 +101,7 @@ export default {
   position: fixed;
   z-index: 1000;
   left: 0;
-  top: 0;
+  top: 60px;
   background-color: #002fb0;
 }
 

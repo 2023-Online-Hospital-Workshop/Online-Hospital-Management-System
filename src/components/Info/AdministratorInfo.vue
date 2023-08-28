@@ -5,64 +5,66 @@
       class="info-btn"
       background-color="warning"
       gradient
+      width="20vw"
     >
       <i class="material-icons">account_circle</i>&nbsp;&nbsp;个人信息
     </va-button>
+    <el-collapse-transition>
+      <div v-if="showInfo" class="info-content">
+        <div id="info">
+          <div id="info-avatar">
+            <va-avatar class="mr-6" font-size="6vh" size="13vh">{{
+              getAvatar
+            }}</va-avatar>
+          </div>
 
-    <div v-if="showInfo" class="info-content">
-      <div id="info">
-        <div id="info-avatar">
-          <va-avatar class="mr-6" font-size="30px" size="large">{{
-            getAvatar
-          }}</va-avatar>
-        </div>
+          <div class="info-container">
+            <va-input
+              v-model="administratorId"
+              readonly
+              class="info-input"
+              placeholder="请输入5位数的编号"
+              background="rgb(255,255,255)"
+              ><template #prepend> 编号： </template></va-input
+            >
+            <va-input
+              v-model.lazy="name"
+              placeholder="请输入你的姓名"
+              class="info-input"
+              :background="input_bg"
+              :readonly="readonly"
+              ><template #prepend>姓名：</template></va-input
+            >
+            <va-input
+              v-model="gender"
+              class="info-input"
+              placeholder="请输入男/女/其他"
+              :background="input_bg"
+              :readonly="readonly"
+              ><template #prepend> 性别： </template></va-input
+            >
+            <va-input
+              v-model="contact"
+              class="info-input"
+              placeholder="请输入11位的电话号码"
+              :background="input_bg"
+              :readonly="readonly"
+              ><template #prepend> 电话： </template></va-input
+            >
+          </div>
 
-        <div class="info-container">
-          <va-input
-            v-model="administratorId"
-            label="编号"
-            readonly
-            class="info-input"
-            placeholder="请输入5位数的编号"
-            background="rgb(223,234,250)"
-          />
-          <va-input
-            v-model.lazy="name"
-            label="姓名"
-            placeholder="请输入你的姓名"
-            class="info-input"
-            :background="input_bg"
-            :readonly="readonly"
-          />
-          <va-input
-            v-model="gender"
-            label="性别"
-            class="info-input"
-            placeholder="请输入男/女/其他"
-            :background="input_bg"
-            :readonly="readonly"
-          />
-          <va-input
-            v-model="contact"
-            label="电话"
-            class="info-input"
-            placeholder="请输入11位的电话号码"
-            :background="input_bg"
-            :readonly="readonly"
-          />
-        </div>
-        <div id="info-btn">
-          <va-button @click="edit">
-            <i class="material-icons">{{ getIcon }}</i
-            >&nbsp;&nbsp;{{ editStates }}
-          </va-button>
-          &nbsp;&nbsp;
-          <va-button @click="exit">
-            <i class="material-icons">exit_to_app</i> &nbsp;&nbsp;退出
-          </va-button>
+          <va-button-group grow preset="primary" id="btn-group">
+            <va-button @click="edit">
+              <i class="material-icons">{{ getIcon }}</i
+              >&nbsp;&nbsp;{{ editStates }}
+            </va-button>
+            <va-button @click="exit">
+              <i class="material-icons">exit_to_app</i> &nbsp;&nbsp;退出
+            </va-button>
+          </va-button-group>
         </div>
       </div>
-    </div>
+    </el-collapse-transition>
   </div>
 </template>
   
@@ -84,7 +86,7 @@ export default {
 
       //控制修改的相关属性
       editStates: "编辑",
-      input_bg: "rgb(223,234,250)",
+      input_bg: "rgb(255,255,255)",
       readonly: true,
     };
   },
@@ -105,7 +107,7 @@ export default {
         this.readonly = false;
         this.editStates = "保存";
       } else {
-        this.input_bg = "rgb(223,234,250)";
+        this.input_bg = "rgb(255,255,255)";
         this.readonly = true;
         this.editStates = "编辑";
         this.putServer();
@@ -135,7 +137,7 @@ export default {
             console.error(error);
           });
       } else {
-        this.input_bg = "rgb(223,234,250)";
+        this.input_bg = "rgb(255,255,255)";
         this.readonly = true;
         this.editStates = "编辑";
       }
@@ -198,7 +200,7 @@ export default {
 .avatar-dropdown {
   position: absolute;
   align-items: center;
-  width: 20%;
+  width: 15%;
   right: 0px;
   text-align: right;
 }
@@ -209,37 +211,45 @@ export default {
   display: block;
   align-items: right;
   margin: 0 auto;
+  /* width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; */
 }
 
 .info-content {
   display: block;
+  width: 100%;
+  color: #154ec1;
+  font-weight: bold;
+  padding-bottom: 20px;
 }
 
 #info {
   margin-right: 0;
   text-align: center;
-  background-color: rgb(223, 234, 250);
+  background-color: rgb(255, 255, 255);
 
   border-radius: 0 0 0 5px;
-  box-shadow: 0 0 2px 2px #dae4f4;
+  box-shadow: 0 0 2px 2px #fbfbfb;
 }
 
 #info-avatar {
   border-top: 10px;
   padding-top: 10px;
+  margin-bottom: 15px;
 }
 
 .info-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 30px;
+  width: 100%; /* 设定宽度为100% */
+  margin: 0; /* 确保外部间距为0 */
+  padding: 0; /* 确保内部间距为0 */
+  box-sizing: border-box; /* 确保宽度包括内部间距和边框 */
 }
 
 .info-input {
   margin-bottom: 10px;
-  width: 60%;
-  margin-left: 20%;
+  width: 85%;
   /* add a padding to increase the distance between label and input */
   --va-input-container-label-font-size: 0.4rem;
   --va-input-container-label-line-height: 0.75;
@@ -247,12 +257,7 @@ export default {
   --va-input-line-height: 30px;
 }
 
-#info-btn {
-  justify-content: center;
-  align-items: center;
-  gap: 20%;
-  padding-top: 30px;
-  scale: 0.75;
-  padding-bottom: 30px;
+#btn-group {
+  padding-top: 10px;
 }
 </style>

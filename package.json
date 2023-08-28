@@ -24,7 +24,8 @@
     "vue-router": "^4.2.4",
     "vuestic-ui": "^1.7.1",
     "vuex": "^4.1.0",
-    "webpack": "^5.88.1"
+    "webpack": "^5.88.1",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
