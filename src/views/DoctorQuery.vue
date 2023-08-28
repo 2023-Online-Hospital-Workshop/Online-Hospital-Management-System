@@ -11,10 +11,10 @@ export default {
   },
   methods: {
     search() {
-      console.log(this.searchKeyword);
+      // console.log(this.searchKeyword);
       axios.get('http://124.223.143.21:4999/Instructor')
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         this.title_visible = true;
         this.doctorList = response.data;
       })
@@ -62,7 +62,10 @@ export default {
             this.filteredDoctors.push(response.data[i]);
           }
         }
-      );
+      )
+      .catch((error) => {
+        console.log(error);
+      });
     },
     // updateSubDepartments() {
     //   // 根据选择的一级科室，更新二级科室列表
@@ -85,13 +88,15 @@ export default {
     //   console.log(res);
     //   this.filteredDoctors = res;
     // },
-    doctorCardClicked(selectedId) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
-      console.log("selected: "+selectedId);
-      this.$router.push({name: 'DoctorAppointment', params: {selectedId: selectedId}});
+    doctorCardClicked(doctor) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
+      console.log("selected: "+doctor.doctorId);
+      this.$router.push({name: 'DoctorAppointment', params: {selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId}});
     },
-    mounted() {
-      
-    }
+    
+  },
+  mounted() {
+    console.log("mounted!");
+    this.httpGetDepts();
   },
   data() {
     return {
@@ -165,7 +170,7 @@ export default {
 
 <template>
   <div id="main-page">
-    <h1 class="va-h3">Doctor Query</h1>
+    <h1 class="va-h3"> 选择医生</h1>
     <div>
       <va-card class="department-card">
       
@@ -174,22 +179,36 @@ export default {
           :input_width="inputWidth" :input_data="inputData" 
           @SearchBoxValueToParent="handleSearchValue">
         </SearchBox> -->
-        <va-card class="search-card">
+        <!-- <va-card class="search-card"> -->
           <div class="search-container">
             <va-input v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
             <va-button color="primary" @click="search">搜索</va-button>
           </div>
-        </va-card>
+        <!-- </va-card> -->
+
+        <va-select
+          v-model="selectedDepartment"
+          class="mb-6"
+          placeholder="请选择对应科室"
+          :options="departments"
+        />
+        <!-- <div class="department-selector">
+          <label for="firstDepartment">科室：</label>
+          <select id="firstDepartment" v-model="selectedDepartment" @click="httpGetDepts" @change="updateSubDepartments">
+            <option value="">请选择科室</option>
+            <option v-for="dept in this.departments" :key="dept" :value="dept">{{ dept }}</option>
+          </select>
+        </div> -->
       </div>
 
-      <div class="department-selectors">
+      <!-- <div class="department-selectors">
         <div class="department-selector">
           <label for="firstDepartment">科室：</label>
           <select id="firstDepartment" v-model="selectedDepartment" @click="httpGetDepts" @change="updateSubDepartments">
             <option value="">请选择科室</option>
             <option v-for="dept in this.departments" :key="dept" :value="dept">{{ dept }}</option>
           </select>
-        </div>
+        </div> -->
 
         <!-- <div class="department-selector">
           <label for="secondDepartment">二级科室：</label>
@@ -198,10 +217,10 @@ export default {
             <option v-for="subDept in subDepartments" :key="subDept" :value="subDept">{{ subDept }}</option>
           </select>
         </div> -->
-      </div>
+      <!-- </div> -->
 
       <div class="doctors-list">
-        <va-card v-for="doctor in filteredDoctors" :key="doctor.doctorName" class="doctor-card" @click="doctorCardClicked(doctor.doctorId)">
+        <va-card v-for="doctor in filteredDoctors" :key="doctor.doctorName" class="doctor-card" @click="doctorCardClicked(doctor)">
           
           <div class="doctor-details">
             <h3>{{ doctor.doctorName }}</h3>
@@ -306,6 +325,7 @@ header {
 
 .flex {
   margin-top: 10px;
+  display: flex;
 }
 
 .logo {

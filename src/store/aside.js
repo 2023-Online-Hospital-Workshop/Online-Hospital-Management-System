@@ -21,7 +21,7 @@ export default {
         name: 'DoctorQuery',
         label: '预约挂号',
         icon: 'insert_invitation',
-        url: '/care/CareServiceMine',
+        url: '/doctor-query',
       },
       {
         path: '/disease-inquiry',

@@ -51,6 +51,18 @@
 
 
 <template>
+  <template>
+    <va-modal
+      v-model="showModal"
+      ok-text="确认"
+      cancel-text="取消"
+    >
+      <p></p>
+      <p>
+        {{ alertText }}
+      </p>
+    </va-modal>
+  </template>
   <div id="main-page" class="parent-box">
     <h1 class="va-h3">门诊预约挂号</h1>
     <div>
@@ -138,6 +150,8 @@ export default {
       options: [],
       model: "two",
       value:new Date(),
+      showModal: false,
+      alertText: "",
     };
   },
 
@@ -218,8 +232,8 @@ export default {
 
 
     sendData(per) {
-      console.log("TIME: "+this.formattedDate);
-      console.log("PER: "+per);
+      
+      console.log("id: "+this.$route.params.selectedId);
       if (this.formattedDate == undefined) {
         alert("请选择就诊日期！");
         return;
@@ -228,22 +242,30 @@ export default {
       const data = {
         patientId: "2151895",
         doctorId: this.$route.params.selectedId,
+        // doctorId: "23008",
         // Time: "2023-08-30T07:22:13.624Z",
         time: this.formattedDate,
         // period: 2,
-        period: per,
+        period: per + 1,
       };
       axios
         .post(url, data)
-        .then(function (response) {
-          console.log(response);
+        .then((response) => {
+          this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data;
+          this.showModal = true;
         })
         .catch(function (error) {
+          alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
           console.error("Error message:", error.message);
+          if (error.message == "Network Error")
+            return;
           if (error.response) {
             console.error("Response data:", error.response.data);
             console.error("Response status:", error.response.status);
           }
+          // if (error.response.status == 400) {
+          //   alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
+          // }
         });
       }
   },
