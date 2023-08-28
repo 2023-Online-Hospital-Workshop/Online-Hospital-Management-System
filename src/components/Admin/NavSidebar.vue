@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <va-sidebar color="primary" gradient width="250px">
+    <va-sidebar color="primary" gradient>
       <h3 class="title">{{ title }}</h3>
       <va-sidebar-item
         @click="clickItem(item)"
@@ -61,6 +61,7 @@ export default {
   position: fixed;
   background-color: #002fb0;
   user-select: none;
+  z-index: 99999;
 }
 .title {
   color: white;
