@@ -1,6 +1,7 @@
 
 <template>
-  <div id="app">
+  <router-view></router-view>
+  <!-- <div id="app">
     <SideBar />
     <router-view></router-view>
     <DoctorInfo />
@@ -8,14 +9,14 @@
 </template>
 
 <script>
-import SideBar from "./components/SideBar.vue";
+// import SideBar from "./components/SideBar.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
 // import DoctorInfo from './components/Info/DoctorInfo.vue';
 import DoctorInfo from "./components/Info/DoctorInfo.vue";
 
 export default {
   components: {
-    SideBar,
+    // SideBar,
     // PatientInfo,
     //DoctorInfo,
     DoctorInfo,
