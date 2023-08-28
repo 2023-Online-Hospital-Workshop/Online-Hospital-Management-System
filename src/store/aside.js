@@ -1,5 +1,6 @@
 export default {
   state: {
+    is_expand: true,
     aside_data: [
       {
         path: '/home',
