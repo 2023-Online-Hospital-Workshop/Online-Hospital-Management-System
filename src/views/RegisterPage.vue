@@ -41,7 +41,7 @@
       <!-- Step 2: Password -->
       <el-form v-if="step === 2" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
         <el-form-item label="手机号码">
-          <el-input type="password" v-model="registerForm.password" auto-complete="off" placeholder="请输入手机号码"></el-input>
+          <el-input type="password" v-model="registerForm.phoneNumber" auto-complete="off" placeholder="请输入手机号码"></el-input>
         </el-form-item>
         <el-form-item label="验证码">
           <el-row type="flex" justify="space-between">
@@ -51,7 +51,7 @@
               <el-col :span="11">
                   <el-text type="text" @click="sendVerificationCode" class="verification-btn">发送验证码</el-text>
               </el-col>
-          </el-row>  
+          </el-row>
         </el-form-item>
         <el-button type="primary" @click="nextStep">下一步</el-button>
       </el-form>
@@ -76,6 +76,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "RegisterPage",
   data() {
@@ -83,8 +85,11 @@ export default {
       step: 1,  // current step
       registerForm: {
         name: '',
-        contact: '',
-        password: ''
+        gender: '',
+        birthdate: '',
+        phoneNumber: '',
+        verificationCode: '',
+        password: '',
       }
     }
   },
@@ -93,12 +98,60 @@ export default {
       this.step = step
     },
     nextStep() {
+      if (this.step == 2) {
+        console.log(this.registerForm.phoneNumber.toString())
+        console.log(this.registerForm.verificationCode.toString())
+        axios
+        .get("http://124.223.143.21:4999/api/Login/verify", {
+              params: {
+                PhoneNumber: this.registerForm.phoneNumber.toString(),
+                code: this.registerForm.verificationCode.toString(),
+              },
+            })
+        .then(response => {
+          console.log(response.data)
+          if (response.data) {
+            // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
+            this.$vaModal.success('验证通过');
+          } else {
+            // 登录失败
+            this.$vaModal.success('验证通过');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      }
+
       if (this.step < 3) {
         this.step++;
       }
     },
     submitForm() {
       // Implement form submission here
+      console.log(this.registerForm)
+    },
+    sendVerificationCode() {
+      console.log(this.registerForm.phoneNumber.toString())
+      axios
+      .get("http://124.223.143.21:4999/api/Login/generate/", {
+            params: {
+              PhoneNumber: this.registerForm.phoneNumber,
+            },
+          })
+      .then(response => {
+        console.log(response.data)
+        if (response.data) {
+          // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
+          console.log("登录成功");
+        } else {
+          // 登录失败
+          console.error("登录失败");
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
     }
   }
 }
