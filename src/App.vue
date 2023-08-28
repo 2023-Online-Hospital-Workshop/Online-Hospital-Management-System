@@ -4,22 +4,22 @@
   <!-- <div id="app">
     <SideBar />
     <router-view></router-view>
-    <AdministratorInfo />
-  </div> -->
+    <DoctorInfo />
+  </div>
 </template>
 
 <script>
 // import SideBar from "./components/SideBar.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
 // import DoctorInfo from './components/Info/DoctorInfo.vue';
-// import AdministratorInfo from "./components/Info/AdministratorInfo.vue";
+import DoctorInfo from "./components/Info/DoctorInfo.vue";
 
 export default {
   components: {
     // SideBar,
     // PatientInfo,
     //DoctorInfo,
-    // AdministratorInfo,
+    DoctorInfo,
   },
 };
 </script>
