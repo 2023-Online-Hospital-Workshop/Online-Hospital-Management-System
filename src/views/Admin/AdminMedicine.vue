@@ -200,9 +200,9 @@ export default {
       // 更新表头
       this.columns = [];
       for (var i = 0; i < this.stockColumns.length; ++i) {
-        this.columns.push({ key: this.stockColumns[i], label: this.stockColumns[i] });
+        this.columns.push(this.stockColumns[i]);
       }
-      this.columns.push({ key: "修改",  label: "修改"});
+      this.columns.push("修改");
 
       // 更新表项
       fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
@@ -241,7 +241,7 @@ export default {
       // 更新表头
       this.columns = [];
       for (var i = 0; i < this.recordColumns.length; ++i) {
-        this.columns.push({ key: this.recordColumns[i], label: this.recordColumns[i] });
+        this.columns.push(this.recordColumns[i]);
       }
 
       // 更新表项
@@ -259,16 +259,11 @@ export default {
     
     // 添加表项
     addItem() {
-      var flag = this.createdItem["库存"] < this.createdItem["阈值"]; 
-      this.items.push({ // 填入表项
-        药品名: this.createdItem["药品名"],
-        生产单位: this.createdItem["生产单位"],
-        生产日期: this.createdItem["生产日期"],
-        库存: this.createdItem["库存"],
-        阈值: this.createdItem["阈值"],
-        预警: flag ? "是" : "否",
-      });
-      console.log("add "+(this.createdItem).toString());
+      var newItem = {};
+      for (var i = 0; i < this.stockColumns.length; ++i) {
+        newItem[this.stockColumns[i]] = this.createdItem[this.stockColumns[i]];
+      }
+      this.items.push(newItem);
     },
 
     // 打开编辑窗口
@@ -280,7 +275,6 @@ export default {
     // 删除项
     deleteItem(rowIndex) {
       this.items.splice(rowIndex, 1);
-      console.log("delete " + (rowIndex).toString());
     },
 
     // 更新库存

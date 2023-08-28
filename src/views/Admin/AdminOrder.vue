@@ -103,7 +103,6 @@ export default {
     },
     // 筛选函数
     filterFunction(source) {
-      console.log(this.columns);
       console.log(source);
       return source.toString().includes(this.searchKeyword);
     },

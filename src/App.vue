@@ -1,7 +1,6 @@
 
 <template>
-  <router-view></router-view>
-  <!-- <div id="app">
+  <div id="app">
     <SideBar />
     <router-view></router-view>
     <DoctorInfo />
