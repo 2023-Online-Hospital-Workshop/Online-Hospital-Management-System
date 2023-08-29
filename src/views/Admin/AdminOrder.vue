@@ -1,3 +1,13 @@
+<!--  
+  问题：
+  1. 前后端交互
+  2. 表格大小无法适配所有分辨率
+  3. 输入框可以添加输入类型限定
+  4. sidebar和header和用户端同步
+  5. 修改和删除可以添加确认提示
+  ...
+ -->
+
 <template>
   <el-container>
 
@@ -8,48 +18,46 @@
     </el-header>
 
     <el-main>
-      <!-- 搜索框 -->
-      <div class="search-box">
+      <!-- 条件区 -->
+      <div class="conditions">
         <center>
-          <va-input v-model="searchKeyword" placeholder="请输入相关信息"></va-input>
-          <va-button @click="search">搜索</va-button>
+          <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
         </center>
       </div>
+      <!-- 条件区 -->
 
-      <!-- 表格 -->
+      <!-- 表格区 -->
       <div class="table">
-        <va-data-table :items="items" 
-        :columns="columns" 
-        :filter-method="filterFunction"
-        :per-page="pageSize" 
-        :current-page="currentPage" 
-        :wrapper-size="550" 
-        hoverable 
-        clickable 
-        virtual-scroller
-        @filtered="filteredCount=$event.items.length"
-        @row:click="rowClicked" 
-        >
+        <va-data-table :items="tableItems" :columns="tableColumns" :filter="filter" :per-page="perPage" :current-page="curPage"
+          :wrapper-size="550" hoverable clickable virtual-scroller @filtered="filteredCount = $event.items.length"
+          @row:click="openModal">
+
           <!-- 分页 -->
           <template #bodyAppend>
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination 
-                v-model="currentPage" 
-                :pages="pages" 
-                style="justify-content: center" 
-                />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
               </td>
             </tr>
           </template>
+          <!-- 分页 -->
+
         </va-data-table>
       </div>
+      <!-- 表格区 -->
 
       <!-- 弹窗 -->
-      <div v-show="showBox">
-        <OrderDetail :id="orderId" :type=0 @closeBox="closeBox"></OrderDetail>
+      <div class="modal">
+        <va-modal v-model="showModal" title="订单详情" ok-text="确认订单" cancel-text="取消操作" no-outside-dismiss @ok="confirm"
+          @cancel="cancel">
+          <div style="line-height: 200%;">订单号：{{ orderId }}</div>
+          <va-data-table :items="modalItems" :columes="modalColumns" :wrapper-size="300" sticky-header hoverable
+            virtual-scroller striped>
+          </va-data-table>
+        </va-modal>
       </div>
+      <!-- 弹窗 -->
 
     </el-main>
 
@@ -57,196 +65,113 @@
 </template>
 
 <script>
-import OrderDetail from '../../components/Admin/OrderDetail.vue'
 export default {
-  components: {
-    OrderDetail,
-  },
-
   data() {
-    const pageSize = 12;
-    const columns = [
-      { key: "订单号", label: "订单号" },
-      { key: "时间", label: "时间" },
-      { key: "就诊人", label: "就诊人" },
-      { key: "金额", label: "金额" },
-      { key: "状态", label: "状态" },
-    ];
+    const perPage = 12;
+    const tableColumns = ["订单号", "时间", "就诊人", "金额", "状态"];
+    const modalColumns = ["药品名", "数量", "单位", "金额"];
 
     return {
-      // 常量
-      pageSize,
-      columns,
-
-      // 变量
-      searchKeyword: "",
+      // 筛选
+      filter: "",
       filteredCount: 0,
-      currentPage: 1,
-      items: [],
 
-      // 弹窗
-      showBox: false,
-      orderId: 0,
+      // 表格
+      tableColumns,
+      tableItems: [],
+
+      // 分页
+      perPage,
+      curPage: 1,
+
+      //弹窗
+      showModal: false,
+      orderId: "",
+      modalColumns,
+      modalItems: [],
+
     }
   },
 
   computed: {
-    // 总页数
+    // 页数
     pages() {
-      return Math.ceil(this.filteredCount / this.pageSize);
+      return Math.ceil(this.filteredCount / this.perPage);
     }
   },
 
   methods: {
-    // 点击搜索
-    search() {
-    },
-    // 筛选函数
-    filterFunction(source) {
-      console.log(source);
-      return source.toString().includes(this.searchKeyword);
-    },
     // 点击表行
-    rowClicked(event) {
-      if (this.showBox) return;
-      this.orderId = event.itemIndex;
-      this.showBox = true;
-    },
-    // 关闭弹窗，由子组件触发
-    closeBox(flag) {
-      if (flag) {
-        // 向后端申请减少药品数量，同时改变订单状态
+    openModal(event) {
+      // 弹窗已弹出则操作无效
+      if (this.showModal) {
+        return;
       }
-      this.showBox = false;
+
+      // 从后端获取订单详细信息
+      this.orderId = this.tableItems[event.itemIndex]["订单号"];
+
+
+
+      // 显示弹窗
+      this.showModal = true;
+    },
+
+    // 确认订单
+    confirm() {
+      // 向后端申请减少药品数量，同时改变订单状态
+      console.log("confirm");
+
+      // 关闭弹窗
+      this.showModal = false;
+    },
+
+    // 取消操作
+    cancel() {
+      // 关闭弹窗
+      this.showModal = false;
     }
   },
 
   mounted() {
-    // 初始获取items
-    this.items = [
-      {
-        订单号: 19810,
+    // 初始获取tableItems/modalItems
+    for (var i = 0; i < 20; ++i) {
+      this.tableItems.push({
+        订单号: parseInt(Math.random() * 90000 + 10000).toString(),
         时间: "2023-07-12 19:19",
         就诊人: "李田所",
-        金额: (114.51).toFixed(2),
+        金额: (114.514).toFixed(2),
         状态: "未支付",
-      },
-      {
-        订单号: 65472,
-        时间: "2022-03-09 15:31",
-        就诊人: "马缇苏",
-        金额: (8).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 12306,
-        时间: "2021-06-06 09:27",
-        就诊人: "王也",
-        金额: (99.9).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-      {
-        订单号: 54321,
-        时间: "2021-03-04 23:22",
-        就诊人: "张德川",
-        金额: (123.7).toFixed(2),
-        状态: "已支付",
-      },
-    ];
-    this.filteredCount = this.items.length;
+      })
+    }
+    for (i = 0; i < 10; ++i) {
+      this.modalItems.push({
+        药品名: "阿米诺司",
+        数量: 2,
+        单位: "盒",
+        金额: (100.00).toFixed(2),
+      })
+    }
+
+    // 初始化filteredCount
+    this.filteredCount = this.tableItems.length;
+  },
+
+  watch: {
+    // 重新筛选时重置curPage
+    filter() {
+      this.curPage = 1;
+    }
   },
 }
 </script>
 
 <style scoped>
-.el-header {
-  background-color: #B3C0D1;
-  color: #333;
-  text-align: center;
-  line-height: 60px;
-  user-select: none;
-}
 
 .el-main {
   user-select: none;
 }
+</style>
 
 * {
   font-family: AliRegular;
@@ -254,7 +179,3 @@ export default {
 }
 </style>
 
-<!--
-  1. 前后端交互
-  2. 弹窗改成modal
- -->
