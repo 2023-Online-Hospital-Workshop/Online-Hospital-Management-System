@@ -362,7 +362,7 @@ export default {
 }
 
 * {
-  font-family: SFRegular;
+  font-family: AliRegular;
 }
 </style>
 

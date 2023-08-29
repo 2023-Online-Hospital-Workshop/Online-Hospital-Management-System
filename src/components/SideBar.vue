@@ -110,6 +110,6 @@ export default {
 }
 
 * {
-  font-family: SFRegular; /* 应用字体 */
+  font-family: AliRegular; /* 应用字体 */
 }
 </style>
