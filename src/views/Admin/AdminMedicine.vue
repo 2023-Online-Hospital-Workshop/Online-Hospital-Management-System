@@ -12,116 +12,78 @@
       <div class="tabs">
         <va-tabs v-model="curTab" grow>
           <template #tabs>
-            <va-tab v-for="title in tabTitle" :key="title.id">
+            <va-tab v-for="title in tabTitles" :key="title.id">
               {{ title.name }}
             </va-tab>
           </template>
         </va-tabs>
       </div>
+      <!-- 切换栏 -->
 
       <!-- 条件区 -->
-      <div class="conditions"> 
+      <div class="conditions">
         <center>
           <span class="search">
-            <va-input v-model="searchKeyword" placeholder="请输入相关信息">
-            </va-input>
-            <va-button @click="search">搜索</va-button>
+            <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
           </span>
-          <span v-if="curTab==0" class="checkbox">
-            <va-checkbox 
-            v-model="warningOnly"
-            :label="checkboxLabel"
-            />
+          <span v-if="curTab == 0" class="checkbox">
+            <va-checkbox v-model="warningOnly" :label="checkboxLabel" />
           </span>
         </center>
       </div>
+      <!-- 条件区 -->
 
       <!-- 表格 -->
       <div class="table">
-        <va-data-table
-        class="table-crud"
-        :items="items"
-        :columns="columns"
-        :filter-method="filterFunction"
-        :per-page="pageSize"
-        :current-page="currentPage"
-        :wrapper-size="500"
-        hoverable
-        virtual-scroller
-        @filtered="filteredCount=$event.items.length"
-        >
+        <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
+          :current-page="curPage" :wrapper-size="520" hoverable virtual-scroller
+          @filtered="filteredCount = $event.items.length">
+
           <!-- 新建区 -->
-          <template v-if="curTab==0" #headerAppend>
+          <template v-if="curTab == 0" #headerAppend>
             <tr class="table-curd__slot">
-              <th
-                v-for="key in Object.keys(createdItem)"
-                :key="key"
-              >
-                <!-- 输入框 -->
-                <va-input
-                  v-model="createdItem[key]"
-                  :placeholder="key"
-                />
+              <th v-for="col in stockColumns.slice(0, -1)" :key="col">
+                <va-input v-model="createdItem[col]" :placeholder="col" />
               </th>
               <th>
-                <!-- 添加按钮 -->
-                <va-button
-                  :disabled="!validItem"
-                  block
-                  @click="addItem"
-                >
-                  添加
-                </va-button>
+                <va-input v-model="createdItemWarning" placeholder="预警" readonly />
+              </th>
+              <th>
+                <va-button :disabled="!createdItemValid" block @click="addItem">添加</va-button>
               </th>
             </tr>
           </template>
+          <!-- 新建区 -->
 
           <!-- 修改操作 -->
-          <template v-if="curTab==0" #cell(修改)="{ rowIndex }">
-            <va-button
-              preset="plain"
-              icon="edit"
-              @click="openItemEdition(rowIndex)"
-            />
-            <va-button
-              preset="plain"
-              icon="delete"
-              class="ml-3"
-              @click="deleteItem(rowIndex)"
-            />
+          <template v-if="curTab == 0" #cell(修改)="{ rowIndex }">
+            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
           </template>
+          <!-- 修改操作 -->
 
           <!-- 分页 -->
           <template #bodyAppend>
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination 
-                v-model="currentPage" 
-                :pages="pages"
-                style="justify-content: center" 
-                />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
               </td>
             </tr>
           </template>
+          <!-- 分页 -->
 
         </va-data-table>
       </div>
+      <!-- 表格 -->
 
       <!-- 弹窗 -->
-      <va-modal
-        class="modal-crud"
-        v-model="showModal"
-        title="编辑库存"
-        ok-text="确认"
-        cancel-text="取消"
-        @ok="confirmUpdate"
-        @cancel="cancelUpdate"
-      >
-        <va-input
-          v-model="editedStock"
-        />
+      <va-modal v-model="showModal" title="编辑" ok-text="确认" cancel-text="取消" no-outside-dismiss
+        @ok="confirmUpdate" @cancel="cancelUpdate">
+        <div class="modal-label">库存</div>
+        <va-input v-model="editedStock" />
       </va-modal>
+      <!-- 弹窗 -->
 
     </el-main>
   </el-container>
@@ -129,66 +91,83 @@
 
 <script>
 export default {
-  components: {
-
-  },
-
   data() {
-    const tabTitle = [
-        { id: 0, name: "查看库存药品" },
-        { id: 1, name: "查看清理记录" },
-      ];
+    const tabTitles = [
+      { id: 0, name: "查看库存药品" },
+      { id: 1, name: "查看清理记录" },
+    ];
     const checkboxLabel = "仅查看预警药品";
-    const pageSize = 10;
-    const stockColumns = [ "药品名", "生产单位", "生产日期", "库存", "阈值", "预警" ];
-    const recordColumns = [ "药品名", "清理日期", "清理负责管理员"];
+    const stockColumns = ["药品名", "生产单位", "生产日期", "库存", "阈值", "预警"];
+    const recordColumns = ["药品名", "清理日期", "清理负责管理员"];
 
     return {
-      // 常量
-      tabTitle,
+      // 切换栏
+      tabTitles,
+      curTab: 0,
+
+      // 筛选
+      filter: "",
+      filteredCount: 0,
       checkboxLabel,
-      pageSize,
+      warningOnly: false,
+
+      // 表格
+      tableColumns: [],
+      tableItems: [],
       stockColumns,
       recordColumns,
 
-      // 变量
-      curTab: 0, // 当前栏
-      searchKeyword: "", // 用户输入
-      warningOnly: false, // 仅查看预警
-      createdItem: {}, // 新项
-      editedStock: 0, // 编辑项
-      currentPage: 1, // 当前页
-      showModal: false, // 是否显示弹窗
-      columns: [], // 表头
-      items: [], // 表项
-      filteredCount: 0, // 筛选出的条目数
+      // 编辑
+      createdItem: {
+        "药品名": "",
+        "生产单位": "",
+        "生产日期": "",
+        "库存": "",
+        "阈值": "",
+      },
+      editedStock: 0,
+      editedRow: 0,
+
+      // 分页
+      perPage: 8,
+      curPage: 1,
+
+      // 弹窗
+      showModal: false,
     }
   },
 
   computed: {
-    // 总页数
+    // 页数
     pages() {
-      return Math.ceil(this.filteredCount / this.pageSize);
+      return Math.ceil(this.filteredCount / this.perPage);
+    },
+
+    // 新项是否预警
+    createdItemWarning() {
+      if (this.createdItem["库存"] == 0 || this.createdItem["阈值"] == 0) {
+        return "";
+      }
+      return this.createdItem["库存"] < this.createdItem["阈值"] ? "是" : "否";
     },
 
     // 新项是否合法
-    validItem() {
-      for (var i = 0; i < this.stockColumns.length; ++i) {
-        if (this.createdItem[this.stockColumns[i]] == "") return false;
+    createdItemValid() {
+      for (var col in this.createdItem) {
+        this.createdItem[col];
+        if (this.createdItem[col] == "") {
+          return false;
+        }
       }
       return true;
     }
   },
 
   methods: {
-    // 点击搜索
-    search() {
-    },
-
     // 筛选函数
     filterFunction(source) {
-      if(source) {
-        return source.toString().includes(this.searchKeyword);
+      if (source) {
+        return source.toString().includes(this.filter);
       }
       else {
         return false;
@@ -197,89 +176,128 @@ export default {
 
     // 转换为药品库存表
     toStock() {
-      // 更新表头
-      this.columns = [];
-      for (var i = 0; i < this.stockColumns.length; ++i) {
-        this.columns.push(this.stockColumns[i]);
-      }
-      this.columns.push("修改");
+      // 切换每页项目个数
+      this.perPage = 9;
 
-      // 更新表项
-      fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
-        method: 'GET',
-        redirect: 'follow'
-      }).then(response => response.text())
-        .then(result => {
-          result = JSON.parse(result); // 将结果转为JSON
-          this.items = []; // 清空表项
-          for (var i = 0; i < result.length; ++i) {
-            var flag = result[i].medicineAmount < result[i].thresholdValue;
-            if (!flag && this.warningOnly) continue;
-            this.items.push({ // 填入表项
-              药品名: result[i].medicineName,
-              生产单位: result[i].manufacturer,
-              生产日期: result[i].productionDate,
-              库存: result[i].medicineAmount,
-              阈值: result[i].thresholdValue,
-              预警: flag ? "是" : "否",
-            });
-          }
-        })
-        .catch(error => console.log('error', error));
-      // this.items.push({ // 填入表项
-      //   药品名: "阿米诺司",
-      //   生产单位: "医德格拉米",
-      //   生产日期: "2022-10-12 18:00",
-      //   库存: 1926,
-      //   阈值: 817,
-      //   预警: "否",
-      // });
+      // 重置curPage
+      this.curPage = 1;
+
+      // 更新表头
+      this.tableColumns = [];
+      for (var i = 0; i < this.stockColumns.length; ++i) {
+        this.tableColumns.push(this.stockColumns[i]);
+      }
+      this.tableColumns.push("修改");
+
+      // 从后端获取药品库存
+      // fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
+      //   method: 'GET',
+      //   redirect: 'follow'
+      // }).then(response => response.text())
+      //   .then(result => {
+      //     result = JSON.parse(result); // 将结果转为JSON
+      //     this.tableItems = []; // 清空表项
+      //     for (i = 0; i < result.length; ++i) {
+      //       var flag = result[i].medicineAmount < result[i].thresholdValue;
+      //       if (!flag && this.warningOnly) continue;
+      //       this.tableItems.push({ // 填入表项
+      //         药品名: result[i].medicineName,
+      //         生产单位: result[i].manufacturer,
+      //         生产日期: result[i].productionDate,
+      //         库存: result[i].medicineAmount,
+      //         阈值: result[i].thresholdValue,
+      //         预警: flag ? "是" : "否",
+      //       });
+      //     }
+      //   })
+      //   .catch(error => console.log('error', error));
+      this.tableItems = [];
+      for (i = 0; i < 20; ++i) {
+        var newItem = {
+          药品名: "阿米诺司",
+          生产单位: "医德格拉米",
+          生产日期: "2022-10-12 18:00",
+          库存: parseInt(Math.random() * 999),
+          阈值: parseInt(Math.random() * 999),
+        }
+        newItem["预警"] = newItem["库存"] < newItem["阈值"] ? "是" : "否";
+        if (!this.warningOnly || newItem["预警"] == "是") {
+          this.tableItems.push(newItem);
+        }
+      }
     },
 
     // 转换为清理记录表
     toRecord() {
+      // 切换每页项目个数
+      this.perPage = 11;
+
+      // 重置curPage
+      this.curPage = 1;
+
       // 更新表头
-      this.columns = [];
+      this.tableColumns = [];
       for (var i = 0; i < this.recordColumns.length; ++i) {
-        this.columns.push(this.recordColumns[i]);
+        this.tableColumns.push(this.recordColumns[i]);
       }
 
-      // 更新表项
-      this.items = []; // 清空表项
       // 从后端获取清理记录
-
+      this.tableItems = [];
       for (i = 0; i < 15; ++i) {
-        this.items.push({
+        this.tableItems.push({
           药品名: "阿米诺司",
           清理日期: "2023-8-8 " + i.toString() + ":00",
           清理负责管理员: "夏胡白",
         });
       }
     },
-    
+
     // 添加表项
     addItem() {
+      // 新建对象
       var newItem = {};
-      for (var i = 0; i < this.stockColumns.length; ++i) {
-        newItem[this.stockColumns[i]] = this.createdItem[this.stockColumns[i]];
+      newItem["预警"] = this.createdItemWarning;
+      for (var col in this.createdItem) {
+        newItem[col] = this.createdItem[col];
+        this.createdItem[col] = ""; // 重置createdItem
       }
-      this.items.push(newItem);
+
+      // 传入后端
+
+
+      // 加入表项
+      this.tableItems.push(newItem);
     },
 
     // 打开编辑窗口
     openItemEdition(rowIndex) {
-      this.editedStock = this.items[rowIndex]["库存"];
+      this.editedStock = this.tableItems[rowIndex]["库存"];
+      this.editedRow = rowIndex;
       this.showModal = true;
     },
 
     // 删除项
     deleteItem(rowIndex) {
-      this.items.splice(rowIndex, 1);
+      // 修改表项
+      this.tableItems.splice(rowIndex, 1);
+
+      // 写入后端
+
     },
 
     // 更新库存
     confirmUpdate() {
-      return;
+      // 写入后端
+      this.tableItems[this.editedRow]["库存"] = this.editedStock;
+      if (this.tableItems[this.editedRow]["库存"] < this.tableItems[this.editedRow]["阈值"]) {
+        this.tableItems[this.editedRow]["预警"] = "是";
+      }
+      else {
+        this.tableItems[this.editedRow]["预警"] = "否";
+      }
+
+      // 刷新表项
+      this.toStock();
     },
 
     // 取消更新
@@ -289,57 +307,59 @@ export default {
   },
 
   mounted() {
-    // 初始化createdItem
-    for (var i = 0; i < this.stockColumns.length; ++i) {
-      this.createdItem[this.stockColumns[i]] = "";
-    }
-
     // 初始化表项
     this.toStock();
-    this.filteredCount = this.items.length;
+    this.filteredCount = this.tableItems.length;
   },
 
   watch: {
     // 监控切换栏
     curTab(newVal, oldVal) {
-      if (newVal == oldVal) return;
+      if (newVal == oldVal) {
+        return;
+      }
       if (newVal == 0) {
         this.toStock();
-      } else if (newVal == 1) {
+      }
+      else if (newVal == 1) {
         this.toRecord();
       }
     },
 
     // 监控checkbox
     warningOnly() {
-      if(this.curTab == 1) return;
+      // 异常情况
+      if (this.curTab == 1) return;
+
+      // 重置当前页
+      this.curPage = 1;
+
+      // 刷新表格
       this.toStock();
+    },
+
+    // 监控关键词
+    filter() {
+      // 重置当前页
+      this.curPage = 1;
     }
   },
 }
 </script>
 
 <style scoped>
-.el-header {
-  background-color: #B3C0D1;
-  color: #333;
-  text-align: center;
-  line-height: 60px;
-  user-select: none;
-}
 
 .el-main {
   user-select: none;
 }
 
 .conditions {
-  margin-top: 20px;
-  height: 40px;
-  justify-content: center;
+  margin-top: 1%;
+  height: 7%;
 }
 
 .checkbox {
-  margin-left: 30px;
+  margin-left: 5%;
 }
 
 .table {
@@ -355,18 +375,11 @@ export default {
     }
   }
 }
-.modal-crud {
-  .va-input {
-    display: block;
-  }
+
+/* 弹窗标签 */
+.modal-label {
+  line-height: 200%;
+  font-size: 13px;
 }
 
-* {
-  font-family: SFRegular;
-}
 </style>
-
-<!--
-  1. 前后端交互
-  2. 新增表项“预警”不应该由用户输入
- -->
