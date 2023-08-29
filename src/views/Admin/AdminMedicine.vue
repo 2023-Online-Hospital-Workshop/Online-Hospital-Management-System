@@ -381,5 +381,9 @@ export default {
   line-height: 200%;
   font-size: 13px;
 }
+* {
+  font-family: AliRegular;
+ 
+}
 
 </style>

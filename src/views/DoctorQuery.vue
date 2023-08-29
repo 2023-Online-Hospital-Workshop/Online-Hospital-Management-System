@@ -11,7 +11,7 @@ export default {
   },
   methods: {
     search() {
-      // console.log(this.searchKeyword);
+      this.filteredDoctors = [];
       axios.get('http://124.223.143.21:4999/Instructor')
       .then((response) => {
         // console.log(response);
@@ -39,14 +39,13 @@ export default {
         });
     },
     httpGetDoctors() {
-      axios.interceptors.request.use(config => {
-        // 在发送请求之前打印请求的 URL
-        console.log('Request URL:', config.url);
-        return config;
-      }, error => {
-        return Promise.reject(error);
-      });
-
+      // axios.interceptors.request.use(config => {
+      //   // 在发送请求之前打印请求的 URL
+      //   console.log('Request URL:', config.url);
+      //   return config;
+      // }, error => {
+      //   return Promise.reject(error);
+      // });
       axios({
         method: 'get',
         url: 'http://124.223.143.21/api/Consultationinfo', 
@@ -56,8 +55,7 @@ export default {
         }
       })
         .then(response => {
-          // console.log(response.data.length);
-          this.filteredDoctors = [];
+          console.log("return doctors: "+response.data);
           for (let i = 0; i < response.data.length; i++) {
             this.filteredDoctors.push(response.data[i]);
           }
@@ -90,13 +88,19 @@ export default {
     // },
     doctorCardClicked(doctor) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
       console.log("selected: "+doctor.doctorId);
-      this.$router.push({name: 'DoctorAppointment', params: {selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId}});
+      this.$router.push({name: 'DoctorAppointment', params: {selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: this.selectedDepartment}});
     },
     
   },
   mounted() {
     console.log("mounted!");
     this.httpGetDepts();
+  },
+  watch: {
+    selectedDepartment() {
+      console.log("watch!");
+      this.search();
+    }
   },
   data() {
     return {
@@ -105,7 +109,7 @@ export default {
       ],
       title_visible: false,
       searchKeyword: '', // 用于接收搜索框的数据
-      inputWidth: '800px',
+      // inputWidth: '800px',
       // selection: [], // 用于接收筛选框的选项
       // departments: ["内科", "外科", "医技"],  // 一级科室列表
       departments: [],
@@ -181,7 +185,7 @@ export default {
         </SearchBox> -->
         <!-- <va-card class="search-card"> -->
           <div class="search-container">
-            <va-input v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
+            <va-input class="search-input" v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
             <va-button color="primary" @click="search">搜索</va-button>
           </div>
         <!-- </va-card> -->
@@ -191,6 +195,7 @@ export default {
           class="mb-6"
           placeholder="请选择对应科室"
           :options="departments"
+
         />
         <!-- <div class="department-selector">
           <label for="firstDepartment">科室：</label>
@@ -261,8 +266,19 @@ export default {
 
 <style scoped>
 .department-card {
+  width: 100%;
   margin-bottom: 20px;
   padding: 20px;
+  /* display: flex; */
+}
+.search-input {
+  width:50%;
+}
+.search-container {
+  width:50%;
+}
+.mb-6 {
+  width:50%;
 }
 
 .department-selectors {
@@ -272,7 +288,7 @@ export default {
 }
 
 .department-selector {
-  margin-right: 20px;
+  /* margin-right: 20px; */
   border-color: BackgroundBorder;
   color: TextInverted;
 }
@@ -291,27 +307,24 @@ export default {
 .doctor-card {
   cursor: pointer;
   width: 27%;
-  height: 100px;
+  height: 120px;
   margin-right: 5%;
   margin-bottom: 1%;
   flex-wrap: nowrap;
   display: flex;
-  
+  line-height: 30px;
 }
 
 .doctor-photo {
   margin-left: auto;
   margin-right: 5px;
-  width: auto;
-  height: 100px;
+  max-width: 100px;
+  height: 120px;
 }
 
-.doctor-details h3 {
+.doctor-details {
   margin-top: 10px;
-  margin-bottom: 5px;
-}
-
-.doctor-details p {
+  margin-left: 10%;
   margin-bottom: 5px;
 }
 
@@ -352,6 +365,7 @@ header {
 }
 
 * {
-  font-family: SFRegular; /* 应用字体 */
+
+  font-family: AliMedium; /* 应用字体 */
 }
 </style>

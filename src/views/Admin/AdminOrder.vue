@@ -172,3 +172,10 @@ export default {
   user-select: none;
 }
 </style>
+
+* {
+  font-family: AliRegular;
+  /* 应用字体 */
+}
+</style>
+
