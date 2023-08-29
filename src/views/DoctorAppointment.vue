@@ -69,9 +69,9 @@
       <va-card color="primary" class="card" id="kp">
         <img class="image-left" src="../assets/yuyue.png" />
         <div class="text">
-          <va-card-content>预约科室 : {{ section }}</va-card-content>
-          <va-card-content>同济大学校医院 {{ doctor }}医生</va-card-content>
-          <va-card-content>医生简介： </va-card-content>
+          <va-card-content>预约科室： {{ this.$route.params.selectedDep }}</va-card-content>
+          <va-card-content>同济大学校医院 {{ this.$route.params.selectedDoctor }}医生</va-card-content>
+          <!-- <va-card-content>医生姓名： {{ this.$route.params.selectedDoctor }}</va-card-content> -->
         </div>
       </va-card>
     </div>
