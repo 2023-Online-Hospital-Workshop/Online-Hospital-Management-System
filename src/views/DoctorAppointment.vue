@@ -11,8 +11,10 @@
   
 }
 .text{
-  font-weight: bold;
+  font-weight: lighter;
   font-size: larger;
+  margin: 5px;
+  line-height: 20px;
 }
 .button-group{
   width: 100%; /* 设置按钮组的宽度为100% */
@@ -91,9 +93,9 @@
     <va-card square outlined stripe class="promptcard">
       <div class="title">预约挂号须知</div>
       <va-card-content >
-        <span style="font-size: large;margin:5px;">1.该医生挂号费用为&nbsp;元，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
-        <span style="font-size: large;margin:5px;">2.就诊当日超时未取号患者号源自动取消（上午号11:00前，下午号17:00前）<br><br></span>
-        <span style="font-size: large;margin:5px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理，以免影响您下次预约和就诊<br><br></span>
+        <span style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为&nbsp;元，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
+        <span style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消（上午号11:00前，下午号17:00前）<br><br></span>
+        <span style="font-size: large;margin:5px;line-height: 20px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理，以免影响您下次预约和就诊<br><br></span>
       </va-card-content>
     </va-card>
   
@@ -331,6 +333,10 @@ export default {
   height: 65px;
   /*flex-basis: 25%;*/
   --va-button-group-button-margin:10px;
+}
+
+* {
+  font-family: AliMedium; /* 应用字体 */
 }
 </style>
 
