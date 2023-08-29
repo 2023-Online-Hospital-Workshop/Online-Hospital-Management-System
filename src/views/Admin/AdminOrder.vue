@@ -249,7 +249,7 @@ export default {
 }
 
 * {
-  font-family: SFRegular;
+  font-family: AliRegular;
   /* 应用字体 */
 }
 </style>
