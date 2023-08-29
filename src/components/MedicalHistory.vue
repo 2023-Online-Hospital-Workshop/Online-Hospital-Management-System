@@ -274,7 +274,7 @@ export default {
 
 <style scoped>
 * {
-  font-family: SFRegular;
+  font-family: AliRegular;
   /* 应用字体 */
 }
 

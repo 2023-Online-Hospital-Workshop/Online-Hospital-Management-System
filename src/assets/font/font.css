@@ -4,7 +4,7 @@
 }
 
 @font-face {
-  font-family: AliMedium;
+  font-family: AliRegular;
   src: url('AlibabaPuHuiTi-2-65-Medium.ttf')
 }
 
@@ -19,7 +19,7 @@
 }
 
 @font-face {
-  font-family: SFRegular;
+  font-family: AliRegular;
   src: url('SF-Pro-Display-Regular.ttf')
 }
 
