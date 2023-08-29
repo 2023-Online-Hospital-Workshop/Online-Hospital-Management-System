@@ -39,14 +39,13 @@ export default {
         });
     },
     httpGetDoctors() {
-      axios.interceptors.request.use(config => {
-        // 在发送请求之前打印请求的 URL
-        console.log('Request URL:', config.url);
-        return config;
-      }, error => {
-        return Promise.reject(error);
-      });
-
+      // axios.interceptors.request.use(config => {
+      //   // 在发送请求之前打印请求的 URL
+      //   console.log('Request URL:', config.url);
+      //   return config;
+      // }, error => {
+      //   return Promise.reject(error);
+      // });
       axios({
         method: 'get',
         url: 'http://124.223.143.21/api/Consultationinfo', 
@@ -56,7 +55,7 @@ export default {
         }
       })
         .then(response => {
-          // console.log(response.data.length);
+          console.log("return doctors: "+response.data);
           for (let i = 0; i < response.data.length; i++) {
             this.filteredDoctors.push(response.data[i]);
           }
@@ -186,7 +185,7 @@ export default {
         </SearchBox> -->
         <!-- <va-card class="search-card"> -->
           <div class="search-container">
-            <va-input v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
+            <va-input class="search-input" v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
             <va-button color="primary" @click="search">搜索</va-button>
           </div>
         <!-- </va-card> -->
@@ -267,8 +266,19 @@ export default {
 
 <style scoped>
 .department-card {
+  width: 100%;
   margin-bottom: 20px;
   padding: 20px;
+  /* display: flex; */
+}
+.search-input {
+  width:50%;
+}
+.search-container {
+  width:50%;
+}
+.mb-6 {
+  width:50%;
 }
 
 .department-selectors {
@@ -278,7 +288,7 @@ export default {
 }
 
 .department-selector {
-  margin-right: 20px;
+  /* margin-right: 20px; */
   border-color: BackgroundBorder;
   color: TextInverted;
 }

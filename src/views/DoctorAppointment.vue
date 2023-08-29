@@ -1,7 +1,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .parent-box {
-  width:100%;
+  width:70%;
   height:200px;
   
 }
@@ -121,7 +121,7 @@
       </va-button>
     </va-button-group>
 
-    <va-button-group preset="primary" class="row">
+    <va-button-group preset="primary" class="time">
       <va-button id="time5" class="time-slot" @click="onButtonClick(4)">
         <span style="margin-right: 100px">14:00-15:00</span>{{ number[4] }}/10
       </va-button>
@@ -275,8 +275,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #main-page {
-  margin-left: 20%;
-  margin-right: 13%;
+  margin-right: 20%;
 }
 #kp {
   display: flex;
