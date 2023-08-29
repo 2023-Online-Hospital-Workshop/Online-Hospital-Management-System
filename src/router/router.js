@@ -33,7 +33,7 @@ const routes = [
     component: MedicalHistory,
   },
   {
-    path: '/doctor-appointment/:selectedDoctor/:selectedId', // 在此处定义参数
+    path: '/doctor-appointment/:selectedDoctor/:selectedId/:selectedDep', // 在此处定义参数
     name: 'DoctorAppointment',
     component: DoctorAppointment,
   },
