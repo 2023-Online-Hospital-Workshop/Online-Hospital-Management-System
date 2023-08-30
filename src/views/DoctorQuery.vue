@@ -366,6 +366,6 @@ header {
 
 * {
 
-  font-family: AliMedium; /* 应用字体 */
+  font-family: AliRegular; /* 应用字体 */
 }
 </style>

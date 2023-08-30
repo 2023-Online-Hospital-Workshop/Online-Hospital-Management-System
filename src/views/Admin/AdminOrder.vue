@@ -171,7 +171,6 @@ export default {
 .el-main {
   user-select: none;
 }
-</style>
 
 * {
   font-family: AliRegular;
