@@ -383,7 +383,7 @@ export default {
 }
 * {
   font-family: AliRegular;
- 
+  --va-font-family: AliRegular;
 }
 
 </style>

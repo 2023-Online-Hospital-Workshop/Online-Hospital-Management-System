@@ -174,6 +174,7 @@ export default {
 
 * {
   font-family: AliRegular;
+  --va-font-family: AliRegular;
   /* 应用字体 */
 }
 </style>
