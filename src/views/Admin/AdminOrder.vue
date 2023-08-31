@@ -171,10 +171,10 @@ export default {
 .el-main {
   user-select: none;
 }
-</style>
 
 * {
   font-family: AliRegular;
+  --va-font-family: AliRegular;
   /* 应用字体 */
 }
 </style>

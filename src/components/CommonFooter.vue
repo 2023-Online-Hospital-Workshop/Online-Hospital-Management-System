@@ -74,4 +74,8 @@ export default {
   .copy_right {
   }
 }
+* {
+  --va-font-family: AliRegular;
+  font-family: AliRegular;
+}
 </style>

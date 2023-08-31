@@ -75,6 +75,7 @@ export default {
 }
 * {
   font-family: AliRegular; /* 应用字体 */
+  --va-font-family: AliRegular;
 }
 </style>
   
