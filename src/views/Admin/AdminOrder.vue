@@ -5,6 +5,9 @@
   3. 输入框可以添加输入类型限定
   4. sidebar和header和用户端同步
   5. 修改和删除可以添加确认提示
+  6. 表格字体大小可以再调整
+  7. 坐诊信息应该不包含科室？
+  8. 输入ID应该自动生成姓名
   ...
  -->
 
@@ -171,11 +174,17 @@ export default {
 .el-main {
   user-select: none;
 }
-</style>
 
 * {
-  font-family: AliRegular;
   /* 应用字体 */
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
 }
+
+.va-data-table {
+  /* 表头大小 */
+  --va-data-table-thead-font-size: 1rem;
+}
+
 </style>
 

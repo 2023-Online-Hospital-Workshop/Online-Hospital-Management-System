@@ -24,7 +24,7 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" hoverable :wrapper-size="550" virtual-scroller
+          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller
           @filtered="filteredCount = $event.items.length">
 
           <!-- 新建区 -->
@@ -64,9 +64,9 @@
       <va-modal v-model="showModal" title="编辑坐诊信息" size="small" ok-text="确认" cancel-text="取消" @ok="confirmUpdate"
         no-outside-dismiss @cancel="cancelUpdate">
         <div v-for="col in tableColumns.slice(0, -1)" :key="col">
+          <br>
           <div class="modal-label">{{ col }}</div>
           <va-input v-model="editedItem[col]" />
-          <br>
         </div>
       </va-modal>
       <!-- 弹窗 -->
@@ -270,5 +270,16 @@ export default {
 .modal-label {
   line-height: 200%;
   font-size: 13px;
+}
+
+* {
+  /* 应用字体 */
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+}
+
+.va-data-table {
+  /* 表头大小 */
+  --va-data-table-thead-font-size: 1rem;
 }
 </style>

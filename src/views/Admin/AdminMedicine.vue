@@ -36,7 +36,7 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" :wrapper-size="520" hoverable virtual-scroller
+          :current-page="curPage" :wrapper-size="550" hoverable virtual-scroller
           @filtered="filteredCount = $event.items.length">
 
           <!-- 新建区 -->
@@ -78,8 +78,8 @@
       <!-- 表格 -->
 
       <!-- 弹窗 -->
-      <va-modal v-model="showModal" title="编辑" ok-text="确认" cancel-text="取消" no-outside-dismiss
-        @ok="confirmUpdate" @cancel="cancelUpdate">
+      <va-modal v-model="showModal" title="编辑" ok-text="确认" cancel-text="取消" no-outside-dismiss @ok="confirmUpdate"
+        @cancel="cancelUpdate">
         <div class="modal-label">库存</div>
         <va-input v-model="editedStock" />
       </va-modal>
@@ -281,6 +281,7 @@ export default {
       // 修改表项
       this.tableItems.splice(rowIndex, 1);
 
+
       // 写入后端
 
     },
@@ -348,9 +349,9 @@ export default {
 </script>
 
 <style scoped>
-
 .el-main {
   user-select: none;
+  height: 800px;
 }
 
 .conditions {
@@ -381,9 +382,16 @@ export default {
   line-height: 200%;
   font-size: 13px;
 }
+
 * {
+  /* 应用字体 */
   font-family: AliRegular;
- 
+  --va-font-family: AliRegular;
 }
 
+.va-data-table {
+  /* 表头大小 */
+  --va-data-table-thead-font-size: 1rem;
+  height: 50%;
+}
 </style>
