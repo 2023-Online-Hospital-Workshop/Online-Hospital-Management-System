@@ -100,7 +100,7 @@
           let LoginURL = ["PatientLogin", "DoctorLogin", "AdminLogin"]
           let AfterLogin = ['/home', '/home', '/home']
           axios
-          .get("http://124.223.143.21/Login/" + LoginURL[this.role_num] + "/", {
+          .get("http://124.223.143.21/api/Login/" + LoginURL[this.role_num] + "/", {
             params: {
               ID: this.loginForm.username,
               password: this.loginForm.password,
