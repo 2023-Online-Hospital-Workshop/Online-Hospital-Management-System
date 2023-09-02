@@ -68,11 +68,12 @@
 </template>
 
 <script>
+
 export default {
   data() {
     const perPage = 12;
     const tableColumns = ["订单号", "时间", "就诊人", "金额", "状态"];
-    const modalColumns = ["药品名", "数量", "单位", "金额"];
+    const modalColumns = ["药品名", "数量", "金额"];
 
     return {
       // 筛选
@@ -113,8 +114,23 @@ export default {
 
       // 从后端获取订单详细信息
       this.orderId = this.tableItems[event.itemIndex]["订单号"];
-
-
+      this.orderId = "202308310002152896230037";
+      fetch("http://124.223.143.21/api/Prescription/GetDetail?prescriptionId="+this.orderId, {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          this.modalItems = [];
+          for (let i = 0; i < result.length; ++i) {
+            this.modalItems.push({
+              "药品名": result[i].medicineName,
+              "数量": result[i].quantity,
+              "金额": result[i].medicinePrice,
+            })
+          }
+        })
+        .catch(error => console.log('error', error));
 
       // 显示弹窗
       this.showModal = true;
@@ -138,6 +154,13 @@ export default {
 
   mounted() {
     // 初始获取tableItems/modalItems
+    fetch("http://124.223.143.21/api/Prescription/GetAll", {
+      method: 'GET',
+      redirect: 'follow'
+    }).then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+
     for (var i = 0; i < 20; ++i) {
       this.tableItems.push({
         订单号: parseInt(Math.random() * 90000 + 10000).toString(),
@@ -151,7 +174,6 @@ export default {
       this.modalItems.push({
         药品名: "阿米诺司",
         数量: 2,
-        单位: "盒",
         金额: (100.00).toFixed(2),
       })
     }

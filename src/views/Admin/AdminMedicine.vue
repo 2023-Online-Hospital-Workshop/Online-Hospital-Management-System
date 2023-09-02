@@ -36,7 +36,7 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" :wrapper-size="550" hoverable virtual-scroller
+          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller
           @filtered="filteredCount = $event.items.length">
 
           <!-- 新建区 -->
@@ -189,42 +189,42 @@ export default {
       }
       this.tableColumns.push("修改");
 
-      // 从后端获取药品库存
-      // fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
-      //   method: 'GET',
-      //   redirect: 'follow'
-      // }).then(response => response.text())
-      //   .then(result => {
-      //     result = JSON.parse(result); // 将结果转为JSON
-      //     this.tableItems = []; // 清空表项
-      //     for (i = 0; i < result.length; ++i) {
-      //       var flag = result[i].medicineAmount < result[i].thresholdValue;
-      //       if (!flag && this.warningOnly) continue;
-      //       this.tableItems.push({ // 填入表项
-      //         药品名: result[i].medicineName,
-      //         生产单位: result[i].manufacturer,
-      //         生产日期: result[i].productionDate,
-      //         库存: result[i].medicineAmount,
-      //         阈值: result[i].thresholdValue,
-      //         预警: flag ? "是" : "否",
-      //       });
-      //     }
-      //   })
-      //   .catch(error => console.log('error', error));
-      this.tableItems = [];
-      for (i = 0; i < 20; ++i) {
-        var newItem = {
-          药品名: "阿米诺司",
-          生产单位: "医德格拉米",
-          生产日期: "2022-10-12 18:00",
-          库存: parseInt(Math.random() * 999),
-          阈值: parseInt(Math.random() * 999),
-        }
-        newItem["预警"] = newItem["库存"] < newItem["阈值"] ? "是" : "否";
-        if (!this.warningOnly || newItem["预警"] == "是") {
-          this.tableItems.push(newItem);
-        }
-      }
+      //从后端获取药品库存
+      fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result); // 将结果转为JSON
+          this.tableItems = []; // 清空表项
+          for (i = 0; i < result.length; ++i) {
+            var flag = result[i].medicineAmount < result[i].thresholdValue;
+            if (!flag && this.warningOnly) continue;
+            this.tableItems.push({ // 填入表项
+              药品名: result[i].medicineName,
+              生产单位: result[i].manufacturer,
+              生产日期: result[i].productionDate,
+              库存: result[i].medicineAmount,
+              阈值: result[i].thresholdValue,
+              预警: flag ? "是" : "否",
+            });
+          }
+        })
+        .catch(error => console.log('error', error));
+      // this.tableItems = [];
+      // for (i = 0; i < 20; ++i) {
+      //   var newItem = {
+      //     药品名: "阿米诺司",
+      //     生产单位: "医德格拉米",
+      //     生产日期: "2022-10-12 18:00",
+      //     库存: parseInt(Math.random() * 999),
+      //     阈值: parseInt(Math.random() * 999),
+      //   }
+      //   newItem["预警"] = newItem["库存"] < newItem["阈值"] ? "是" : "否";
+      //   if (!this.warningOnly || newItem["预警"] == "是") {
+      //     this.tableItems.push(newItem);
+      //   }
+      // }
     },
 
     // 转换为清理记录表
@@ -351,7 +351,6 @@ export default {
 <style scoped>
 .el-main {
   user-select: none;
-  height: 800px;
 }
 
 .conditions {
