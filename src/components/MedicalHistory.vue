@@ -15,14 +15,14 @@
         </va-card-title>
 
         <!-- 第二行 -->
-        <va-card-content class="info-row" v-if="record.status === 1">
+        <!-- <va-card-content class="info-row" v-if="record.status === 1">
           <div class="row justify-start">
             <span class="flex flex-col xs3">预约号码:</span>
             <span class="flex flex-col xs3">{{
               record.appointmentNumber
             }}</span>
           </div>
-        </va-card-content>
+        </va-card-content> -->
 
         <!-- 第三行 -->
         <va-card-content class="info-row">
@@ -35,7 +35,7 @@
         <va-card-content class="info-row">
           <div class="row justify-start">
             <span class="flex flex-col xs3">预约时间段:</span>
-            <span class="flex flex-col xs3">{{ record.appointmentTime }}</span>
+            <span class="flex flex-col xs3">{{ this.periodDict[record.appointmentTime] }}</span>
           </div>
         </va-card-content>
         <!-- 第五行 -->
@@ -128,7 +128,8 @@ export default {
       feedbacks: [],
       leaveNotes: [],
       currentPage: 1,
-      itemsPerPage: 8,
+      itemsPerPage: 6,
+      periodDict: {},
     };
   },
   computed: {
@@ -144,13 +145,22 @@ export default {
     },
   },
   mounted() {
+    for (let i = 1; i <= 3; i++) {
+      this.periodDict[i] = `${i + 7}:00-${i + 8}:00`
+    }
+    for (let i = 4; i <= 7; i++) {
+      this.periodDict[i] = `${i + 9}:00-${i + 10}:00`
+    }
+
     axios.get('http://124.223.143.21:4999/Registration/Patient/2151895')
       .then((response) => {
         console.log(response.data);
         const newData = response.data; // 获取响应数据
         // 将新数据转化为 record 对象并添加到 allRecords 数组中
         this.allRecords = newData.map(item => ({
+          patient: item.patient.name,
           patientID: "2151895",
+          patientGender: item.patient.gender ? "男" : "女",
           doctor: item.doctor.name,
           doctorID: item.doctor.doctorId,
           date: item.date.replace('T', ' '),
@@ -235,42 +245,119 @@ export default {
       axios.get('http://124.223.143.21/api/Prescription/GetPrescription?diagnoseId=202309012151895230012')
         .then((response) => {
           let prescriptionData = response.data;
+          console.log("prescriptionData");
           console.log(prescriptionData);
-          console.log(record);
-          const PAGE_MARGIN = 10;
-          const doc = new jsPDF();
+          const PAGE_MARGIN = 5;
+          const doc = new jsPDF({
+            unit: "mm", // 单位，本示例为mm
+            format: "a6", // 页面大小
+            orientation: "landscape", // 页面方向，portrait: 纵向，landscape: 横向
+          });
 
           doc.addFileToVFS("MyFont.ttf", myFont);
           doc.addFont("MyFont.ttf", "MyFont", "normal");
           doc.setFont("MyFont");
 
-          const text = "济康同行打印单";
-          // 添加第一页内容
-          doc.text(text, PAGE_MARGIN, PAGE_MARGIN);
+          var penHeight = PAGE_MARGIN;
+          const pageWidth = doc.internal.pageSize.width; // 获取页面宽度
+          const pageHeight = doc.internal.pageSize.height; // 获取页面宽度
 
-          const data = [
-            ["ID", "Name", "Age", "City"],
-            [1, "诊断记录", 30, "New York"],
-            [2, "Jane Smith", 25, "Los Angeles"],
-            [3, "Bob Johnson", 45, "Chicago"],
-            [4, "Lisa Chen", 35, "San Francisco"],
-            [5, "Mike Lee", 50, "Miami"]
+
+          // 添加标题
+          doc.setFontSize(12);
+          const text = "同济大学校医院";
+          const textWidth = doc.getTextDimensions(text).w; // 获取文本的宽度
+          const centerX = (pageWidth - textWidth) / 2; // 计算居中位置的 x 坐标
+          penHeight += doc.getTextDimensions(text).h;
+          doc.text(text, centerX, penHeight); // 在居中位置显示文本
+          // 添加副标题
+          doc.setFontSize(10);
+          const subtitle = "门 诊 处 方";
+          const subtitleTextWidth = doc.getTextDimensions(subtitle).w;
+          const subtitleCenterX = (pageWidth - subtitleTextWidth) / 2;
+          penHeight += doc.getTextDimensions(subtitle).h + 2;
+          doc.text(subtitle, subtitleCenterX, penHeight); //  
+          // 在副标题下方绘制一条直线
+          doc.setLineWidth(0.2); // 设置直线的宽度
+          var lineY = penHeight + doc.getTextDimensions(subtitle).h + 6; // 计算直线的纵坐标
+          doc.line(8, lineY, pageWidth - 8, lineY); // 绘制直线，横坐标范围：20 到 pageWidth - 20
+
+          // 打印基本信息
+          doc.setFontSize(6);
+          const basics = `姓名：xxx    性别：xxx    年龄：xxx    患者编号：${record.patientID}    科室：${prescriptionData.doctor.secondaryDepartment}    时间：${prescriptionData.diagnoseTime.replace('T', ' ')}`
+          const basicsStart = 25 - doc.getTextDimensions(subtitle).w / 2;
+          penHeight += doc.getTextDimensions(basics).h + PAGE_MARGIN;
+          doc.text(basics, basicsStart, penHeight);
+          // 打印表格
+          const printData = [
+            [`诊断记录：  ${record.diagnoseId}`],
+            [`诊断医生：  ${prescriptionData.doctor.name}`],
+            [`既往病史：  ${prescriptionData.anamnesis}`],
+            [`初步诊断：  ${prescriptionData.clinicdia}`],
+            [`体征检查：  ${prescriptionData.sign}`]
           ];
-
-          const textHeight = doc.getTextDimensions(text).h;
-
           doc.autoTable({
-            startY: textHeight + PAGE_MARGIN, // 开始渲染表格的高度位置
-            head: [data[0]],
-            body: data.slice(1),
-            margin: { top: PAGE_MARGIN }, // 上边距
+            theme: 'plain',
+            startY: penHeight + PAGE_MARGIN, // 开始渲染表格的高度位置
+            body: printData,
+
             styles: {
               font: 'MyFont', // 设置表格字体
-              fontStyle: 'normal', // 设置表格字体样式
+              fontSize: 7,
+              cellPadding: { top: 0, right: 1, bottom: 1, left: 0 }
+            },
+          });
+          penHeight += 35;
+          var tmpMedicines = prescriptionData.medicines;
+          console.log(tmpMedicines);
+
+          // 打印基本信息
+          doc.setFontSize(9);
+          const info = "处方："
+          doc.text(info, PAGE_MARGIN + 9, penHeight + 1);
+          // 打印药品
+          const medicineData = [
+            ["药品名称", "药品价格(元)", "药品数量(盒)", "服用剂量", "服用建议"],
+          ];
+          tmpMedicines.forEach(medicine => {
+            console.log(medicine);
+            const medicationName = medicine.medicineName;
+            const medicinePrice = medicine.medicinePrice;
+            const medicineQuantity = medicine.quantity;
+            const medicineDose = medicine.medicationInstruction.split("#")[0];
+            const medicineAdvice = medicine.medicationInstruction.split("#")[1];
+            medicineData.push([medicationName, medicinePrice, medicineQuantity, medicineDose, medicineAdvice]);
+          });
+          medicineData.push([`总价：${prescriptionData.totalPrice}`])
+
+          console.log(medicineData);
+
+          doc.autoTable({
+            theme: 'plain',
+            startY: penHeight + PAGE_MARGIN, // 开始渲染表格的高度位置
+            body: medicineData,
+
+            styles: {
+              font: 'MyFont', // 设置表格字体
+              fontSize: 7,
+              cellPadding: { top: 0, right: 2, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
             },
           });
 
-          doc.save("example.pdf");
+          // 打印时间
+          doc.setFontSize(6);
+          const currentDate = new Date(); // 获取当前时间
+          const formattedTime = `打印时间：${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
+          const timeTextWidth = doc.getTextDimensions(formattedTime).w;
+          const timeX = pageWidth - PAGE_MARGIN * 2 - timeTextWidth; // 计算时间文本的横坐标，使其在右侧对齐
+          const finalHeight = pageHeight - doc.getTextDimensions(formattedTime).h;
+          doc.text(formattedTime, timeX, finalHeight);
+          doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
+
+          // doc.save("example.pdf");
+          const blob = doc.output('blob');
+          const url = URL.createObjectURL(blob);
+          window.open(url, '_blank');  // 在新窗口中打开 PDF 文件
         })
         .catch((error) => {
           console.log(error);
