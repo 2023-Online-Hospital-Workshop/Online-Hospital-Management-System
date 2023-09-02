@@ -196,6 +196,7 @@ export default {
 .el-main {
   user-select: none;
 }
+</style>
 
 * {
   /* 应用字体 */
@@ -204,6 +205,7 @@ export default {
 }
 
 .va-data-table {
+  --va-font-family: AliRegular;
   /* 表头大小 */
   --va-data-table-thead-font-size: 1rem;
 }
