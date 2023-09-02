@@ -196,7 +196,6 @@ export default {
 .el-main {
   user-select: none;
 }
-</style>
 
 * {
   /* 应用字体 */
