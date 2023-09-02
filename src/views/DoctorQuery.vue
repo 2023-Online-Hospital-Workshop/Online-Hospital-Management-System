@@ -149,6 +149,7 @@ export default {
             <div class="doctor-details">
               <h3>{{ doctor.doctorName }}</h3>
               <p>科室: {{ doctor.department }}</p>
+              <p>职称: {{ doctor.title }}</p>
               <!-- <p>擅长领域: </p> -->
               <!-- <p>{{ doctor.expertise }}</p> -->
             </div>
