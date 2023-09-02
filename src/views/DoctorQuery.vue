@@ -92,7 +92,7 @@ export default {
     doctorCardClicked(doctor) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
 
       console.log("selected: " + doctor.doctorId);
-      this.$router.push({ name: 'DoctorAppointment', params: { selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: this.selectedDepartment } });
+      this.$router.push({ name: 'DoctorAppointment', params: { selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: doctor.department } });
     },
 
 
@@ -251,11 +251,10 @@ export default {
             <div class="center"><va-chip outline square size="small">主任医师</va-chip></div>
            
 
-            <div class="center">科室: &nbsp; {{ this.selectedDepartment }} &nbsp;综合评分： 5.0</div>
+            <div class="center">科室: &nbsp; {{ doctor.department }} &nbsp;综合评分： 5.0</div>
             
             <div class="center"><va-button preset="primary" class="mr-6 mb-2">点击预约</va-button></div>
 
-              <p>职称: {{ doctor.title }}</p>
             <!-- <p>擅长领域: </p> -->
             <!-- <p>{{ doctor.expertise }}</p> -->
 
