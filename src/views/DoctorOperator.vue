@@ -14,10 +14,15 @@
     </va-navbar>
 
     <div class="main">
+
+
         <div id="registe">
             <div style="text-align: center; margin-top:70px; margin-bottom:30px">
                 <label id="title"> 患者挂号信息 </label>
             </div>
+            <div>
+            这里：{{ test }}
+        </div>
             <div style="text-align: left;">
                 <va-scroll-container id="register" class="max-h-52" vertical>
                     <va-list>
@@ -198,30 +203,10 @@
 
 <script>
 import { reactive } from 'vue';
-
+import  userInfo from '../store/user.js'
 
 export default {
     name: 'App',
-    setup() {
-        let med = [];
-        for (let i = 0; i < 15; i++) {
-            let one_med = {
-                "name": "",
-                "spec": "", //药品规格
-                "single": "", //药品一次剂量
-                "ad": "", //药品用法
-                "fre": "", //使用频率
-                "count": 1, //药品数量
-                "tips": "", //注意事项
-            }
-            med.push(one_med);
-        }
-        let all_med = reactive(med);
-
-        return {
-            all_med,  //处方中所有的药品和药品属性
-        };
-    },
     data() {
         return {
             patients: [],
@@ -235,7 +220,7 @@ export default {
             contact: "",
             counsellor: "",
             num: 0, //当前就诊患者的序号
-            doctorId: 23002,
+            doctorId: userInfo.state.userID,
             dept: "普通外科",
 
             //处方药品
@@ -259,8 +244,31 @@ export default {
             showModal2: false,
             p: 0, //当前显示的就诊历史页面
             total_p: 0, //就诊历史总页面数量
+
+            test:userInfo.state.userID,
         }
     },
+    setup() {
+        let med = [];
+        for (let i = 0; i < 15; i++) {
+            let one_med = {
+                "name": "",
+                "spec": "", //药品规格
+                "single": "", //药品一次剂量
+                "ad": "", //药品用法
+                "fre": "", //使用频率
+                "count": 1, //药品数量
+                "tips": "", //注意事项
+            }
+            med.push(one_med);
+        }
+        let all_med = reactive(med);
+
+        return {
+            all_med,  //处方中所有的药品和药品属性
+        };
+    },
+
     mounted() {
         this.initial(); //初始化
     },
@@ -332,7 +340,6 @@ export default {
             this.ID = this.patients[i].patientId;
             this.period = this.patients[i].period;
             console.log(this.patients[i].period);
-
         },
 
         //添加药品

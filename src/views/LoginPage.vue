@@ -43,6 +43,7 @@
   import axios from "axios";
   import { useRouter } from 'vue-router'
   import {useStore} from "vuex";
+  import  userInfo from '../store/user.js'
 
   export default {
     name: "LoginPage",
@@ -98,7 +99,7 @@
     methods: {
       login() {
           let LoginURL = ["PatientLogin", "DoctorLogin", "AdminLogin"]
-          let AfterLogin = ['/home', '/home', '/home']
+          let AfterLogin = ['/home', '/doctor-operator', '/admin-layout']
           axios
           .get("http://124.223.143.21/api/Login/" + LoginURL[this.role_num] + "/", {
             params: {
@@ -116,6 +117,9 @@
               });
               this.store.state.userID = this.loginForm.username;
               this.store.state.role = this.role_num;
+
+              //hcr更改，存储用户账号信息到user.js
+              userInfo.state.userID=this.loginForm.username;
             } else {
               // 登录失败
               console.error("登录失败");
