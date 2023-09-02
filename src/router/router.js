@@ -60,17 +60,17 @@ const routes = [
 
   //管理员路由
   {
-    path: '/Admin/Medicine',
+    path: '/Admin/medicine',
     name: 'AdminMedicine',
     component: AdminMedicine,
   },
   {
-    path: '/Admin/Doctor',
+    path: '/Admin/doctor',
     name: 'AdminDoctor',
     component: AdminDoctor,
   },
   {
-    path: '/Admin/Order',
+    path: '/Admin/order',
     name: 'AdminOrder',
     component: AdminOrder,
   },
