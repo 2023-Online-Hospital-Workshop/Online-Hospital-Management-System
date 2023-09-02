@@ -172,6 +172,7 @@ export default {
   user-select: none;
 }
 
+
 * {
   font-family: AliRegular;
   --va-font-family: AliRegular;
