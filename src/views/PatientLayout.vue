@@ -1,14 +1,10 @@
 <template>
-  <el-container>
-    <el-aside width="256px">
-      <SideBar />
-    </el-aside>
-    <router-view></router-view>
-  </el-container>
+  <SideBar />
+  <router-view></router-view>
   <Header />
 </template>
-
-<script>
+  
+  <script>
 import SideBar from "@/components/SideBar.vue";
 import Header from "@/components/Header.vue";
 export default {
@@ -18,6 +14,6 @@ export default {
   },
 };
 </script>
-
-<style scoped>
+  
+  <style scoped>
 </style>

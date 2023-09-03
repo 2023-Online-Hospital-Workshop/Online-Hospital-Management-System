@@ -2,23 +2,27 @@
   <header class="header">
     <va-icon name="menu" class="header-icon" @click="toggleSidebar"></va-icon>
     <h1 class="main-title">济康同行</h1>
-    <PatientInfo />
+    <PatientInfo v-if="role === 0" />
+    <AdministratorInfo v-else />
   </header>
 </template>
 
 <script>
 import { useStore } from "vuex";
 import PatientInfo from "./Info/PatientInfo.vue";
+import AdministratorInfo from "./Info/AdministratorInfo.vue";
+import userState from "../store/user.js";
 
 export default {
   name: "CommonHeader",
   components: {
     PatientInfo,
+    AdministratorInfo,
   },
   setup() {
     const title = "济康同行";
     const store = useStore();
-
+    const role = userState.state.role;
     const toggleSidebar = () => {
       console.log(store.state.state.is_expand);
       store.state.state.is_expand = !store.state.state.is_expand;
@@ -27,6 +31,7 @@ export default {
     return {
       title,
       toggleSidebar,
+      role,
     };
   },
 };

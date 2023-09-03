@@ -5,11 +5,12 @@
       @click="toggleInfo"
       class="header-icon"
     ></va-icon>
+
     <el-collapse-transition>
       <div v-if="showInfo" class="info-content">
         <div id="info">
           <div id="info-avatar">
-            <va-avatar class="mr-6" font-size="6vh" size="13vh">{{
+            <va-avatar class="mr-6" font-size="4vh" size="large">{{
               getAvatar
             }}</va-avatar>
           </div>
@@ -212,24 +213,14 @@ export default {
   text-align: right;
 }
 
-.info-btn {
-  position: relative;
-  cursor: pointer;
-  display: block;
-  align-items: right;
-  margin: 0 auto;
-  /* width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center; */
-}
-
 .info-content {
   display: block;
   width: 100%;
   color: #154ec1;
   font-weight: bold;
   padding-bottom: 20px;
+  position: absolute;
+  top: 45px;
 }
 
 #info {
