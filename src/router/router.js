@@ -13,6 +13,7 @@ import AdminOrder from '../views/Admin/AdminOrder.vue'
 import MedicalHistory from '../components/MedicalHistory.vue'
 import AppointmentSuccess from '../views/AppointmentSuccess.vue'
 import LoginPage from '../views/LoginPage.vue'
+import RegisterPage from '../views/RegisterPage.vue'
 
 
 // 路由配置项
@@ -21,6 +22,11 @@ const routes = [
     path: '/',
     name: 'LoginPage',
     component: LoginPage,
+  },
+  {
+    path: '/register',
+    name: 'RegisterPage',
+    component: RegisterPage,
   },
   {
     path: '/home',
