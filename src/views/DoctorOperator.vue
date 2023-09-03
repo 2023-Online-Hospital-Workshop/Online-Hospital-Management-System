@@ -493,7 +493,7 @@ export default {
     },
 
     //确认处方
-    enter() {
+    enter() {    //一旦已经就诊就无法再次发送处方
       //把正在就诊的病人状态改为已就诊
       //this.patients[this.num - 1].treatmentRecords = "已就诊";
 
