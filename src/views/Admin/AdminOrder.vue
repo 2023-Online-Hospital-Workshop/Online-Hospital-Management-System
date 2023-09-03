@@ -5,18 +5,15 @@
   3. 输入框可以添加输入类型限定
   4. sidebar和header和用户端同步
   5. 修改和删除可以添加确认提示
+  6. 表格字体大小可以再调整
+  7. 坐诊信息应该不包含科室？
+  8. 输入ID应该自动生成姓名
+  9. 新药品种类功能
   ...
  -->
 
 <template>
   <el-container>
-
-    <el-header>
-      <h4 class="va-h4">
-        处方订单管理
-      </h4>
-    </el-header>
-
     <el-main>
       <!-- 条件区 -->
       <div class="conditions">
@@ -28,9 +25,9 @@
 
       <!-- 表格区 -->
       <div class="table">
-        <va-data-table :items="tableItems" :columns="tableColumns" :filter="filter" :per-page="perPage" :current-page="curPage"
-          :wrapper-size="550" hoverable clickable virtual-scroller @filtered="filteredCount = $event.items.length"
-          @row:click="openModal">
+        <va-data-table :items="tableItems" :columns="tableColumns" :filter="filter" :per-page="perPage"
+          :current-page="curPage" :wrapper-size="550" hoverable clickable virtual-scroller
+          @filtered="filteredCount = $event.items.length" @row:click="openModal">
 
           <!-- 分页 -->
           <template #bodyAppend>
@@ -52,7 +49,7 @@
         <va-modal v-model="showModal" title="订单详情" ok-text="确认订单" cancel-text="取消操作" no-outside-dismiss @ok="confirm"
           @cancel="cancel">
           <div style="line-height: 200%;">订单号：{{ orderId }}</div>
-          <va-data-table :items="modalItems" :columes="modalColumns" :wrapper-size="300" sticky-header hoverable
+          <va-data-table :items="modalItems" :columes="modalColumns" :wrapper-size="250" sticky-header hoverable
             virtual-scroller striped>
           </va-data-table>
         </va-modal>
@@ -65,11 +62,12 @@
 </template>
 
 <script>
+
 export default {
   data() {
     const perPage = 12;
-    const tableColumns = ["订单号", "时间", "就诊人", "金额", "状态"];
-    const modalColumns = ["药品名", "数量", "单位", "金额"];
+    const tableColumns = ["订单号", "时间", "就诊人ID", "金额", "状态"];
+    const modalColumns = ["药品名", "数量", "单价", "总价"];
 
     return {
       // 筛选
@@ -101,6 +99,29 @@ export default {
   },
 
   methods: {
+    // 刷新表格
+    getTable() {
+      fetch("http://124.223.143.21/api/Prescription/GetAll", {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          console.log(result);
+          this.tableItems = [];
+          for (let i = 0; i < result.length; ++i) {
+            this.tableItems.push({
+              "订单号": result[i].prescriptionId,
+              "时间": result[i].diagnoseTime.replace("T", " "),
+              "就诊人ID": result[i].patientId,
+              "金额": result[i].totalPrice,
+              "状态": result[i].paystate ? "已支付" : "未支付",
+            })
+          }
+        })
+        .catch(error => console.log('error', error));
+    },
+
     // 点击表行
     openModal(event) {
       // 弹窗已弹出则操作无效
@@ -110,20 +131,45 @@ export default {
 
       // 从后端获取订单详细信息
       this.orderId = this.tableItems[event.itemIndex]["订单号"];
-
-
-
-      // 显示弹窗
-      this.showModal = true;
+      fetch("http://124.223.143.21/api/Prescription/GetDetail?prescriptionId=" + this.orderId, {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          this.modalItems = [];
+          for (let i = 0; i < result.length; ++i) {
+            this.modalItems.push({
+              "药品名": result[i].medicineName,
+              "数量": result[i].quantity,
+              "单价": result[i].medicinePrice,
+              "总价": result[i].quantity * result[i].medicinePrice,
+            })
+          }
+          this.showModal = true; // 显示弹窗
+        })
+        .catch(error => console.log('error', error));
     },
 
     // 确认订单
     confirm() {
-      // 向后端申请减少药品数量，同时改变订单状态
-      console.log("confirm");
+      // 减少药品数量
 
-      // 关闭弹窗
-      this.showModal = false;
+
+      // 改变订单状态
+      fetch("http://124.223.143.21/api/Prescription/UpdatePaystate"
+        + "?prescriptionId=" + this.orderId.toString(), {
+        method: 'PUT',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          if (result == "该订单已支付") {
+            alert("该订单已支付！");
+          }
+          this.getTable(); // 刷新表格
+          this.showModal = false; // 关闭弹窗
+        })
+        .catch(error => console.log('error', error));
     },
 
     // 取消操作
@@ -134,26 +180,8 @@ export default {
   },
 
   mounted() {
-    // 初始获取tableItems/modalItems
-    for (var i = 0; i < 20; ++i) {
-      this.tableItems.push({
-        订单号: parseInt(Math.random() * 90000 + 10000).toString(),
-        时间: "2023-07-12 19:19",
-        就诊人: "李田所",
-        金额: (114.514).toFixed(2),
-        状态: "未支付",
-      })
-    }
-    for (i = 0; i < 10; ++i) {
-      this.modalItems.push({
-        药品名: "阿米诺司",
-        数量: 2,
-        单位: "盒",
-        金额: (100.00).toFixed(2),
-      })
-    }
-
-    // 初始化filteredCount
+    // 初始化表格和 filteredCount
+    this.getTable();
     this.filteredCount = this.tableItems.length;
   },
 
@@ -167,16 +195,20 @@ export default {
 </script>
 
 <style scoped>
-
 .el-main {
   user-select: none;
 }
 
-
 * {
+  /* 应用字体 */
   font-family: AliRegular;
   --va-font-family: AliRegular;
-  /* 应用字体 */
+}
+
+.va-data-table {
+  --va-font-family: AliRegular;
+  /* 表头大小 */
+  --va-data-table-thead-font-size: 1rem;
 }
 </style>
 
