@@ -8,7 +8,7 @@ import AdminMedicine from '../views/Admin/AdminMedicine.vue'
 import AdminDoctor from '../views/Admin/AdminDoctor.vue'
 import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
-
+import AdminCheckin from '../views/Admin/AdminCheckin.vue'
 // import { use } from 'vue/types/umd'
 import MedicalHistory from '../components/MedicalHistory.vue'
 import AppointmentSuccess from '../views/AppointmentSuccess.vue'
@@ -84,6 +84,11 @@ const routes = [
     path: '/admin-layout',
     name: 'AdminLayput',
     component: AdminLayout,
+  },
+  {
+    path: '/admin-checkin',
+    name: 'AdminCheckin',
+    component: AdminCheckin,
   },
 ]
 

@@ -113,7 +113,7 @@
   
   margin-left:20px;
 }
-/* 样式可以根据你的需求来定义 */
+
 .news-item {
   display: flex;
   margin-bottom: 20px;
@@ -185,7 +185,7 @@ export default {
     };
   },
   methods: {
-    
+    //获取新闻信息
     fetchNewsData() {
       var self = this; // 存储当前对象的引用
       const d = new Date();
@@ -211,6 +211,7 @@ export default {
           alert("操作失败!");
         });
     },
+    //获取疾病信息
     fetchDiseaseData(searchKeyword) {
       var self = this; // 存储当前对象的引用  
       // 创建请求参数对象
