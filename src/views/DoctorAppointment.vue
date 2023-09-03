@@ -110,7 +110,11 @@
       </va-card>
 
       <div class="flex gap-5 flex-wrap date-picker">
-        <va-date-picker stateful v-model="value" @click="fetchData(value)" class="date" />
+        <va-date-picker stateful v-model="value" @click="fetchData(value)" class="date"
+        :allowed-days="(date) => (workday.indexOf(String(date.getDate())) !== -1 
+                                  && date.getDate() >= currentDate 
+                                  && date.getMonth() == currentMonth) 
+                                || date.getMonth() > currentMonth" />
       </div>
     </div>
     <div class="button-groups">
@@ -155,6 +159,7 @@ export default {
   data() {
     return {
       currentDate: "",
+      currentMonth: "",
       formattedDate: "",
       nextDates: [],
       fetchedData: [],
@@ -171,22 +176,32 @@ export default {
         "副主任医师": "15",
         "副主任技师": "15",
       },
+      DoctorInfo:"",
+      DoctorFee:"",
+      worktime:{},
+      workday:[],
     };
   },
 
-  mounted() {
+  async mounted() {
     this.getCurrentDate();
     this.generateNextDates();
     this.fetchData(new Date());
+    await this.GetDoctorInfo();
+    console.log("workday:");
+    console.log(this.workday);
     this.options = this.options.concat(
       this.nextDates.map((date) => ({ label: date, value: date }))
     );
+    // console.log("curDate:"+this.currentDate.toString());
   },
   methods: {
     getCurrentDate() {
       const now = new Date();
       const day = now.getDate();
+      const month = now.getMonth();
       this.currentDate = String(day);
+      this.currentMonth = String(month);
       this.options.push({ label: this.currentDate, value: this.currentDate });
     },
     generateNextDates() {
@@ -364,7 +379,52 @@ export default {
         alert('请先扫描数据！');
       }
     },*/
+    async GetDoctorInfo() {
+      var self = this; // 存储当前对象的引用
+      // 新增部分
+      axios
+        .get("http://124.223.143.21/api/Doctors/fee?", {
+          params: {
+            doctorId: this.$route.params.selectedId,
+          },
+        })
+        .then(function (response) {
+          self.DoctorInfo = response.data.consultationInfos;
+          self.DoctorFee =response.data.fee;
+          // console.log(self.DoctorInfo);
 
+          // 创建一个Set来跟踪已经记录的日期
+          const recordedDates = new Set();
+          // 遍历排班信息数组，将日期和period值添加到字典中
+          self.DoctorInfo.forEach((info) => {
+            const dateTime = info.dateTime.substring(8, 10);
+            const period = info.period;
+
+            if (!recordedDates.has(dateTime)) {
+              recordedDates.add(dateTime);
+              self.worktime[dateTime] = [];
+              self.workday.push(dateTime);
+            }
+
+            // 将period值添加到对应日期的数组中
+            self.worktime[dateTime].push(period);
+          });
+
+          // 现在，workday对象包含了所有日期对应的period值
+          // console.log(self.worktime);
+          // console.log("workday:"+self.workday);
+          for (let day in self.workday) {
+            if (self.workday[day][0] == '0') {
+              self.workday[day] = self.workday[day].slice(1, 2);
+              // console.log(self.workday[day]);
+            }
+          }
+
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+      },
   },
 };
 </script>

@@ -320,7 +320,7 @@ export default {
 */
 .doctor-card {
   width: 27%;
-  height: 320px;
+  height: 350px;
   margin-right: 6%;
   margin-bottom: 1%;
 }
@@ -348,6 +348,8 @@ export default {
   justify-content: center;
   margin:5px;
   margin-bottom: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
   /* max-width: 120px; */
 }
 
