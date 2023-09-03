@@ -1,25 +1,25 @@
 
 <template>
   <div id="app">
-    <SideBar />
+    <!-- <SideBar /> -->
     <router-view></router-view>
-    <Header />
+    <!-- <Header /> -->
   </div>
 </template>
 
 <script>
-import SideBar from "./components/SideBar.vue";
-import Header from "./components/Header.vue";
+// import SideBar from "./components/SideBar.vue";
+// import Header from "./components/Header.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
 // import DoctorInfo from './components/Info/DoctorInfo.vue';
 //import DoctorInfo from "./components/Info/DoctorInfo.vue";
 
 export default {
   components: {
-    SideBar,
+    // SideBar,
     // PatientInfo,
-    //DoctorInfo,
-    Header,
+    // DoctorInfo,
+    // Header,
   },
 };
 </script>

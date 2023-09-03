@@ -1,12 +1,6 @@
 <template>
   <el-container>
 
-    <el-header>
-      <h4 class="va-h4">
-        坐诊医生管理
-      </h4>
-    </el-header>
-
     <el-main>
       <!-- 条件区 -->
       <div class="conditions">
@@ -130,7 +124,7 @@ export default {
 
     // 新项是否合法
     createdItemValid() {
-      for (var col in this.createdItem) {
+      for (let col in this.createdItem) {
         this.createdItem[col];
         if (this.createdItem[col] == "") {
           return false;
@@ -154,8 +148,8 @@ export default {
     // 添加表项
     addItem() {
       // 新建对象
-      var newItem = {};
-      for (var col in this.createdItem) {
+      let newItem = {};
+      for (let col in this.createdItem) {
         newItem[col] = this.createdItem[col];
         this.createdItem[col] = ""; // 重置createdItem
       }
@@ -169,7 +163,7 @@ export default {
 
     // 打开编辑窗口
     openItemEdition(rowIndex) {
-      for (var col in this.editedItem) {
+      for (let col in this.editedItem) {
         this.editedItem[col] = this.tableItems[rowIndex][col];
       }
       this.editedRow = rowIndex;
@@ -186,7 +180,7 @@ export default {
     // 确认编辑
     confirmUpdate() {
       // 写入后端
-      for (var col in this.editedItem) {
+      for (let col in this.editedItem) {
         this.tableItems[this.editedRow][col] = this.editedItem[col];
       }
 
@@ -202,7 +196,7 @@ export default {
     getTable() {
       this.allItems = [];
       this.tableItems = [];
-      for (var i = 0; i < 15; ++i) {
+      for (let i = 0; i < 15; ++i) {
         this.allItems.push({
           ID: 36436,
           姓名: "袁野",
@@ -233,7 +227,7 @@ export default {
     selected() {
       this.curPage = 1;
       this.tableItems = [];
-      for (var i = 0; i < this.allItems.length; ++i) {
+      for (let i = 0; i < this.allItems.length; ++i) {
         if (this.selected == "所有科室" || this.allItems[i]["科室"] == this.selected) {
           this.tableItems.push(this.allItems[i]);
         }

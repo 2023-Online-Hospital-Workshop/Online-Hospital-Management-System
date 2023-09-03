@@ -1,12 +1,5 @@
 <template>
   <el-container>
-
-    <el-header>
-      <h4 class="va-h4">
-        药品库存管理
-      </h4>
-    </el-header>
-
     <el-main>
       <!-- 切换栏 -->
       <div class="tabs">
@@ -90,6 +83,7 @@
 </template>
 
 <script>
+import user from '../../store/user.js';
 export default {
   data() {
     const tabTitles = [
@@ -98,7 +92,7 @@ export default {
     ];
     const checkboxLabel = "仅查看预警药品";
     const stockColumns = ["药品名", "生产单位", "生产日期", "库存", "阈值", "预警"];
-    const recordColumns = ["药品名", "清理日期", "清理负责管理员"];
+    const recordColumns = ["药品名", "生产单位", "生产日期", "清理日期", "清理负责管理员"];
 
     return {
       // 切换栏
@@ -184,7 +178,7 @@ export default {
 
       // 更新表头
       this.tableColumns = [];
-      for (var i = 0; i < this.stockColumns.length; ++i) {
+      for (let i = 0; i < this.stockColumns.length; ++i) {
         this.tableColumns.push(this.stockColumns[i]);
       }
       this.tableColumns.push("修改");
@@ -197,34 +191,20 @@ export default {
         .then(result => {
           result = JSON.parse(result); // 将结果转为JSON
           this.tableItems = []; // 清空表项
-          for (i = 0; i < result.length; ++i) {
-            var flag = result[i].medicineAmount < result[i].thresholdValue;
+          for (let i = 0; i < result.length; ++i) {
+            let flag = result[i].medicineAmount < result[i].thresholdValue;
             if (!flag && this.warningOnly) continue;
             this.tableItems.push({ // 填入表项
-              药品名: result[i].medicineName,
-              生产单位: result[i].manufacturer,
-              生产日期: result[i].productionDate,
-              库存: result[i].medicineAmount,
-              阈值: result[i].thresholdValue,
-              预警: flag ? "是" : "否",
+              "药品名": result[i].medicineName,
+              "生产单位": result[i].manufacturer,
+              "生产日期": result[i].productionDate.replace("T", " "),
+              "库存": result[i].medicineAmount,
+              "阈值": result[i].thresholdValue,
+              "预警": flag ? "是" : "否",
             });
           }
         })
         .catch(error => console.log('error', error));
-      // this.tableItems = [];
-      // for (i = 0; i < 20; ++i) {
-      //   var newItem = {
-      //     药品名: "阿米诺司",
-      //     生产单位: "医德格拉米",
-      //     生产日期: "2022-10-12 18:00",
-      //     库存: parseInt(Math.random() * 999),
-      //     阈值: parseInt(Math.random() * 999),
-      //   }
-      //   newItem["预警"] = newItem["库存"] < newItem["阈值"] ? "是" : "否";
-      //   if (!this.warningOnly || newItem["预警"] == "是") {
-      //     this.tableItems.push(newItem);
-      //   }
-      // }
     },
 
     // 转换为清理记录表
@@ -237,36 +217,82 @@ export default {
 
       // 更新表头
       this.tableColumns = [];
-      for (var i = 0; i < this.recordColumns.length; ++i) {
+      for (let i = 0; i < this.recordColumns.length; ++i) {
         this.tableColumns.push(this.recordColumns[i]);
       }
 
       // 从后端获取清理记录
-      this.tableItems = [];
-      for (i = 0; i < 15; ++i) {
-        this.tableItems.push({
-          药品名: "阿米诺司",
-          清理日期: "2023-8-8 " + i.toString() + ":00",
-          清理负责管理员: "夏胡白",
-        });
-      }
+      fetch("http://124.223.143.21/api/Medicine/GetCleanedMedicines", {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result); // 将结果转为JSON
+          this.tableItems = []; // 清空表项
+          console.log(result);
+          for (let i = 0; i < result.length; ++i) {
+            this.tableItems.push({
+              "药品名": result[i].medicineName,
+              "生产单位": result[i].manufacturer,
+              "生产日期": result[i].productiondate.replace("T", " "),
+              "清理日期": result[i].cleanDate.replace("T", " "),
+              "清理负责管理员": result[i].cleanAdministrator,
+            });
+          }
+          console.log(this.tableItems);
+        })
+        .catch(error => console.log('error', error));
     },
 
     // 添加表项
     addItem() {
       // 新建对象
-      var newItem = {};
+      let newItem = {};
       newItem["预警"] = this.createdItemWarning;
-      for (var col in this.createdItem) {
+      for (let col in this.createdItem) {
+        console.log(col);
         newItem[col] = this.createdItem[col];
         this.createdItem[col] = ""; // 重置createdItem
       }
 
       // 传入后端
+      // let myHeaders = new Headers();
+      // myHeaders.append("Content-Type", "application/json");
+      // let raw = JSON.stringify({
+      //   "medicineName": newItem["药品名"],
+      //   "manufacturer": newItem["生产单位"],
+      //   "productionDate": newItem["生产日期"].replace(" ", "T"),
+      //   "medicineAmount": newItem["库存"],
+      //   "thresholdValue": newItem["阈值"],
+      //   "administratorId": user.state.userID,
+      //   "medicineShelflife": 0,
+      //   "purchasePrice": 0,
+      //   "medicineType": "",
+      //   "applicableSymptom": "",
+      //   "specification": "",
+      //   "singledose": "",
+      //   "administration": "",
+      //   "attention": "",
+      //   "frequency": "",
+      //   "sellingprice": 0,
+      // });
+      // let requestOptions = {
+      //   method: 'POST',
+      //   headers: myHeaders,
+      //   body: raw,
+      //   redirect: 'follow'
+      // };
 
+      // fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
+      //   .then(response => response.text())
+      //   .then(result => {
+      //     if (result != "Medicine stock added successfully.") {
+      //       alert("库存已存在！");
+      //     }
+      //     this.toStock();
+      //   })
+      //   .catch(error => console.log('error', error));
 
-      // 加入表项
-      this.tableItems.push(newItem);
     },
 
     // 打开编辑窗口
@@ -278,27 +304,43 @@ export default {
 
     // 删除项
     deleteItem(rowIndex) {
-      // 修改表项
-      this.tableItems.splice(rowIndex, 1);
-
-
-      // 写入后端
-
+      fetch("http://124.223.143.21/api/Medicine/CleanMedicine"
+        + "?medicineName=" + this.tableItems[rowIndex]["药品名"]
+        + "&manufacturer=" + this.tableItems[rowIndex]["生产单位"]
+        + "&productionDate="+ this.tableItems[rowIndex]["生产日期"]
+        + "&administratorId=" + user.state.userID, {
+        method: 'PUT',
+        redirect: 'follow'
+      })
+        .then(response => response.text())
+        .then(result => {
+          if(result == "Medicine cleaned successfully.") {
+            this.toStock();
+          }
+          else {
+            alert("请求非法！");
+          }
+        })
+        .catch(error => console.log('error', error));
     },
 
     // 更新库存
     confirmUpdate() {
-      // 写入后端
-      this.tableItems[this.editedRow]["库存"] = this.editedStock;
-      if (this.tableItems[this.editedRow]["库存"] < this.tableItems[this.editedRow]["阈值"]) {
-        this.tableItems[this.editedRow]["预警"] = "是";
-      }
-      else {
-        this.tableItems[this.editedRow]["预警"] = "否";
-      }
-
-      // 刷新表项
-      this.toStock();
+      fetch("http://124.223.143.21/api/Medicine/UpdateStock"
+        + "?medicineName=" + this.tableItems[this.editedRow]["药品名"]
+        + "&newAmount=" + this.editedStock.toString(), {
+        method: 'PUT',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          if (result == "Medicine stock updated successfully.") {
+            this.toStock();
+          }
+          else {
+            alert("请求非法！");
+          }
+        })
+        .catch(error => console.log('error', error));
     },
 
     // 取消更新
@@ -311,6 +353,9 @@ export default {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
+
+    // debug
+    user.state.userID = "23201";
   },
 
   watch: {
