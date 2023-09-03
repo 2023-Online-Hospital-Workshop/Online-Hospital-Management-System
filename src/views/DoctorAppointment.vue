@@ -67,6 +67,7 @@
       <p>
         {{ alertText }}
       </p>
+      <p><img :src="imgUrl" alt="图片"></p>
     </va-modal>
   </template>
   <div id="main-page" class="parent-box">
@@ -144,10 +145,12 @@
       </va-button-group>
     </div>
   </div>
+  
 </template>
 
 <script >
 import axios from "axios";
+import UserState from "../store/user.js"
 export default {
   data() {
     return {
@@ -161,6 +164,7 @@ export default {
       value: new Date(),
       showModal: false,
       alertText: "",
+      imgUrl:"",
     };
   },
 
@@ -232,8 +236,8 @@ export default {
         .then(function (response) {
           self.fetchedData = response.data;
           console.log(self.fetchedData);
-          for (let i = 0; i < self.fetchedData.length; i++) {
-            self.number[i] = self.fetchedData[i].Count;
+          for (let i = 0; i < self.fetchedData.length; i++) {    
+            self.number[self.fetchedData[i].Period-1] = self.fetchedData[i].Count;
           }
         })
         .catch(function (error) {
@@ -251,7 +255,7 @@ export default {
       }
       const url = "http://124.223.143.21/Registration/regist";
       const data = {
-        patientId: "2151678",
+        patientId: UserState.state.userID,
         doctorId: this.$route.params.selectedId,
         // doctorId: "23008",
         // Time: "2023-08-30T07:22:13.624Z",
@@ -259,11 +263,18 @@ export default {
         // period: 2,
         period: per + 1,
       };
+      console.log(data);
       axios
         .post(url, data)
         .then((response) => {
-          this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data;
-          this.showModal = true;
+          const dataString = UserState.state.userID +this.$route.params.selectedId +this.formattedDate +(per + 1);
+          console.log(dataString);
+          // 在axios请求成功的回调函数内部调用Generate函数
+      this.Generate(dataString, () => {
+        console.log(this.imgUrl); // 在这里访问imgUrl
+        this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data +"\n预约二维码地址："+ this.imgUrl;
+        this.showModal = true;
+      });
         })
         .catch(function (error) {
           alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
@@ -278,7 +289,76 @@ export default {
           //   alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
           // }
         });
-    }
+    },
+    closeModal() {
+      this.showModal = false;
+    },
+    Generate(dataString,callback) {
+       var self = this;
+       var formData=new FormData();
+       formData.append("showapi_appid", '1475668'); 
+       formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); //这两个不用改
+       
+       formData.append("content", dataString);//这里放二维码内容
+       formData.append("size", "8");//这里可以修改图片大小
+       formData.append("imgExtName","jpg");//这里修改图片格式
+       // 发送POST请求
+       axios
+         .post("http://route.showapi.com/887-1", formData)
+         .then(function (response) {
+           self.imgUrl =response.data.showapi_res_body.imgUrl;
+           if (callback) {
+             callback(); // 调用回调函数
+            }
+         })
+         .catch(function (error) {
+           console.error(error);
+           alert("操作失败!");
+         });
+     },
+    /*sendData() {
+      const scannedData = this.scannedDataInput;
+      
+      // 检查是否有扫描到数据
+      if (scannedData) {
+        // 假设每个字段的长度是固定的
+        const patientId = scannedData.substring(0, 7);
+        const doctorId = scannedData.substring(7, 12);
+        const time = scannedData.substring(12, 22);
+        const period = scannedData.substring(22);
+
+        // 构建请求数据对象
+        const data = {
+          patientId,
+          doctorId,
+          time,
+          period,
+        };
+
+        // 发送请求
+        axios
+          .post("http://124.223.143.21/Registration/regist", data)
+          .then((response) => {
+            this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + time + " " + response.data;
+            this.uploadSuccess = true;
+          })
+          .catch(function (error) {
+            alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
+            console.error("Error message:", error.message);
+            if (error.message == "Network Error") return;
+            if (error.response) {
+              console.error("Response data:", error.response.data);
+              console.error("Response status:", error.response.status);
+            }
+          });
+
+        // 清空输入框
+        this.scannedDataInput = '';
+      } else {
+        alert('请先扫描数据！');
+      }
+    },*/
+
   },
 };
 </script>
@@ -355,7 +435,6 @@ export default {
   --va-button-group-button-margin: 10px;
 }
 
-
 .button-groups {
   display: flex;
   /* 使用 Flex 布局 */
@@ -364,7 +443,6 @@ export default {
   /* 对齐方式为左对齐 */
   gap: 10px;
   /* 间距为 10px */
-
 }
 
 * {
