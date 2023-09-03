@@ -120,6 +120,7 @@ import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { myFont } from "../assets/font/myfont-normal"
+import user from "../store/user.js"
 
 export default {
   data() {
@@ -152,23 +153,26 @@ export default {
       this.periodDict[i] = `${i + 9}:00-${i + 10}:00`
     }
 
-    axios.get('http://124.223.143.21:4999/Registration/Patient/2151895')
+    axios.get(`http://124.223.143.21:4999/Registration/Patient/${user.state.userID}`)
       .then((response) => {
         console.log(response.data);
         const newData = response.data; // 获取响应数据
         // 将新数据转化为 record 对象并添加到 allRecords 数组中
         this.allRecords = newData.map(item => ({
           patient: item.patient.name,
-          patientID: "2151895",
+          patientID: user.state.userID,
           patientGender: item.patient.gender ? "男" : "女",
+          patientBirth: item.patient.birthDate,
           doctor: item.doctor.name,
           doctorID: item.doctor.doctorId,
           date: item.date.replace('T', ' '),
           appointmentTime: item.period,
           waitingCount: item.queueCount,
           status: item.state,
-          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${2151895}${item.doctor.doctorId}${item.period}`,
+          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${user.state.userID}${item.doctor.doctorId}${item.period}`,
         }));
+
+        console.log(this.allRecords);
 
         this.feedbacks = this.allRecords.map(item => ({
           diagnoseId: item.diagnoseId,
@@ -184,7 +188,11 @@ export default {
           isSubmitted: false
         }));
 
-        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications?PatientId=2151895')
+        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+          params: {
+            PatientId: user.state.userID
+          }
+        })
           .then((response) => {
             for (let idData of response.data) {
               let tmp = idData.substring(0, idData.length - 3);
@@ -198,7 +206,11 @@ export default {
             console.log(error);
           });
 
-        axios.get('http://124.223.143.21:4999/api/Comment/whether?PatientId=2151895')
+        axios.get('http://124.223.143.21:4999/api/Comment/whether', {
+          params: {
+            PatientId: user.state.userID
+          }
+        })
           .then((response) => {
             for (let idData of response.data) {
               let tmp = idData;
@@ -242,7 +254,11 @@ export default {
     },
 
     viewPrescription(record) {
-      axios.get('http://124.223.143.21/api/Prescription/GetPrescription?diagnoseId=202309012151895230012')
+      axios.get('http://124.223.143.21/api/Prescription/GetPrescription', {
+        params: {
+          diagnoseId: record.diagnoseId
+        }
+      })
         .then((response) => {
           let prescriptionData = response.data;
           console.log("prescriptionData");
@@ -284,7 +300,9 @@ export default {
 
           // 打印基本信息
           doc.setFontSize(6);
-          const basics = `姓名：xxx    性别：xxx    年龄：xxx    患者编号：${record.patientID}    科室：${prescriptionData.doctor.secondaryDepartment}    时间：${prescriptionData.diagnoseTime.replace('T', ' ')}`
+          const birthYear = new Date(record.patientBirth).getFullYear();
+          const currentYear = new Date().getFullYear();
+          const basics = `姓名：${record.patient}    性别：${record.patientGender}    年龄：${currentYear - birthYear}    患者编号：${record.patientID}    科室：${prescriptionData.doctor.secondaryDepartment}    时间：${prescriptionData.diagnoseTime.replace('T', ' ')}`
           const basicsStart = 25 - doc.getTextDimensions(subtitle).w / 2;
           penHeight += doc.getTextDimensions(basics).h + PAGE_MARGIN;
           doc.text(basics, basicsStart, penHeight);
@@ -293,8 +311,8 @@ export default {
             [`诊断记录：  ${record.diagnoseId}`],
             [`诊断医生：  ${prescriptionData.doctor.name}`],
             [`既往病史：  ${prescriptionData.anamnesis}`],
+            [`体征检查：  ${prescriptionData.sign}`],
             [`初步诊断：  ${prescriptionData.clinicdia}`],
-            [`体征检查：  ${prescriptionData.sign}`]
           ];
           doc.autoTable({
             theme: 'plain',

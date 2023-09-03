@@ -66,24 +66,27 @@ const routes = [
 
   //管理员路由
   {
-    path: '/Admin/medicine',
-    name: 'AdminMedicine',
-    component: AdminMedicine,
-  },
-  {
-    path: '/Admin/doctor',
-    name: 'AdminDoctor',
-    component: AdminDoctor,
-  },
-  {
-    path: '/Admin/order',
-    name: 'AdminOrder',
-    component: AdminOrder,
-  },
-  {
-    path: '/admin-layout',
-    name: 'AdminLayput',
-    component: AdminLayout,
+    path: '/Admin',
+    name: 'AdminLayout',
+    component: AdminLayout, 
+    redirect:'/Admin/order',
+    children: [
+      {
+        path: 'order',
+        name: 'AdminOrder',
+        component: AdminOrder,
+      },
+      {
+        path: 'medicine',
+        name: 'AdminMedicine',
+        component: AdminMedicine,
+      },
+      {
+        path: 'doctor',
+        name: 'AdminDoctor',
+        component: AdminDoctor,
+      },
+    ],
   },
 ]
 
