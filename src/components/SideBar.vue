@@ -27,13 +27,16 @@ import { useStore } from "vuex";
 
 export default {
   name: "SideBar",
-  setup() {
+  props: {
+    role: String,
+  },
+  setup(props) {
     const store = useStore();
     const router = useRouter();
 
     const isCollapse = computed(() => store.state.state.isCollapse);
-    const menu = computed(() => store.state.state.aside_data);
-    const aside_title = computed(() => store.state.state.aside_title);
+    const menu = computed(() => store.state.state.aside_data[props.role]);
+    const aside_title = computed(() => store.state.state.aside_title[props.role]);
     const is_expand = ref(store.state.state.is_expand);
 
     const noChildren = computed(() => {

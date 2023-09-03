@@ -1,5 +1,5 @@
 <template>
-  <SideBar />
+  <SideBar :role="0" />
   <Header />
 </template>
 
