@@ -105,6 +105,11 @@ const routes = [
     name: 'AdminCheckin',
     component: AdminCheckin,
   },
+  {
+    path: '/doctor-operator',
+    name: 'DoctorOperator',
+    component: DoctorOperator,
+  },
 ]
 
 const router = createRouter({
