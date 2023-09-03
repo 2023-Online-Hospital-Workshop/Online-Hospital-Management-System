@@ -92,7 +92,7 @@ export default {
     doctorCardClicked(doctor) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
 
       console.log("selected: " + doctor.doctorId);
-      this.$router.push({ name: 'DoctorAppointment', params: { selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: doctor.department } });
+      this.$router.push({ name: 'DoctorAppointment', params: { selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: doctor.department, doctorTitle: doctor.title } });
     },
 
 
@@ -210,8 +210,9 @@ export default {
            
 
             <div class="center">科室: &nbsp; {{ doctor.department }} &nbsp;综合评分： 5.0</div>
+            <div class="center" style="font-weight: light;margin-top: 10px;">{{ doctor.skiledIn }}</div>
             
-            <div class="center"><va-button preset="primary" class="mr-6 mb-2">点击预约</va-button></div>
+            <!-- <div class="center"><va-button preset="primary" class="mr-6 mb-2">点击预约</va-button></div> -->
 
             <!-- <p>擅长领域: </p> -->
             <!-- <p>{{ doctor.expertise }}</p> -->
@@ -319,7 +320,7 @@ export default {
 */
 .doctor-card {
   width: 27%;
-  height: 300px;
+  height: 320px;
   margin-right: 6%;
   margin-bottom: 1%;
 }
@@ -346,6 +347,8 @@ export default {
   align-items: center;
   justify-content: center;
   margin:5px;
+  margin-bottom: 10px;
+  /* max-width: 120px; */
 }
 
 #main-page {

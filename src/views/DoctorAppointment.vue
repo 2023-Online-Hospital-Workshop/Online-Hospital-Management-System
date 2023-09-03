@@ -99,7 +99,7 @@
         <div class="title">预约挂号须知</div>
         <va-card-content>
           <span
-            style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为&nbsp;元，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
+            style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为{{ fee[this.$route.params.doctorTitle] }}元，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
           <span
             style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消（上午号11:00前，下午号17:00前）<br><br></span>
           <span
@@ -165,6 +165,12 @@ export default {
       showModal: false,
       alertText: "",
       imgUrl:"",
+      fee: {
+        "主任医师": "25",
+        "主任技师": "25",
+        "副主任医师": "15",
+        "副主任技师": "15",
+      },
     };
   },
 
