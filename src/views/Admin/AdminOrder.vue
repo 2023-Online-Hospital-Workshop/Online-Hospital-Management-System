@@ -6,8 +6,7 @@
   - 表格可以包含姓名（根据ID自动获取）
   - 可以有新增新药品种类的功能
   - 修改坐诊时间period可以改成下拉菜单
-  - userID的获取还没解决
-  - 坐诊记录的添加和删除无效
+  - （坐诊记录的添加和删除无效）
   - 表最多显示10页
   - 侧边栏遮挡输入框
  -->
@@ -34,7 +33,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10"/>
               </td>
             </tr>
           </template>

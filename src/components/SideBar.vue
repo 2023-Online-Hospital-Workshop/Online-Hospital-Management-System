@@ -1,13 +1,8 @@
 <template>
-  <div class="mb-6 h-64 sidebar" :style="{ backgroundColor: 'transparent'}">
+  <div class="mb-6 h-64 sidebar" :style="{ backgroundColor: 'transparent', 'pointer-events': is_expand ? 'none' : 'auto' }">
     <va-sidebar color="primary" gradient minimized-width="64px" :width="is_expand ? '0px' : '200px'">
-      <va-sidebar-item
-        @click="clickMenu(item)"
-        v-for="item in noChildren"
-        :index="item.path"
-        :key="item.path"
-        active-color="backgroundPrimary"
-      >
+      <va-sidebar-item @click="clickMenu(item)" v-for="item in noChildren" :index="item.path" :key="item.path"
+        active-color="backgroundPrimary">
         <va-sidebar-item-content>
           <va-icon :name="item.icon" />
           <va-sidebar-item-title>
@@ -68,7 +63,8 @@ export default {
     watch(
       () => store.state.state.is_expand,
       (newValue) => {
-        is_expand.value = newValue;})
+        is_expand.value = newValue;
+      })
     return {
       isCollapse,
       menu,
@@ -113,7 +109,8 @@ export default {
 }
 
 * {
-  font-family: AliRegular; /* 应用字体 */
+  font-family: AliRegular;
+  /* 应用字体 */
   --va-font-family: AliRegular;
 }
 </style>

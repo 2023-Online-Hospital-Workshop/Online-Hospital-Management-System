@@ -60,7 +60,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10" />
               </td>
             </tr>
           </template>

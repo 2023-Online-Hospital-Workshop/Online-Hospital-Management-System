@@ -77,7 +77,7 @@ export default {
         {
           path: '/Admin/checkin',
           name: 'AdminCheckin',
-          label: '患者报到管理',
+          label: '挂号患者报到',
           icon: 'list',
           url: '/Admin/checkin',
         },
