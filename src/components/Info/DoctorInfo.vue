@@ -1,13 +1,10 @@
 <template>
   <div class="avatar-dropdown">
-    <va-button
+    <va-icon
+      name="account_circle"
       @click="toggleInfo"
-      class="info-btn"
-      background-color="warning"
-      gradient
-    >
-      <i class="material-icons">account_circle</i>&nbsp;&nbsp;个人信息
-    </va-button>
+      class="header-icon"
+    ></va-icon>
 
     <el-collapse-transition>
       <div v-if="showInfo" class="info-content">
@@ -86,6 +83,7 @@
 
 <script>
 import axios from "axios";
+import userState from "../../store/user.js";
 
 export default {
   name: "DoctorInfo",
@@ -94,7 +92,7 @@ export default {
       showInfo: false,
 
       //医生属性
-      doctorId: "23002",
+      doctorId: "",
       name: "",
       gender: "",
       contact: "",
@@ -134,8 +132,11 @@ export default {
     },
     exit() {
       //接跳转到首页的路由
+      this.$router.push("/");
+      this.showInfo = !this.showInfo;
     },
     toggleInfo() {
+      this.doctorId = userState.state.userID;
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;
@@ -222,6 +223,13 @@ export default {
 </script>
 
 <style scoped>
+.header-icon {
+  cursor: pointer;
+  color: white; /* 根据需要设置颜色 */
+  font-size: 24px; /* 调整大小 */
+  margin-right: 100px; /* 如果需要，可以添加边距 */
+  align-content: center;
+}
 .avatar-dropdown {
   position: absolute;
   align-items: center;
@@ -230,24 +238,14 @@ export default {
   text-align: right;
 }
 
-.info-btn {
-  position: relative;
-  cursor: pointer;
-  display: block;
-  align-items: right;
-  margin: 0 auto;
-  /* width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center; */
-}
-
 .info-content {
   display: block;
   width: 100%;
   color: #154ec1;
   font-weight: bold;
   padding-bottom: 20px;
+  position: absolute;
+  top: 45px;
 }
 
 #info {

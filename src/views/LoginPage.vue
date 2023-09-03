@@ -3,21 +3,50 @@
     <div class="centered-text">济康同行</div>
     <div class="centered-text-2">Online Hospital Management System</div>
     <div class="login-box">
-      <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" class="login-form" label-position="left" label-width="80px">
+      <el-form
+        ref="loginFormRef"
+        :model="loginForm"
+        :rules="loginFormRules"
+        class="login-form"
+        label-position="left"
+        label-width="80px"
+      >
         <h3 class="login-title">登录</h3>
 
         <el-form-item :prop="username" class="input-box" label="账号">
-          <el-tooltip class="item" effect="dark" content="账号即为注册时的手机号码" placement="right">
-            <el-input type="text" v-model="loginForm.username" auto-complete="off" placeholder="请输入账号"></el-input>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="账号即为注册时的手机号码"
+            placement="right"
+          >
+            <el-input
+              type="text"
+              v-model="loginForm.username"
+              auto-complete="off"
+              placeholder="请输入账号"
+            ></el-input>
           </el-tooltip>
         </el-form-item>
 
         <el-form-item :prop="password" class="input-box" label="密码">
-          <el-input type="password" v-model="loginForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
+          <el-input
+            type="password"
+            v-model="loginForm.password"
+            auto-complete="off"
+            placeholder="请输入密码"
+          ></el-input>
         </el-form-item>
 
         <el-radio-group v-model="roleCheckBox" size="small" class="radio-group">
-          <el-radio-button class="radio-item" v-for="(role_text, role_index) in roles_text" :label="role_text" :key="role_index" @change="roleChange(role_index)" :class="{ 'is-active': role_index === role_num }">
+          <el-radio-button
+            class="radio-item"
+            v-for="(role_text, role_index) in roles_text"
+            :label="role_text"
+            :key="role_index"
+            @change="roleChange(role_index)"
+            :class="{ 'is-active': role_index === role_num }"
+          >
             {{ role_text }}
           </el-radio-button>
         </el-radio-group>
@@ -28,8 +57,15 @@
         </div>
 
         <div class="bottom-actions">
-          <el-radio v-model="isStayLogin" :label="true" @click.prevent="onRadioChange(true)">3天内自动登录</el-radio>
-          <el-button type="text" @click="applyInsButtonClick">申请护理机构</el-button>
+          <el-radio
+            v-model="isStayLogin"
+            :label="true"
+            @click.prevent="onRadioChange(true)"
+            >3天内自动登录</el-radio
+          >
+          <el-button type="text" @click="applyInsButtonClick"
+            >申请护理机构</el-button
+          >
         </div>
       </el-form>
     </div>
@@ -40,113 +76,113 @@
 </template>
 
   <script>
-  import axios from "axios";
-  import { useRouter } from 'vue-router'
-  import {useStore} from "vuex";
-  import  userInfo from '../store/user.js'
+import axios from "axios";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import userInfo from "../store/user.js";
 
-  export default {
-    name: "LoginPage",
-    data() {
-      return {
-        router : useRouter(),
-        store : useStore(),
-        access_token: null,
-        headers: {},
+export default {
+  name: "LoginPage",
+  data() {
+    return {
+      router: useRouter(),
+      store: useStore(),
+      access_token: null,
+      headers: {},
 
-        //登录表单数据绑定
-        loginForm: {
-          username: "",
-          password: "",
-        },
-        //表单的验证规则
-        loginFormRules: {
-          //验证用户ID是否合法
-          username: [
-            { required: true, message: "请输入账号", trigger: "blur" },
-            {
-              min: 11,
-              max: 11,
-              message: "用户账号必须是11位",
-              trigger: "blur",
-            },
-          ],
-          //    验证密码是否合法
-          password: [
-            { required: true, message: "请输入密码", trigger: "blur" },
-            {
-              min: 1,
-              max: 50,
-              message: "密码必须在1-50个字符之间",
-              trigger: "blur",
-            },
-          ],
-          userToken: "",
-        },
-        //是否保持登录
-        isStayLogin: false,
-        //身份多选框文字
-        roles_text: ["普通用户", "医生", "管理员"],
-        role_checkBox: "普通用户",
-        role_num: "0",
-        administratorId: "23202",
-      };
-    },
-    //回车登录操作
-    created() {
-
-    },
-    methods: {
-      login() {
-          let LoginURL = ["PatientLogin", "DoctorLogin", "AdminLogin"]
-          let AfterLogin = ['/home', '/doctor-operator', '/admin-layout']
-          axios
-          .get("http://124.223.143.21/api/Login/" + LoginURL[this.role_num] + "/", {
+      //登录表单数据绑定
+      loginForm: {
+        username: "",
+        password: "",
+      },
+      //表单的验证规则
+      loginFormRules: {
+        //验证用户ID是否合法
+        username: [
+          { required: true, message: "请输入账号", trigger: "blur" },
+          {
+            min: 11,
+            max: 11,
+            message: "用户账号必须是11位",
+            trigger: "blur",
+          },
+        ],
+        //    验证密码是否合法
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          {
+            min: 1,
+            max: 50,
+            message: "密码必须在1-50个字符之间",
+            trigger: "blur",
+          },
+        ],
+        userToken: "",
+      },
+      //是否保持登录
+      isStayLogin: false,
+      //身份多选框文字
+      roles_text: ["普通用户", "医生", "管理员"],
+      role_checkBox: "普通用户",
+      role_num: "0",
+      administratorId: "23202",
+    };
+  },
+  //回车登录操作
+  created() {},
+  methods: {
+    login() {
+      let LoginURL = ["PatientLogin", "DoctorLogin", "AdminLogin"];
+      let AfterLogin = ["/Patient", "/doctor-operator", "/Admin"];
+      axios
+        .get(
+          "http://124.223.143.21/api/Login/" + LoginURL[this.role_num] + "/",
+          {
             params: {
               ID: this.loginForm.username,
               password: this.loginForm.password,
             },
-          })
-          .then(response => {
-            console.log(response.data)
-            if (response.data) {
-              // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
-              console.log("登录成功");
-              this.router.push({
-                path: AfterLogin[this.role_num],
-              });
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          if (response.data) {
+            // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
+            console.log("登录成功");
+            this.router.push({
+              path: AfterLogin[this.role_num],
+            });
 
-              //hcr更改，存储用户账号信息到user.js
-              userInfo.state.userID=this.loginForm.username;
-              userInfo.state.role=this.role_num;
-            } else {
-              // 登录失败
-              console.error("登录失败");
-            }
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      },
-
-      toRegister() {
-        this.router.push({
-          path: '/register',
+            //hcr更改，存储用户账号信息到user.js
+            userInfo.state.userID = this.loginForm.username;
+            userInfo.state.role = this.role_num;
+          } else {
+            // 登录失败
+            console.error("登录失败");
+          }
+        })
+        .catch((error) => {
+          console.error(error);
         });
-      },
-
-      roleChange(index) {
-        this.role_num = index
-        this.role_checkBox = this.roles_text[index];
-        console.log(this.role_num)
-        console.log(this.role_checkBox)
-      }
     },
-  };
-  </script>
+
+    toRegister() {
+      this.router.push({
+        path: "/register",
+      });
+    },
+
+    roleChange(index) {
+      this.role_num = index;
+      this.role_checkBox = this.roles_text[index];
+      console.log(this.role_num);
+      console.log(this.role_checkBox);
+    },
+  },
+};
+</script>
 
 <style lang="less" scoped>
-
 .logincontent {
   display: flex;
   flex-direction: column;
@@ -181,7 +217,7 @@
   font-size: 2em;
   font-weight: bold;
   z-index: 2;
-  font-family: '楷体', KaiTi, sans-serif;
+  font-family: "楷体", KaiTi, sans-serif;
 }
 .login-box {
   position: absolute;
@@ -206,15 +242,15 @@
       font-family: "Microsoft YaHei";
       font-weight: bold;
       font-size: 25px;
-      color: #002FA7; /* Klein Blue */
+      color: #002fa7; /* Klein Blue */
       margin-bottom: 20px;
     }
 
     .input-box .el-input {
       border-radius: 5px;
-      border-color: #002FA7; /* Klein Blue */
+      border-color: #002fa7; /* Klein Blue */
       &:hover {
-        border-color: darken(#002FA7, 10%);
+        border-color: darken(#002fa7, 10%);
       }
     }
 
@@ -223,18 +259,17 @@
       justify-content: center;
       margin-bottom: 20px;
       .el-radio-button {
-        border-color: #002FA7; /* Klein Blue */
-        color: #002FA7; /* Klein Blue */
+        border-color: #002fa7; /* Klein Blue */
+        color: #002fa7; /* Klein Blue */
         &:hover {
-          background-color: lighten(#002FA7, 10%);
+          background-color: lighten(#002fa7, 10%);
         }
       }
       .el-radio-button.is-active {
-        background-color: #002FA7; /* Klein Blue */
-        border-color: #002FA7; /* Klein Blue */
+        background-color: #002fa7; /* Klein Blue */
+        border-color: #002fa7; /* Klein Blue */
         color: white;
       }
-
     }
 
     .button-group {
@@ -243,11 +278,11 @@
       margin-top: 20px;
 
       .el-button {
-        background-color: #002FA7; /* Klein Blue */
-        border-color: #002FA7; /* Klein Blue */
+        background-color: #002fa7; /* Klein Blue */
+        border-color: #002fa7; /* Klein Blue */
         &:hover {
-          background-color: darken(#002FA7, 10%);
-          border-color: darken(#002FA7, 10%);
+          background-color: darken(#002fa7, 10%);
+          border-color: darken(#002fa7, 10%);
         }
       }
     }
