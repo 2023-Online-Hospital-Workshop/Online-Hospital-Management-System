@@ -81,7 +81,7 @@ export default {
           console.log("return doctors: " + response.data);
           for (let i = 0; i < response.data.length; i++) {
             this.filteredDoctors.push(response.data[i]);
-
+            this.filteredDoctors[this.filteredDoctors.length - 1]["department"] = this.selectedDepartment;
           }
         }
         )
@@ -92,7 +92,7 @@ export default {
     doctorCardClicked(doctor) { // 当医生被选中时，存储被选中的医生姓名并返回预约界面
 
       console.log("selected: " + doctor.doctorId);
-      this.$router.push({ name: 'DoctorAppointment', params: { selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: doctor.department } });
+      this.$router.push({ name: 'DoctorAppointment', params: { selectedDoctor: doctor.doctorName, selectedId: doctor.doctorId, selectedDep: doctor.department, doctorTitle: doctor.title } });
     },
 
 
@@ -119,50 +119,6 @@ export default {
       searchKeyword: '', // 用于接收搜索框的数据 
       departments: [], // 一级科室列表
       selectedDepartment: '', // 选中的一级科室
-
-      // selectedSubDepartment: '',
-      // subDepartments: [],
-      // departmentMap: {
-      //   "内科": ['消化内科', '皮肤科', '神经内科'],
-      //   "外科": ['消化外科', '骨科', '泌尿外科'],
-      //   "医技": ['放射科', '超声科', '检验科']
-      //   // 其他一级科室和对应的二级科室列表
-      // },
-      doctors: [
-        {
-          name: '沈璐',
-          // department: '内科', 
-          // subDepartment: 
-          department: '神经内科',
-          expertise: '神经退行性疾病特别是老年期痴呆的基础与临床研究',
-          photoUrl: 'https://www.xiangya.com.cn/upload/images/2021/11/8cd959b5a3921b1d.png'
-        },
-        {
-          name: '雷光华',
-          // department: '外科',
-          // subDepartment: 
-          department: '骨科',
-          expertise: '擅长人工关节置换、翻修和关节镜微创手术',
-          photoUrl: 'https://www.xiangya.com.cn/upload/images/2021/9/aa61543ee1181e57.jpeg'
-        },
-        {
-          name: '祖雄兵',
-          // department: '外科',
-          // subDepartment: 
-          department: '泌尿外科',
-          expertise: '肾癌、膀胱癌、前列腺疾病、泌尿外科微创技术',
-          photoUrl: 'https://www.xiangya.com.cn/upload/images/2022/1/2e1d7ff02e9b5c49.jpg'
-        },
-        {
-          name: '易斌',
-          // department: '医技',
-          // subDepartment:
-          department: '检验科',
-          expertise: '肿瘤生化免疫实验诊断、临床实验室质量管理及自动化仪器应用',
-          photoUrl: 'https://www.xiangya.com.cn/upload/images/2021/1/661f25095b0c0100.png'
-        },
-        // 其他医生信息
-      ],
 
       filteredDoctors: [],
       value: 0,
@@ -201,7 +157,7 @@ export default {
 
           <!-- </va-card> -->
 
-          <va-select v-model="selectedDepartment" class="mb-6" placeholder="请选择对应科室" :options="departments" />
+          <!-- <va-select v-model="selectedDepartment" class="mb-6" placeholder="请选择对应科室" :options="departments" /> -->
           <!-- <div class="department-selector">
           <label for="firstDepartment">科室：</label>
           <select id="firstDepartment" v-model="selectedDepartment" @click="httpGetDepts" @change="updateSubDepartments">
@@ -213,8 +169,10 @@ export default {
         <div style="margin-top: 20px;">
           <div style="font-weight: bold;">按科室查询：</div>
           <va-tabs v-model="selectedDepartment" grow>
-
             <template #tabs>
+              <va-tab :name=null @click="httpGetDoctors">
+                所有科室
+              </va-tab>
               <va-tab v-for="department in departments" :key="department" :name="department">
                 {{ department }}
               </va-tab>
@@ -248,12 +206,13 @@ export default {
           <div class="center"><img :src="doctor.photoUrl" alt="Doctor Photo" class="doctor-photo" /></div>
           <div class="doctor-details">
             <div class="center" style="font-size: xx-large;font-weight: bold;margin-bottom: 10px;">{{ doctor.doctorName }} </div>
-            <div class="center"><va-chip outline square size="small">主任医师</va-chip></div>
+            <div class="center"><va-chip outline square size="small">{{ doctor.title }}</va-chip></div>
            
 
             <div class="center">科室: &nbsp; {{ doctor.department }} &nbsp;综合评分： 5.0</div>
+            <div class="center" style="font-weight: light;margin-top: 10px;">{{ doctor.skiledIn }}</div>
             
-            <div class="center"><va-button preset="primary" class="mr-6 mb-2">点击预约</va-button></div>
+            <!-- <div class="center"><va-button preset="primary" class="mr-6 mb-2">点击预约</va-button></div> -->
 
             <!-- <p>擅长领域: </p> -->
             <!-- <p>{{ doctor.expertise }}</p> -->
@@ -300,11 +259,11 @@ export default {
 }
 
 .search-input {
-  width: 50%;
+  width: 95%;
 }
 
 .search-container {
-  width: 50%;
+  width: 100%;
 }
 
 .mb-6 {
@@ -361,7 +320,7 @@ export default {
 */
 .doctor-card {
   width: 27%;
-  height: 300px;
+  height: 350px;
   margin-right: 6%;
   margin-bottom: 1%;
 }
@@ -388,6 +347,10 @@ export default {
   align-items: center;
   justify-content: center;
   margin:5px;
+  margin-bottom: 10px;
+  margin-left: 10%;
+  margin-right: 10%;
+  /* max-width: 120px; */
 }
 
 #main-page {
