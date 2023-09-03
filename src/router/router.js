@@ -105,6 +105,11 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/doctor-operator',
+    name: 'DoctorOperator',
+    component: DoctorOperator,
+  },
 ]
 
 const router = createRouter({
