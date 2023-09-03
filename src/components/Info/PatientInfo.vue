@@ -137,6 +137,7 @@ export default {
     toggleInfo() {
       this.studentId = userState.state.userID;
       this.showInfo = !this.showInfo;
+      console.log(userState.state.role);
       if (this.showInfo === true) {
         var self = this;
         axios
