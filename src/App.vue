@@ -1,13 +1,18 @@
 
 <template>
   <div id="app">
+
     <!-- <SideBar /> -->
     <router-view></router-view>
     <!-- <Header /> -->
+
   </div>
 </template>
 
 <script>
+
+export default {
+  
 // import SideBar from "./components/SideBar.vue";
 // import Header from "./components/Header.vue";
 // import PatientInfo from './components/Info/PatientInfo.vue';
@@ -21,6 +26,7 @@ export default {
     // DoctorInfo,
     // Header,
   },
+
 };
 </script>
 

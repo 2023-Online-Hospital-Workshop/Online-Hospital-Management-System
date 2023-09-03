@@ -1,14 +1,10 @@
 <template>
   <div class="avatar-dropdown">
-    <va-button
+    <va-icon
+      name="account_circle"
       @click="toggleInfo"
-      class="info-btn"
-      background-color="warning"
-      gradient
-      width="20vw"
-    >
-      <i class="material-icons">account_circle</i>&nbsp;&nbsp;个人信息
-    </va-button>
+      class="header-icon"
+    ></va-icon>
     <el-collapse-transition>
       <div v-if="showInfo" class="info-content">
         <div id="info">
@@ -70,6 +66,7 @@
   
   <script>
 import axios from "axios";
+import userState from "../../store/user.js";
 
 export default {
   name: "AdminstratorInfo",
@@ -78,7 +75,7 @@ export default {
       showInfo: false,
 
       //管理员属性
-      administratorId: "23202",
+      administratorId: "",
       name: "",
       gender: "",
       birthdate: "",
@@ -115,8 +112,11 @@ export default {
     },
     exit() {
       //接跳转到首页的路由
+      this.$router.push("/");
+      this.showInfo = !this.showInfo;
     },
     toggleInfo() {
+      this.administratorId = userState.state.userID;
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;
@@ -196,7 +196,14 @@ export default {
 };
 </script>
   
-  <style scoped>
+<style scoped>
+.header-icon {
+  cursor: pointer;
+  color: white; /* 根据需要设置颜色 */
+  font-size: 24px; /* 调整大小 */
+  margin-right: 100px; /* 如果需要，可以添加边距 */
+  align-content: center;
+}
 .avatar-dropdown {
   position: absolute;
   align-items: center;

@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="avatar-dropdown">
     <va-icon
@@ -85,7 +83,7 @@
 
 <script>
 import axios from "axios";
-
+import userState from "../../store/user.js";
 export default {
   name: "PatientInfo",
   data() {
@@ -93,7 +91,7 @@ export default {
       showInfo: false,
 
       //学生属性
-      studentId: "2151895",
+      studentId: "",
       name: "",
       gender: "",
       phone: "",
@@ -133,8 +131,11 @@ export default {
     },
     exit() {
       //接跳转到首页的路由
+      this.$router.push("/");
+      this.showInfo = !this.showInfo;
     },
     toggleInfo() {
+      this.studentId = userState.state.userID;
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;

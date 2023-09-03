@@ -1,26 +1,20 @@
 <template>
-  <SideBar></SideBar>
-  <h1>ssss</h1>
-  <div class="views" style="background-color: #002fa7">
-    <el-container>
-      <el-aside class="aside" width="auto">
-        <!-- 自定义aside组件 -->
-        <SideBar>1</SideBar>
-      </el-aside>
-    </el-container>
-  </div>
+  <SideBar />
+  <Header />
 </template>
 
 
 <script>
 import { ref, computed, onMounted } from "vue";
 import SideBar from "@/components/SideBar.vue";
+import Header from "@/components/Header.vue";
 import { useStore } from "vuex";
 
 export default {
   name: "HomePage",
   components: {
     SideBar,
+    Header,
   },
   setup() {
     const store = useStore();
