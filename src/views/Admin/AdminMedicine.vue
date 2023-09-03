@@ -60,7 +60,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10" />
               </td>
             </tr>
           </template>
@@ -142,12 +142,12 @@ export default {
       if (this.createdItem["库存"] == 0 || this.createdItem["阈值"] == 0) {
         return "";
       }
-      return this.createdItem["库存"] < this.createdItem["阈值"] ? "是" : "否";
+      return parseInt(this.createdItem["库存"]) < parseInt(this.createdItem["阈值"]) ? "是" : "否";
     },
 
     // 新项是否合法
     createdItemValid() {
-      for (var col in this.createdItem) {
+      for (let col in this.createdItem) {
         this.createdItem[col];
         if (this.createdItem[col] == "") {
           return false;
@@ -197,7 +197,7 @@ export default {
             this.tableItems.push({ // 填入表项
               "药品名": result[i].medicineName,
               "生产单位": result[i].manufacturer,
-              "生产日期": result[i].productionDate.replace("T", " "),
+              "生产日期": result[i].productionDate,
               "库存": result[i].medicineAmount,
               "阈值": result[i].thresholdValue,
               "预警": flag ? "是" : "否",
@@ -229,17 +229,15 @@ export default {
         .then(result => {
           result = JSON.parse(result); // 将结果转为JSON
           this.tableItems = []; // 清空表项
-          console.log(result);
           for (let i = 0; i < result.length; ++i) {
             this.tableItems.push({
               "药品名": result[i].medicineName,
               "生产单位": result[i].manufacturer,
-              "生产日期": result[i].productiondate.replace("T", " "),
-              "清理日期": result[i].cleanDate.replace("T", " "),
+              "生产日期": result[i].productiondate,
+              "清理日期": result[i].cleanDate,
               "清理负责管理员": result[i].cleanAdministrator,
             });
           }
-          console.log(this.tableItems);
         })
         .catch(error => console.log('error', error));
     },
@@ -250,48 +248,50 @@ export default {
       let newItem = {};
       newItem["预警"] = this.createdItemWarning;
       for (let col in this.createdItem) {
-        console.log(col);
         newItem[col] = this.createdItem[col];
         this.createdItem[col] = ""; // 重置createdItem
       }
 
       // 传入后端
-      // let myHeaders = new Headers();
-      // myHeaders.append("Content-Type", "application/json");
-      // let raw = JSON.stringify({
-      //   "medicineName": newItem["药品名"],
-      //   "manufacturer": newItem["生产单位"],
-      //   "productionDate": newItem["生产日期"].replace(" ", "T"),
-      //   "medicineAmount": newItem["库存"],
-      //   "thresholdValue": newItem["阈值"],
-      //   "administratorId": user.state.userID,
-      //   "medicineShelflife": 0,
-      //   "purchasePrice": 0,
-      //   "medicineType": "",
-      //   "applicableSymptom": "",
-      //   "specification": "",
-      //   "singledose": "",
-      //   "administration": "",
-      //   "attention": "",
-      //   "frequency": "",
-      //   "sellingprice": 0,
-      // });
-      // let requestOptions = {
-      //   method: 'POST',
-      //   headers: myHeaders,
-      //   body: raw,
-      //   redirect: 'follow'
-      // };
+      let myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      let raw = JSON.stringify({
+        "medicineName": newItem["药品名"],
+        "manufacturer": newItem["生产单位"],
+        "productionDate": newItem["生产日期"],
+        "medicineShelflife": 1, // 暂定
+        "medicineAmount": parseInt(newItem["库存"]),
+        "thresholdValue": parseInt(newItem["阈值"]),
+        "administratorId": user.state.userID,
+        "purchasePrice": 1, // 暂定
+        "medicineType": "1", // 暂定
+        "applicableSymptom": "1", // 暂定
+        "specification": "1", // 暂定
+        "singledose": "1", // 暂定
+        "administration": "1", // 暂定
+        "attention": "1", // 暂定
+        "frequency": "1", // 暂定
+        "sellingprice": 1, // 暂定
+      });
+      let requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
 
-      // fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
-      //   .then(response => response.text())
-      //   .then(result => {
-      //     if (result != "Medicine stock added successfully.") {
-      //       alert("库存已存在！");
-      //     }
-      //     this.toStock();
-      //   })
-      //   .catch(error => console.log('error', error));
+      fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          if (result != "Medicine stock added successfully.") {
+            alert("参数错误！");
+          }
+          this.toStock();
+        })
+        .catch(error => {
+          alert("数据冲突！");
+          console.log('error', error)
+        });
 
     },
 
@@ -307,14 +307,15 @@ export default {
       fetch("http://124.223.143.21/api/Medicine/CleanMedicine"
         + "?medicineName=" + this.tableItems[rowIndex]["药品名"]
         + "&manufacturer=" + this.tableItems[rowIndex]["生产单位"]
-        + "&productionDate="+ this.tableItems[rowIndex]["生产日期"]
+        + "&productionDate=" + this.tableItems[rowIndex]["生产日期"]
         + "&administratorId=" + user.state.userID, {
         method: 'PUT',
         redirect: 'follow'
       })
         .then(response => response.text())
         .then(result => {
-          if(result == "Medicine cleaned successfully.") {
+          console.log(user.state.userID);
+          if (result == "Medicine cleaned successfully.") {
             this.toStock();
           }
           else {
@@ -328,7 +329,10 @@ export default {
     confirmUpdate() {
       fetch("http://124.223.143.21/api/Medicine/UpdateStock"
         + "?medicineName=" + this.tableItems[this.editedRow]["药品名"]
-        + "&newAmount=" + this.editedStock.toString(), {
+        + "&newAmount=" + this.editedStock.toString()
+        + "&manufacturer=" + this.tableItems[this.editedRow]["生产单位"]
+        + "&productionDate=" + this.tableItems[this.editedRow]["生产日期"]
+        + "&administratorId=" + user.state.userID, {
         method: 'PUT',
         redirect: 'follow'
       }).then(response => response.text())
@@ -353,9 +357,7 @@ export default {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
-
-    // debug
-    user.state.userID = "23201";
+    console.log("adminID:", user.state.userID);
   },
 
   watch: {
