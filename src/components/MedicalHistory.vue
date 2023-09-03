@@ -48,7 +48,7 @@
         <!-- 按钮，如果是已经取消或者已经就诊完就不能取消挂号 -->
         <va-card-content class="button-row">
           <va-button :disabled="record.status != 0" color="primary" class="button"
-            @click="cancelAppointment(record, index + (this.currentPage - 1) * this.itemsPerPage)">
+            @click="cancelAppointment(record, realIndex(index))">
             取消挂号
           </va-button>
 
@@ -57,7 +57,7 @@
           </va-button>
 
           <va-popover placement="left" trigger="click">
-            <va-button :disabled="record.status != 1 || feedbacks[index].isSubmitted == true" color="primary"
+            <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
               class="feedback-button">
               反馈评价
             </va-button>
@@ -70,17 +70,17 @@
             <template #body>
               <div class="stars">
                 <span v-for="star in 5" :key="star" class="star"
-                  :class="{ active: feedbacks[index].hoverRating >= star || feedbacks[index].selectedRating >= star }"
-                  @mouseover="setHoverRating(index, star)" @mouseout="setHoverRating(index, 0)"
-                  @click.stop="setSelectedRating(index, star)">
+                  :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
+                  @mouseover="setHoverRating(realIndex(index), star)" @mouseout="setHoverRating(realIndex(index), 0)"
+                  @click.stop="setSelectedRating(realIndex(index), star)">
                   ★
                 </span>
               </div>
               <div>
-                <textarea v-model="feedbacks[index].comment" placeholder="请在此输入您的评论..." @click.stop></textarea>
+                <textarea v-model="feedbacks[realIndex(index)].comment" placeholder="请在此输入您的评论..." @click.stop></textarea>
               </div>
               <div>
-                <va-button v-if="!feedbacks[index].isSubmitted" @click="submitFeedback(index)">
+                <va-button v-if="!feedbacks[realIndex(index)].isSubmitted" @click="submitFeedback(realIndex(index))">
                   提交
                 </va-button>
               </div>
@@ -89,16 +89,16 @@
 
 
           <va-popover placement="left" trigger="click">
-            <va-button :disabled="record.status != 1 || leaveNotes[index].isSubmitted == true" color="primary"
+            <va-button :disabled="record.status != 1 || leaveNotes[realIndex(index)].isSubmitted == true" color="primary"
               class="feedback-button">
               提交假条
             </va-button>
             <template #body>
               <div>
-                <input v-model="leaveNotes[index].leaveNoteInput" type="number" placeholder="请输入请假天数" @click.stop />
+                <input v-model="leaveNotes[realIndex(index)].leaveNoteInput" type="number" placeholder="请输入请假天数" @click.stop />
               </div>
               <div>
-                <va-button color="primary" @click="submitExcuse(index)">
+                <va-button color="primary" @click="submitExcuse(realIndex(index))">
                   提交假条
                 </va-button>
               </div>
@@ -165,7 +165,7 @@ export default {
           patientBirth: item.patient.birthDate,
           doctor: item.doctor.name,
           doctorID: item.doctor.doctorId,
-          date: item.date.replace('T', ' '),
+          date: item.date.split('T')[0],
           appointmentTime: item.period,
           waitingCount: item.queueCount,
           status: item.state,
@@ -212,11 +212,13 @@ export default {
           }
         })
           .then((response) => {
+            console.log("checkComment");
+            console.log(response);
             for (let idData of response.data) {
               let tmp = idData;
               let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
               if (selectedObject) {
-                // console.log("found");
+                console.log("found");
                 selectedObject.isSubmitted = true;
               }
             }
@@ -232,6 +234,9 @@ export default {
       });
   },
   methods: {
+    realIndex(index) {
+      return index + (this.currentPage - 1) * this.itemsPerPage;
+    },
     cancelAppointment(record, index) {
       const inputModel = {
         "PatientId": record.patientID,
