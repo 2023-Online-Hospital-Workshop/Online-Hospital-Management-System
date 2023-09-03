@@ -95,7 +95,8 @@
             </va-button>
             <template #body>
               <div>
-                <input v-model="leaveNotes[realIndex(index)].leaveNoteInput" type="number" placeholder="请输入请假天数" @click.stop />
+                <input v-model="leaveNotes[realIndex(index)].leaveNoteInput" type="number" placeholder="请输入请假天数"
+                  @click.stop />
               </div>
               <div>
                 <va-button color="primary" @click="submitExcuse(realIndex(index))">
@@ -171,6 +172,11 @@ export default {
           status: item.state,
           diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${user.state.userID}${item.doctor.doctorId}${item.period}`,
         }));
+        this.allRecords.sort((record1, record2) => {
+          const date1 = new Date(record1.date);
+          const date2 = new Date(record2.date);
+          return date2 - date1; // 比较结果决定排序顺序
+        });
 
         console.log(this.allRecords);
 
