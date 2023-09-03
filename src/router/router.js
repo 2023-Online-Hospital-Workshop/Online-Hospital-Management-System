@@ -10,9 +10,10 @@ import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
 
 // import { use } from 'vue/types/umd'
-//import MedicalHistory from '../components/MedicalHistory.vue'
+import MedicalHistory from '../components/MedicalHistory.vue'
 import AppointmentSuccess from '../views/AppointmentSuccess.vue'
 import LoginPage from '../views/LoginPage.vue'
+import RegisterPage from '../views/RegisterPage.vue'
 
 
 // 路由配置项
@@ -21,6 +22,11 @@ const routes = [
     path: '/',
     name: 'LoginPage',
     component: LoginPage,
+  },
+  {
+    path: '/register',
+    name: 'RegisterPage',
+    component: RegisterPage,
   },
   {
     path: '/home',
@@ -32,13 +38,13 @@ const routes = [
     name: 'DoctorQuery',
     component: DoctorQuery,
   },
-  // {
-  //   path: '/medical-history',
-  //   name: 'MedicalHistory',
-  //   component: MedicalHistory,
-  // },
   {
-    path: '/doctor-appointment/:selectedId', // 在此处定义参数
+    path: '/medical-history',
+    name: 'MedicalHistory',
+    component: MedicalHistory,
+  },
+  {
+    path: '/doctor-appointment/:selectedDoctor/:selectedId/:selectedDep', // 在此处定义参数
     name: 'DoctorAppointment',
     component: DoctorAppointment,
   },

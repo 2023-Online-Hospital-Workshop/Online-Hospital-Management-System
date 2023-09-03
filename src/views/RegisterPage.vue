@@ -9,6 +9,7 @@
         <div class="circle" :class="{active: step === 1}" @click="changeStep(1)">1</div>
         <div class="circle" :class="{active: step === 2}" @click="changeStep(2)">2</div>
         <div class="circle" :class="{active: step === 3}" @click="changeStep(3)">3</div>
+        <div class="circle" :class="{active: step === 4}" @click="changeStep(4)">4</div>
       </div>
 
       <!-- Step 1: Name & Phone -->
@@ -40,6 +41,35 @@
 
       <!-- Step 2: Password -->
       <el-form v-if="step === 2" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
+        <el-form-item v-if="registerForm.identity == 'identity1'" label="学号">
+          <el-input type="flex" v-model="registerForm.patientId" auto-complete="off" placeholder="请输入学号"></el-input>
+        </el-form-item>
+        <el-form-item v-if="registerForm.identity == 'identity1'" label="院系">
+          <el-input type="text" v-model="registerForm.department" auto-complete="off" placeholder="请输入院系"></el-input>
+        </el-form-item>
+
+        <el-form-item v-if="registerForm.identity == 'identity2'" label="医生ID">
+          <el-input type="flex" v-model="registerForm.doctorId" auto-complete="off" placeholder="请输入医生ID"></el-input>
+        </el-form-item>
+        <el-form-item v-if="registerForm.identity == 'identity2'" label="职称">
+          <el-input type="text" v-model="registerForm.title" auto-complete="off" placeholder="请输入职称"></el-input>
+        </el-form-item>
+        <el-form-item v-if="registerForm.identity == 'identity2'" label="一级科室">
+          <el-input type="text" v-model="registerForm.firstDepartment" auto-complete="off" placeholder="请输入一级科室"></el-input>
+        </el-form-item>
+        <el-form-item v-if="registerForm.identity == 'identity2'" label="二级科室">
+          <el-input type="text" v-model="registerForm.secondDepartment" auto-complete="off" placeholder="请输入一级科室"></el-input>
+        </el-form-item>
+
+        <el-form-item v-if="registerForm.identity == 'identity3'" label="管理员ID">
+          <el-input type="flex" v-model="registerForm.patientId" auto-complete="off" placeholder="请输入管理员ID"></el-input>
+        </el-form-item>
+
+        <el-button type="primary" @click="nextStep">下一步</el-button>
+      </el-form>
+
+      <!-- Step 3: Password -->
+      <el-form v-if="step === 3" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
         <el-form-item label="手机号码">
           <el-input type="password" v-model="registerForm.phoneNumber" auto-complete="off" placeholder="请输入手机号码"></el-input>
         </el-form-item>
@@ -56,8 +86,8 @@
         <el-button type="primary" @click="nextStep">下一步</el-button>
       </el-form>
 
-      <!-- Step 3: ... (You can fill in other details here) -->
-      <el-form v-if="step === 3" ref="registerFormRef" :model="registerForm" label-position="left" label-width="100px">
+      <!-- Step 4: ... (You can fill in other details here) -->
+      <el-form v-if="step === 4" ref="registerFormRef" :model="registerForm" label-position="left" label-width="100px">
         <!-- Other form items here -->
         <el-form-item label="请输入密码">
           <el-input type="password" v-model="registerForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
@@ -90,6 +120,14 @@ export default {
         phoneNumber: '',
         verificationCode: '',
         password: '',
+        patientId: '',
+        department: '',
+        doctorId: '',
+        title: '',
+        firstDepartment: '',
+        secondDepartment: '',
+        administratorId: '',
+        identity: '',
       }
     }
   },
@@ -98,7 +136,8 @@ export default {
       this.step = step
     },
     nextStep() {
-      if (this.step == 2) {
+      let state = false;
+      if (this.step == 3) {
         console.log(this.registerForm.phoneNumber.toString())
         console.log(this.registerForm.verificationCode.toString())
         axios
@@ -111,11 +150,12 @@ export default {
         .then(response => {
           console.log(response.data)
           if (response.data) {
-            // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
-            this.$vaModal.success('验证通过');
+            // 登录成功, 可以做一些后续的处理，比如导航到其他页面等
+            this.$message.success('验证通过');
+            state = true;
           } else {
             // 登录失败
-            this.$vaModal.success('验证通过');
+            this.$message.error('验证失败');
           }
         })
         .catch(error => {
@@ -123,8 +163,91 @@ export default {
         });
       }
 
-      if (this.step < 3) {
+      if (this.step < 4 & state) {
         this.step++;
+      }
+
+      if (this.registerForm.identity == 'identity1' && this.step == 4) {
+        axios
+        .post("http://124.223.143.21:4999/api/Enroll/PatientEnroll", {
+              params: {
+                patientId: this.registerForm.patientId.toString(),
+                name: this.registerForm.name.toString(),
+                gender: this.registerForm.gender,
+                birthdate: this.registerForm.birthdate,
+                contact: this.registerForm.phoneNumber,
+                password: this.registerForm.password,
+                department: this.registerForm.department
+              },
+            })
+        .then(response => {
+          console.log(response.data)
+          if (response.data) {
+            this.$message.success('注册成功');
+            console.log('注册成功')
+          } else {
+            this.$message.error('注册失败');
+            console.log('注册失败')
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      }
+
+      if (this.registerForm.identity == 'identity2' && this.step == 4) {
+        axios
+        .post("http://124.223.143.21:4999/api/Enroll/DoctorEnroll", {
+              params: {
+                doctorId: this.registerForm.doctorId.toString(),
+                name: this.registerForm.name.toString(),
+                gender: this.registerForm.gender,
+                birthdate: this.registerForm.birthdate,
+                contact: this.registerForm.phoneNumber,
+                password: this.registerForm.password,
+                firstDepartment: this.registerForm.firstDepartment,
+                secondDepartment: this.registerForm.secondDepartment
+              },
+            })
+        .then(response => {
+          console.log(response.data)
+          if (response.data) {
+            this.$message.success('注册成功');
+            console.log('注册成功')
+          } else {
+            this.$message.error('注册失败');
+            console.log('注册失败')
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+      }
+      
+      if (this.registerForm.identity == 'identity3' && this.step == 4) {
+        axios
+        .post("http://124.223.143.21:4999/api/Enroll/AdminEnroll", {
+              params: {
+                administratorId: this.registerForm.administratorId.toString(),
+                name: this.registerForm.name.toString(),
+                gender: this.registerForm.gender,
+                birthdate: this.registerForm.birthdate,
+                contact: this.registerForm.phoneNumber,
+              },
+            })
+        .then(response => {
+          console.log(response.data)
+          if (response.data) {
+            this.$message.success('注册成功');
+            console.log('注册成功')
+          } else {
+            this.$message.error('注册失败');
+            console.log('注册失败')
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
       }
     },
     submitForm() {
