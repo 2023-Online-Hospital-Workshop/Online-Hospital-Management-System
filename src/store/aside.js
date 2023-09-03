@@ -74,6 +74,13 @@ export default {
           icon: 'list',
           url: '/Admin/doctor',
         },
+        {
+          path: '/Admin/checkin',
+          name: 'AdminCheckin',
+          label: '患者报到管理',
+          icon: 'list',
+          url: '/Admin/checkin',
+        },
       ],
 
       // {

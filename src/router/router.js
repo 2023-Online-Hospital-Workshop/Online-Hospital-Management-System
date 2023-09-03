@@ -98,12 +98,12 @@ const routes = [
         name: 'AdminDoctor',
         component: AdminDoctor,
       },
+      {
+        path: 'checkin',
+        name: 'AdminCheckin',
+        component: AdminCheckin,
+      },
     ],
-  },
-  {
-    path: '/admin-checkin',
-    name: 'AdminCheckin',
-    component: AdminCheckin,
   },
 ]
 

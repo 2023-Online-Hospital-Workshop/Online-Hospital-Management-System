@@ -145,7 +145,27 @@ export default {
       }
 
       // 传入后端
-
+      let myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      let raw = JSON.stringify({
+        "doctorId": newItem["ID"],
+        "clinicName": newItem["诊室"],
+        "dateTime": newItem["日期"],
+        "period": this.toPeriod(newItem["坐诊日期"]),
+      });
+      let requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      fetch("http://124.223.143.21/api/Consultationinfo/AddConsult", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          console.log(result);
+          this.getTable();
+        })
+        .catch(error => console.log('error', error));
 
       // 加入表项
       this.tableItems.push(newItem);

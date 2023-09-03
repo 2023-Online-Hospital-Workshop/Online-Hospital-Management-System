@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { useStore } from "vuex";
+import user from '../../store/user.js';
 export default {
   data() {
     const tabTitles = [
@@ -262,7 +262,7 @@ export default {
         "medicineShelflife": 1, // 暂定
         "medicineAmount": parseInt(newItem["库存"]),
         "thresholdValue": parseInt(newItem["阈值"]),
-        "administratorId": useStore().state.state.userID,
+        "administratorId": user.state.userID,
         "purchasePrice": 1, // 暂定
         "medicineType": "1", // 暂定
         "applicableSymptom": "1", // 暂定
@@ -308,13 +308,13 @@ export default {
         + "?medicineName=" + this.tableItems[rowIndex]["药品名"]
         + "&manufacturer=" + this.tableItems[rowIndex]["生产单位"]
         + "&productionDate=" + this.tableItems[rowIndex]["生产日期"]
-        + "&administratorId=" + useStore().state.state.userID, {
+        + "&administratorId=" + user.state.userID, {
         method: 'PUT',
         redirect: 'follow'
       })
         .then(response => response.text())
         .then(result => {
-          console.log(useStore().state.state.userID);
+          console.log(user.state.userID);
           if (result == "Medicine cleaned successfully.") {
             this.toStock();
           }
@@ -332,7 +332,7 @@ export default {
         + "&newAmount=" + this.editedStock.toString()
         + "&manufacturer=" + this.tableItems[this.editedRow]["生产单位"]
         + "&productionDate=" + this.tableItems[this.editedRow]["生产日期"]
-        + "&administratorId=" + useStore().state.state.userID, {
+        + "&administratorId=" + user.state.userID, {
         method: 'PUT',
         redirect: 'follow'
       }).then(response => response.text())
@@ -357,7 +357,7 @@ export default {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
-    console.log("adminID:", useStore().state.state.userID);
+    console.log("adminID:", user.state.userID);
   },
 
   watch: {
