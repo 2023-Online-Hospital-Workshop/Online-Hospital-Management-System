@@ -41,11 +41,11 @@
 
       <!-- Step 2: Password -->
       <el-form v-if="step === 2" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
+        <el-form-item v-if="registerForm.identity == 'identity1'" label="学校">
+          <el-input type="text" v-model="registerForm.university" auto-complete="off" placeholder="同济大学" disabled></el-input>
+        </el-form-item>
         <el-form-item v-if="registerForm.identity == 'identity1'" label="学号">
           <el-input type="flex" v-model="registerForm.patientId" auto-complete="off" placeholder="请输入学号"></el-input>
-        </el-form-item>
-        <el-form-item v-if="registerForm.identity == 'identity1'" label="院系">
-          <el-input type="text" v-model="registerForm.department" auto-complete="off" placeholder="请输入院系"></el-input>
         </el-form-item>
 
         <el-form-item v-if="registerForm.identity == 'identity2'" label="医生ID">
@@ -121,13 +121,13 @@ export default {
         verificationCode: '',
         password: '',
         patientId: '',
-        department: '',
+        university: '同济大学',
         doctorId: '',
         title: '',
         firstDepartment: '',
         secondDepartment: '',
         administratorId: '',
-        identity: '',
+        identity: 'identity1',
       }
     }
   },
@@ -163,7 +163,7 @@ export default {
         });
       }
 
-      if (this.step < 4 & state) {
+      if (this.step < 4 & !state) {
         this.step++;
       }
 
@@ -175,9 +175,9 @@ export default {
                 name: this.registerForm.name.toString(),
                 gender: this.registerForm.gender,
                 birthdate: this.registerForm.birthdate,
+                university: this.registerForm.university,
                 contact: this.registerForm.phoneNumber,
                 password: this.registerForm.password,
-                department: this.registerForm.department
               },
             })
         .then(response => {
@@ -204,9 +204,8 @@ export default {
                 gender: this.registerForm.gender,
                 birthdate: this.registerForm.birthdate,
                 contact: this.registerForm.phoneNumber,
+                secondDepartment: this.registerForm.secondDepartment,
                 password: this.registerForm.password,
-                firstDepartment: this.registerForm.firstDepartment,
-                secondDepartment: this.registerForm.secondDepartment
               },
             })
         .then(response => {
