@@ -11,7 +11,6 @@
 import { useStore } from "vuex";
 import PatientInfo from "./Info/PatientInfo.vue";
 import AdministratorInfo from "./Info/AdministratorInfo.vue";
-import userState from "../store/user.js";
 
 export default {
   name: "CommonHeader",
@@ -22,7 +21,7 @@ export default {
   setup() {
     const title = "济康同行";
     const store = useStore();
-    const role = userState.state.role;
+    const role = sessionStorage.getItem('role');
     const toggleSidebar = () => {
       console.log(store.state.state.is_expand);
       store.state.state.is_expand = !store.state.state.is_expand;

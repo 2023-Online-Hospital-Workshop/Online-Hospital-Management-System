@@ -53,11 +53,14 @@
       <!-- 弹窗 -->
       <va-modal v-model="showModal" title="编辑坐诊信息" size="small" ok-text="确认" cancel-text="取消" @ok="confirmUpdate"
         no-outside-dismiss @cancel="cancelUpdate">
-        <div v-for="col in tableColumns.slice(0, -1)" :key="col">
+        <div v-for="col in tableColumns.slice(0, -2)" :key="col">
           <br>
           <div class="modal-label">{{ col }}</div>
           <va-input v-model="editedItem[col]" />
         </div>
+        <br>
+        <div class="modal-label">坐诊时间</div>
+        <va-select v-model='editedItem["坐诊时间"]' :options="editedOptions" />
       </va-modal>
       <!-- 弹窗 -->
 
@@ -95,6 +98,7 @@ export default {
         "日期": "",
         "坐诊时间": "",
       },
+      editedOptions: [],
 
       // 分页
       perPage,
@@ -177,6 +181,20 @@ export default {
         this.editedItem[col] = this.tableItems[rowIndex][col];
       }
       this.editedRow = rowIndex;
+      this.editedOptions = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"];
+      for (let i = 0; i < this.tableItems.length; ++i) { // 遍历所有列表项
+        let flag = true; // 前几项属性是否都相同
+        for (let col in this.tableColumns.slice(0, -2)) { // 遍历所有属性
+          let att = this.tableColumns[col];
+          if (this.editedItem[att] != this.tableItems[i][att]) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) { // 筛掉所有重复的
+          this.editedOptions = this.editedOptions.filter(item => item != this.tableItems[i]["坐诊时间"]);
+        }
+      }
       this.showModal = true;
     },
 
@@ -208,7 +226,7 @@ export default {
     // 时间转换为 period
     toPeriod(time) {
       let startTime = parseInt(time.slice(0, 2));
-      return [0, 8, 9, 10, 13, 14, 15, 0, 16].findIndex(val => val == startTime);
+      return [8, 9, 10, 13, 14, 15, 16].findIndex(val => val == startTime) + 1;
     },
 
     // 确认编辑

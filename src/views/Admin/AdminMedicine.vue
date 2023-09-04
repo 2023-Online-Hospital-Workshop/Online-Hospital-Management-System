@@ -50,7 +50,6 @@
 
           <!-- 修改操作 -->
           <template v-if="curTab == 0" #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
             <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
           </template>
           <!-- 修改操作 -->
@@ -83,7 +82,6 @@
 </template>
 
 <script>
-import user from '../../store/user.js';
 export default {
   data() {
     const tabTitles = [
@@ -262,7 +260,7 @@ export default {
         "medicineShelflife": 1, // 暂定
         "medicineAmount": parseInt(newItem["库存"]),
         "thresholdValue": parseInt(newItem["阈值"]),
-        "administratorId": user.state.userID,
+        "administratorId": sessionStorage.getItem('userID'),
         "purchasePrice": 1, // 暂定
         "medicineType": "1", // 暂定
         "applicableSymptom": "1", // 暂定
@@ -279,7 +277,6 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-
       fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
         .then(response => response.text())
         .then(result => {
@@ -308,13 +305,12 @@ export default {
         + "?medicineName=" + this.tableItems[rowIndex]["药品名"]
         + "&manufacturer=" + this.tableItems[rowIndex]["生产单位"]
         + "&productionDate=" + this.tableItems[rowIndex]["生产日期"]
-        + "&administratorId=" + user.state.userID, {
+        + "&administratorId=" + sessionStorage.getItem('userID'), {
         method: 'PUT',
         redirect: 'follow'
       })
         .then(response => response.text())
         .then(result => {
-          console.log(user.state.userID);
           if (result == "Medicine cleaned successfully.") {
             this.toStock();
           }
@@ -324,40 +320,13 @@ export default {
         })
         .catch(error => console.log('error', error));
     },
-
-    // 更新库存
-    confirmUpdate() {
-      fetch("http://124.223.143.21/api/Medicine/UpdateStock"
-        + "?medicineName=" + this.tableItems[this.editedRow]["药品名"]
-        + "&newAmount=" + this.editedStock.toString()
-        + "&manufacturer=" + this.tableItems[this.editedRow]["生产单位"]
-        + "&productionDate=" + this.tableItems[this.editedRow]["生产日期"]
-        + "&administratorId=" + user.state.userID, {
-        method: 'PUT',
-        redirect: 'follow'
-      }).then(response => response.text())
-        .then(result => {
-          if (result == "Medicine stock updated successfully.") {
-            this.toStock();
-          }
-          else {
-            alert("请求非法！");
-          }
-        })
-        .catch(error => console.log('error', error));
-    },
-
-    // 取消更新
-    cancelUpdate() {
-      return;
-    },
   },
 
   mounted() {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
-    console.log("adminID:", user.state.userID);
+    console.log("adminID:", sessionStorage.getItem('userID'));
   },
 
   watch: {

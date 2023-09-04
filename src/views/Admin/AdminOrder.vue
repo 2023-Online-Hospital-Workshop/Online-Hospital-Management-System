@@ -5,10 +5,8 @@
   - 修改和删除可以添加确认提示
   - 表格可以包含姓名（根据ID自动获取）
   - 可以有新增新药品种类的功能
-  - 修改坐诊时间period可以改成下拉菜单
-  - （坐诊记录的添加和删除无效）
-  - 表最多显示10页
-  - 侧边栏遮挡输入框
+  - 新增药品有时报错 500
+  - 
  -->
 
 <template>
@@ -33,7 +31,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10"/>
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10" />
               </td>
             </tr>
           </template>
@@ -61,7 +59,6 @@
 </template>
 
 <script>
-
 export default {
   data() {
     const perPage = 12;
@@ -83,6 +80,7 @@ export default {
 
       //弹窗
       showModal: false,
+      selectedRow: 0,
       orderId: "",
       modalColumns,
       modalItems: [],
@@ -110,7 +108,7 @@ export default {
           for (let i = 0; i < result.length; ++i) {
             this.tableItems.push({
               "订单号": result[i].prescriptionId,
-              "时间": result[i].diagnoseTime,
+              "时间": result[i].diagnoseTime.replace("T", " ").slice(0, 19),
               "就诊人ID": result[i].patientId,
               "金额": result[i].totalPrice,
               "状态": result[i].paystate ? "已支付" : "未支付",
@@ -119,6 +117,9 @@ export default {
         })
         .catch(error => console.log('error', error));
     },
+
+    // 由就诊人ID获取姓名
+
 
     // 点击表行
     openModal(event) {
@@ -129,6 +130,7 @@ export default {
 
       // 从后端获取订单详细信息
       this.orderId = this.tableItems[event.itemIndex]["订单号"];
+      this.selectedRow = event.itenIndex;
       fetch("http://124.223.143.21/api/Prescription/GetDetail?prescriptionId=" + this.orderId, {
         method: 'GET',
         redirect: 'follow'
@@ -151,7 +153,7 @@ export default {
 
     // 确认订单
     confirm() {
-      // 改变订单状态
+      /* 改变订单状态 */
       fetch("http://124.223.143.21/api/Prescription/UpdatePaystate"
         + "?prescriptionId=" + this.orderId.toString(), {
         method: 'PUT',
@@ -159,25 +161,53 @@ export default {
       }).then(response => response.text())
         .then(result => {
           if (result == "该订单已支付") {
-            alert("该订单已支付！");
+            alert(result);
+            this.showModal = false; // 关闭弹窗
+            return;
           }
-          else {
 
+          /* 获取所有药品 */
+          fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
+            method: 'GET',
+            redirect: 'follow'
+          }).then(response => response.text())
+            .then(result => {
+              for (let i in this.modalItems) {
+                let flag = false;
+                for (let j = 0; j < result.length; ++j) {
+                  if (result[j].medicineName == this.modalItems[i]["药品名"]
+                      && result[j].medicineAmount >= this.modalItems[i]["数量"]) {
 
+                    /* 减少药品数量 */
+                    fetch("http://124.223.143.21/api/Medicine/UpdateStock"
+                      + "?medicineName=" + result[j].medicineName
+                      + "&newAmount=" + result[j].medicineAmount.toString()
+                      + "&manufacturer=" + result[j].manufacturer,
+                      + "&productionDate=" + result[j].productiondate,
+                      + "&administratorId=" + sessionStorage.getItem('userID'),
+                      + "&patientId=" + this.tableItems[this.selectedRow]["就诊人ID"], {
+                      method: 'PUT',
+                      redirect: 'follow'
+                    }).then(response => response.text())
+                      .then(result => console.assert(result == "Medicine stock updated successfully."))
+                      .catch(error => console.log('error', error));
+                    /* 减少药品数量 */
+                    
+                    flag = true;
+                    break;
+                  }
+                }
+                console.assert(flag);
+              }
+            })
+            .catch(error => console.log('error', error));
+          /* 获取所有药品 */
 
-            // 减少药品数量
-            for (let i in this.modalItems) {
-              this.modalItems[i]["药品名"];
-              this.modalItems[i]["数量"];
-            }
-
-
-
-            this.getTable(); // 刷新表格
-          }
+          this.getTable(); // 刷新表格
           this.showModal = false; // 关闭弹窗
         })
         .catch(error => console.log('error', error));
+      /* 改变订单状态 */
     },
 
     // 取消操作
