@@ -1,7 +1,36 @@
 <template>
+  
   <div style="margin-top:80px">
     <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(record, index) in displayedAllRecords "
       :key="index">
+      <va-modal v-model="showModal" class="feedbackBox" hide-default-actions>
+        <center>
+          <span v-for="star in 5" :key="star" class="star"
+            :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
+            @mouseover="setHoverRating(realIndex(index), star)" @mouseout="setHoverRating(realIndex(index), 0)"
+            @click.stop="setSelectedRating(realIndex(index), star)">
+            ★
+          </span>
+        </center>
+        <p style="height: 10px;"></p>
+        <va-input
+          v-model="feedbacks[realIndex(index)].comment"
+          class="mb-6"
+          type="textarea"
+          placeholder="请在此输入您的评论..."
+          :min-rows="3"
+          :max-rows="3"
+          @click.stop
+        />
+        <!-- <textarea v-model="feedbacks[realIndex(index)].comment" placeholder="请在此输入您的评论..." @click.stop></textarea> -->
+        <p>
+          <va-button style="width: 100%;"
+            @click="submitFeedback(realIndex(index))"
+          >
+            提交
+          </va-button>
+        </p>
+      </va-modal>
       <va-card class="record-card" elevation="10" color="#ECF0F1">
         <!-- 第一行 -->
         <!-- (标题) -->
@@ -56,7 +85,12 @@
             查看处方
           </va-button>
 
-          <va-popover placement="left" trigger="click">
+          <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
+              class="feedback-button" @click="showModal = !showModal"> 
+            反馈评价
+          </va-button>
+
+          <!-- <va-popover placement="left" trigger="click">
             <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
               class="feedback-button">
               反馈评价
@@ -85,7 +119,7 @@
                 </va-button>
               </div>
             </template>
-          </va-popover>
+          </va-popover> -->
 
 
           <va-popover placement="left" trigger="click">
@@ -132,6 +166,7 @@ export default {
       currentPage: 1,
       itemsPerPage: 6,
       periodDict: {},
+      showModal: false,
     };
   },
   computed: {
@@ -524,5 +559,8 @@ export default {
 .star.active {
   color: gold;
   /* 亮起的星星颜色 */
+}
+.feedbackBox {
+  box-shadow: none;
 }
 </style>
