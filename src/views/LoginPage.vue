@@ -274,7 +274,7 @@ export default {
           opacity: 0.4;
         }
         &.active {
-          background-color: #89bcef;
+          background-color: #002fa7;
           color: white;
         }
       }
