@@ -23,7 +23,7 @@
             >
               <va-list-item-section avatar>
                 <va-avatar>
-                  <img src="../assets/patient.png" alt="" />
+                  <img src="../../assets/patient.png" alt="" />
                 </va-avatar>
               </va-list-item-section>
 
@@ -286,8 +286,8 @@
 
 <script>
 import { reactive } from "vue";
-import userInfo from "../store/user.js";
-import DoctorInfo from "../components/Info/DoctorInfo.vue";
+import userInfo from "../../store/user.js";
+import DoctorInfo from "../../components/Info/DoctorInfo.vue";
 
 export default {
   name: "App",
