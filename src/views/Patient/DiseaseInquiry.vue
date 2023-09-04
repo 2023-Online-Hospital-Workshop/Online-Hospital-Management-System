@@ -170,9 +170,9 @@ export default {
         }
       },
       img:[
-      require("../assets/diseaseImg/img-1.jpg"),require("../assets/diseaseImg/img-2.jpg"),require("../assets/diseaseImg/img-3.jpg"),
-      require("../assets/diseaseImg/img-4.jpg"),require("../assets/diseaseImg/img-5.jpg"),require("../assets/diseaseImg/img-6.jpg"),
-      require("../assets/diseaseImg/img-7.jpg"),
+      require("../../assets/diseaseImg/img-1.jpg"),require("../../assets/diseaseImg/img-2.jpg"),require("../../assets/diseaseImg/img-3.jpg"),
+      require("../../assets/diseaseImg/img-4.jpg"),require("../../assets/diseaseImg/img-5.jpg"),require("../../assets/diseaseImg/img-6.jpg"),
+      require("../../assets/diseaseImg/img-7.jpg"),
       ],
       DetailData:{
         showapi_res_body: {

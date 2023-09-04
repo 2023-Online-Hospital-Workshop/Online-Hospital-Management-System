@@ -74,7 +74,7 @@
     <h1 class="va-h3">门诊预约挂号</h1>
     <div>
       <va-card color="primary" class="card" id="kp">
-        <img class="image-left" src="../assets/yuyue.png" />
+        <img class="image-left" src="../../assets/yuyue.png" />
         <div class="text">
           <va-card-content>预约科室： {{ this.$route.params.selectedDep }}</va-card-content>
           <va-card-content>同济大学校医院 {{ this.$route.params.selectedDoctor }}医生</va-card-content>
@@ -150,7 +150,7 @@
 
 <script >
 import axios from "axios";
-import UserState from "../store/user.js"
+import UserState from "../../store/user.js"
 export default {
   data() {
     return {
