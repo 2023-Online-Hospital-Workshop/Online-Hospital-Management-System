@@ -10,8 +10,9 @@
       <va-card v-for="(i, index) in leave_app" :key="index" style="margin-bottom: 30px;">
         <va-card-title>请假申请</va-card-title>
         <va-card-content>
-          申请人:
-          <!-- <br />诊断：{{ i.treatmentRecord.clinicdia }} -->
+          患者姓名:{{ i.patientName.name}}
+          <br />患者ID:{{i.patientName.patientId}}
+          <br/>诊断：{{ i.treatmentRecord.clinicdia }} -->
           <br />开始时间：{{ i.leaveApplication.leaveStartDate }}
           <br />结束时间：{{ i.leaveApplication.leaveEndDate }}
           <br />申请时间：{{ i.leaveApplication.leaveApplicationTime }}
@@ -189,7 +190,7 @@
           </el-table-column>
         </el-table>
 
-        <va-checkbox v-model="value" label="是否开具假条" />
+        同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
 
         <!-- <va-button @click="showModal2 = !showModal2">
                     确认处方
@@ -233,7 +234,7 @@ export default {
       contact: "",
       counsellor: "",
       num: 0, //当前就诊患者的序号
-      doctorId: "23003",
+      doctorId: sessionStorage.getItem('userID'),
       //doctorId: userInfo.state.userID,
       dept: "普通外科",
 
@@ -261,6 +262,7 @@ export default {
 
       //病假信息
       leave_app: [],
+      leave_day:0,
       drawer: false,
     };
   },
@@ -300,8 +302,11 @@ export default {
       return inputString.slice(0, 10);
     },
 
-    //初始化今日挂号的病人
+    //初始化
     async initial() {
+      //获取医生id
+      console.log(this.doctorId);
+      //初始化今日挂号病人
       let api =
         "http://124.223.143.21:4999/Registration/commit?doctorId=" +
         this.doctorId;
@@ -557,6 +562,18 @@ export default {
       this.total_p = this.his_rep.records.length * 10;
 
       console.log(this.his_rep);
+
+      //发送假条数据
+      var requestOptions2 = {
+        method: 'POST',
+        redirect: 'follow'
+      };
+      const url2 = "http://124.223.143.21/api/Leave/Offline?patientId=" + this.patientId + "&doctorId=" + this.doctorId + "&period=" + this.period + "&leaveDays=" + this.leave_day;
+
+      fetch(url2, requestOptions2)
+        .then(response => { console.log(response); return response.text(); })
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
     },
 
     //就诊历史翻页

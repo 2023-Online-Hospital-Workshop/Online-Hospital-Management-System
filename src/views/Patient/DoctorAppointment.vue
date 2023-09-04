@@ -152,7 +152,6 @@
 
 <script >
 import axios from "axios";
-import UserState from "../../store/user.js"
 export default {
   data() {
     return {
@@ -275,7 +274,7 @@ export default {
       }
       const url = "http://124.223.143.21/Registration/regist";
       const data = {
-        patientId: UserState.state.userID,
+        patientId: sessionStorage.getItem('userID'),
         doctorId: this.$route.params.selectedId,
         // doctorId: "23008",
         // Time: "2023-08-30T07:22:13.624Z",
@@ -287,7 +286,7 @@ export default {
       axios
         .post(url, data)
         .then((response) => {
-          const dataString = UserState.state.userID +this.$route.params.selectedId +this.formattedDate +(per + 1);
+          const dataString = sessionStorage.getItem('userID') +this.$route.params.selectedId +this.formattedDate +(per + 1);
           console.log(dataString);
           // 在axios请求成功的回调函数内部调用Generate函数
       this.Generate(dataString, () => {
