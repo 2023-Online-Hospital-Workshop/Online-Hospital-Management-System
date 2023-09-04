@@ -15,7 +15,7 @@ import AdminDoctor from '../views/Admin/AdminDoctor.vue'
 import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
 import AdminCheckin from '../views/Admin/AdminCheckin.vue'
-
+import MedicineCount from '@/views/Admin/MedicineCount.vue'
 
 // import { use } from 'vue/types/umd'
 // 登录注册页面
@@ -106,6 +106,11 @@ const routes = [
         name: 'AdminCheckin',
         component: AdminCheckin,
       },
+      {
+        path:'table',
+        name:'MedicineCount',
+        component:MedicineCount,
+      }
     ],
   },
 
