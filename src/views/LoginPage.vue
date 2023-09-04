@@ -79,7 +79,6 @@
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import userInfo from "../store/user.js";
 
 export default {
   name: "LoginPage",
