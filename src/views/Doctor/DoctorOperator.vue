@@ -3,9 +3,37 @@
     <img src="@/assets/logo.jpg" alt="Logo" class="logo" />
     <h1 class="main-title">济康同行</h1>
     <DoctorInfo />
+    <el-button type="primary" style="margin-left: 16px" @click="drawer = true">
+      请假申请
+    </el-button>
+    <el-drawer v-model="drawer" title="I am the title" :with-header="false">
+      <va-card v-for="(i, index) in leave_app" :key="index" style="margin-bottom: 30px;">
+        <va-card-title>请假申请</va-card-title>
+        <va-card-content>
+          申请人:
+          <!-- <br />诊断：{{ i.treatmentRecord.clinicdia }} -->
+          <br />开始时间：{{ i.leaveApplication.leaveStartDate }}
+          <br />结束时间：{{ i.leaveApplication.leaveEndDate }}
+          <br />申请时间：{{ i.leaveApplication.leaveApplicationTime }}
+          <br />诊断时间：{{ i.leaveApplication.diagnoseTime }}
+
+          <va-card-actions align="stretch"
+            style="justify-content: flex-end; /* 将按钮右对齐 */margin-right: 10px; /* 添加右侧间距 */">
+            <va-button icon="clear" color="danger" class="mr-3 mb-2" @click="fail(i.leaveApplication.leaveNoteId)">
+              驳回
+            </va-button>
+            <va-button icon-right="arrow_forward" icon-color="#ffffff50" class="mr-3 mb-2"
+              @click="agree(i.leaveApplication.leaveNoteId)">
+              同意
+            </va-button>
+          </va-card-actions>
+
+        </va-card-content>
+      </va-card>
+    </el-drawer>
   </header>
 
-  <div class="main">
+  <div class=" main">
     <div id="registe">
       <div style="text-align: center; margin-top: 70px; margin-bottom: 30px">
         <label id="title"> 患者挂号信息 </label>
@@ -14,13 +42,8 @@
       <div style="text-align: left">
         <va-scroll-container id="register" class="max-h-52" vertical>
           <va-list>
-            <va-list-item
-              v-for="(pt, index) in patients"
-              :key="index"
-              :id="'item' + index"
-              gradient="true"
-              class="list__item"
-            >
+            <va-list-item v-for="(pt, index) in patients" :key="index" :id="'item' + index" gradient="true"
+              class="list__item">
               <va-list-item-section avatar>
                 <va-avatar>
                   <img src="../../assets/patient.png" alt="" />
@@ -40,12 +63,7 @@
           </va-list>
         </va-scroll-container>
         <div style="text-align: center">
-          <va-button
-            id="re-button"
-            preset="primary"
-            class="mr-6 mb-2"
-            @click="nextPatient()"
-          >
+          <va-button id="re-button" preset="primary" class="mr-6 mb-2" @click="nextPatient()">
             叫号
           </va-button>
         </div>
@@ -68,12 +86,7 @@
         </tr>
         <tr>
           <td>初诊/复诊：</td>
-          <va-button
-            @click="getHistory()"
-            type="submit"
-            preset="primary"
-            class="mt-3"
-          >
+          <va-button @click="getHistory()" type="submit" preset="primary" class="mt-3">
             获得就诊历史
           </va-button>
           <td>
@@ -81,12 +94,7 @@
               查看就诊历史
             </va-button>
           </td>
-          <va-modal
-            v-model="showModal"
-            fullscreen
-            :message="message"
-            hide-default-actions
-          >
+          <va-modal v-model="showModal" fullscreen :message="message" hide-default-actions>
             <div class="diagnose">
               <h1 class="myh1">同济大学校医院病人就诊历史</h1>
               <label>日期：{{ his_rep.records[p].record.diagnoseTime }} </label>
@@ -117,11 +125,7 @@
                   <br /><br />处方：
                 </div>
                 <div class="example-pagination-block">
-                  <el-pagination
-                    @current-change="changeReport"
-                    layout="prev, pager, next"
-                    :total="total_p"
-                  />
+                  <el-pagination @current-change="changeReport" layout="prev, pager, next" :total="total_p" />
                 </div>
               </table>
               <label> </label>
@@ -131,60 +135,20 @@
       </table>
       <va-form class="w-[300px]" tag="form" @submit.prevent="enter">
         主诉：
-        <input
-          type="text"
-          v-model="problem"
-          name="firstname"
-          placeholder="请输入"
-        />
+        <input type="text" v-model="problem" name="firstname" placeholder="请输入" />
         <br /><br />现病史：
-        <input
-          type="text"
-          v-model="illness"
-          name="firstname"
-          placeholder="请输入"
-        />
+        <input type="text" v-model="illness" name="firstname" placeholder="请输入" />
         <br /><br />既往史：
-        <input
-          type="text"
-          v-model="past_illness"
-          name="firstname"
-          placeholder="请输入"
-        />
-        <br /><br />体征：<input
-          type="text"
-          v-model="symptom"
-          name="firstname"
-          placeholder="请输入"
-        />
+        <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
+        <br /><br />体征：<input type="text" v-model="symptom" name="firstname" placeholder="请输入" />
         <br /><br />门诊诊断：
-        <input
-          type="text"
-          v-model="diagnose"
-          name="firstname"
-          placeholder="请输入"
-        />
+        <input type="text" v-model="diagnose" name="firstname" placeholder="请输入" />
         <br /><br />诊疗建议:
-        <input
-          type="text"
-          v-model="prescription"
-          name="firstname"
-          placeholder="请输入"
-        />
+        <input type="text" v-model="prescription" name="firstname" placeholder="请输入" />
         <br /><br />处方:
 
-        <el-select
-          v-model="select_medi"
-          @change="selectMedicine()"
-          filterable
-          placeholder="从药品库中选择药品"
-        >
-          <el-option
-            v-for="(item, index) in stocks"
-            :key="index"
-            :label="item"
-            :value="item"
-          >
+        <el-select v-model="select_medi" @change="selectMedicine()" filterable placeholder="从药品库中选择药品">
+          <el-option v-for="(item, index) in stocks" :key="index" :label="item" :value="item">
           </el-option>
         </el-select>
         <el-table :data="medicine" stripe style="width: 100%" max-height="500">
@@ -194,68 +158,33 @@
           </el-table-column>
           <el-table-column label="单次剂量" width="120">
             <template #default="scope">
-              <input
-                class="input2"
-                type="text"
-                v-model="all_med[scope.$index].single"
-                name="firstname"
-                placeholder=""
-              />
+              <input class="input2" type="text" v-model="all_med[scope.$index].single" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="用法" width="70">
             <template #default="scope">
-              <input
-                class="input2"
-                type="text"
-                v-model="all_med[scope.$index].ad"
-                name="firstname"
-                placeholder=""
-              />
+              <input class="input2" type="text" v-model="all_med[scope.$index].ad" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="频率" width="100">
             <template #default="scope">
-              <input
-                class="input2"
-                type="text"
-                v-model="all_med[scope.$index].fre"
-                name="firstname"
-                placeholder=""
-              />
+              <input class="input2" type="text" v-model="all_med[scope.$index].fre" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="数量" width="110">
             <template #default="scope">
-              <el-input-number
-                v-model="all_med[scope.$index].count"
-                :min="1"
-                :max="30"
-                size="large"
-                controls-position="right"
-                style="width: 70px"
-              ></el-input-number>
+              <el-input-number v-model="all_med[scope.$index].count" :min="1" :max="30" size="large"
+                controls-position="right" style="width: 70px"></el-input-number>
             </template>
           </el-table-column>
           <el-table-column label="注意事项" width="140">
             <template #default="scope">
-              <input
-                class="input2"
-                type="text"
-                v-model="all_med[scope.$index].tips"
-                name="firstname"
-                placeholder=""
-              />
+              <input class="input2" type="text" v-model="all_med[scope.$index].tips" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="编辑" width="80">
             <template #default="scope">
-              <el-button
-                size="small"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
-              >
+              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -286,7 +215,7 @@
 
 <script>
 import { reactive } from "vue";
-import userInfo from "../../store/user.js";
+//import userInfo from "../../store/user.js";
 import DoctorInfo from "../../components/Info/DoctorInfo.vue";
 
 export default {
@@ -304,7 +233,8 @@ export default {
       contact: "",
       counsellor: "",
       num: 0, //当前就诊患者的序号
-      doctorId: userInfo.state.userID,
+      doctorId: "23003",
+      //doctorId: userInfo.state.userID,
       dept: "普通外科",
 
       //处方药品
@@ -329,7 +259,9 @@ export default {
       p: 0, //当前显示的就诊历史页面
       total_p: 0, //就诊历史总页面数量
 
-      test: userInfo.state.userID,
+      //病假信息
+      leave_app: [],
+      drawer: false,
     };
   },
   components: {
@@ -360,6 +292,14 @@ export default {
     this.initial(); //初始化
   },
   methods: {
+    time(inputString) {
+      if (typeof inputString !== 'string' || inputString.length === 0) {
+        return ''; // 如果输入为空或不是字符串，则返回空字符串
+      }
+
+      return inputString.slice(0, 10);
+    },
+
     //初始化今日挂号的病人
     async initial() {
       let api =
@@ -394,6 +334,27 @@ export default {
         }
       } catch (error) {
         console.error("Error:", error);
+      }
+
+      //获得病假申请
+      const url3 = "http://124.223.143.21/api/Leave/GetLeaveApplicationsByDoctor?doctorId=" + this.doctorId;
+      var requestOptions3 = {
+        method: "GET",
+        redirect: "follow",
+      };
+
+      try {
+        const response = await fetch(url3, requestOptions3);
+        const result = await response.json();
+        this.leave_app = result;
+      } catch (error) {
+        console.log("error", error);
+      }
+      for (let i = 0; i < this.leave_app.length; i++) {
+        this.leave_app[i].leaveApplication.leaveApplicationTime = this.time(this.leave_app[i].leaveApplication.leaveApplicationTime);
+        this.leave_app[i].leaveApplication.leaveStartDate = this.time(this.leave_app[i].leaveApplication.leaveStartDate);
+        this.leave_app[i].leaveApplication.leaveEndDate = this.time(this.leave_app[i].leaveApplication.leaveEndDate);
+        //this.leave_app[i].treatmentRecord.diagnoseTime = this.time(this.leave_app[i].treatmentRecord.diagnoseTime);
       }
     },
 
@@ -603,13 +564,42 @@ export default {
       //np是newpage
       this.p = np - 1;
     },
+
+    //同意或反对病假申请
+    agree(id) {
+      var requestOptions = {
+        method: 'PUT',
+        redirect: 'follow'
+      };
+      console.log(id);
+      const url = "http://124.223.143.21/api/Leave/ratify?leaveNoteId=" + id + "&status=1";
+      fetch(url, requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+
+      this.leave_app.shift();
+    },
+    fail(id) {
+      var requestOptions = {
+        method: 'PUT',
+        redirect: 'follow'
+      };
+      const url = "http://124.223.143.21/api/Leave/ratify?leaveNoteId=" + id + "&status=0";
+      fetch(url, requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+      this.leave_app.shift();
+    }
   },
 };
 </script>
   
 <style scoped>
 .header {
-  position: fixed; /* 使其始终在屏幕顶部 */
+  position: fixed;
+  /* 使其始终在屏幕顶部 */
   top: 0;
   left: 0;
   right: 0;
@@ -617,24 +607,41 @@ export default {
   align-items: center;
   justify-content: space-between;
   background-color: #002fb0;
-  height: 60px; /* 为Header设置一个固定高度 */
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16); /* 为Header添加轻微的阴影效果 */
-  z-index: 100; /* 确保Header始终位于其他内容之上 */
-  padding: 0 20px; /* 两侧添加一些边距 */
+  height: 60px;
+  /* 为Header设置一个固定高度 */
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  /* 为Header添加轻微的阴影效果 */
+  z-index: 100;
+  /* 确保Header始终位于其他内容之上 */
+  padding: 0 20px;
+  /* 两侧添加一些边距 */
 }
+
+* {
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+  /* 应用字体 */
+}
+
 .logo {
-  height: 40px; /* Adjust the height as necessary */
-  margin-right: 10px; /* Adjust the margin as necessary */
+  height: 40px;
+  /* Adjust the height as necessary */
+  margin-right: 10px;
+  /* Adjust the margin as necessary */
 }
 
 .main-title {
   flex-grow: 1;
   text-align: center;
-  font-size: 24px; /* 增大字体大小 */
-  margin: 0; /* 移除所有边距 */
-  color: white; /* 设置标题颜色为白色 */
+  font-size: 24px;
+  /* 增大字体大小 */
+  margin: 0;
+  /* 移除所有边距 */
+  color: white;
+  /* 设置标题颜色为白色 */
 }
-.navbar-item-slot > a {
+
+.navbar-item-slot>a {
   border: 1px dashed var(--va-secondary);
   padding: 6px 10px;
   color: aliceblue;
@@ -667,7 +674,7 @@ export default {
   font-weight: bold;
 }
 
-.list__item + .list__item {
+.list__item+.list__item {
   margin-top: 20px;
 }
 
