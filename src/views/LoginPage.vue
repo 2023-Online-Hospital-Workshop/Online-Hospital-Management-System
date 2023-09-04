@@ -38,18 +38,17 @@
           ></el-input>
         </el-form-item>
 
-        <el-radio-group v-model="roleCheckBox" size="small" class="radio-group">
-          <el-radio-button
-            class="radio-item"
+        <div class="rec-group">
+          <div class="rec"
             v-for="(role_text, role_index) in roles_text"
             :label="role_text"
             :key="role_index"
-            @change="roleChange(role_index)"
-            :class="{ 'is-active': role_index === role_num }"
+            @click="roleChange(role_index)"
+            :class="{ active: role_index === role_num }"
           >
             {{ role_text }}
-          </el-radio-button>
-        </el-radio-group>
+          </div>
+        </div>
 
         <div class="button-group">
           <el-button type="primary" @click="login">登录</el-button>
@@ -79,7 +78,6 @@
 import axios from "axios";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
-import userInfo from "../store/user.js";
 
 export default {
   name: "LoginPage",
@@ -153,9 +151,9 @@ export default {
               path: AfterLogin[this.role_num],
             });
 
-            //hcr更改，存储用户账号信息到user.js
-            userInfo.state.userID = this.loginForm.username;
-            userInfo.state.role = this.role_num;
+            sessionStorage.setItem("userID", this.loginForm.username)
+            sessionStorage.setItem("role", this.role_num)
+            
           } else {
             // 登录失败
             console.error("登录失败");
@@ -254,21 +252,31 @@ export default {
       }
     }
 
-    .radio-group {
+    .rec-group {
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
-      .el-radio-button {
-        border-color: #002fa7; /* Klein Blue */
-        color: #002fa7; /* Klein Blue */
+      .rec {
+        display: flex;
+        background-color: white;
+        width: 70px;
+        height: 30px;
+        border-radius: 10%;
+        color: #2c3e50; /* Klein Blue */
+        align-items: center;
+        justify-content: center;
+        font-size: 1px;
+        margin: 0 10px;
+        border: 1px solid #dae4f4;
         &:hover {
-          background-color: lighten(#002fa7, 10%);
+          background-color: #89bcef;
+          color: white;
+          opacity: 0.4;
         }
-      }
-      .el-radio-button.is-active {
-        background-color: #002fa7; /* Klein Blue */
-        border-color: #002fa7; /* Klein Blue */
-        color: white;
+        &.active {
+          background-color: #002fa7;
+          color: white;
+        }
       }
     }
 

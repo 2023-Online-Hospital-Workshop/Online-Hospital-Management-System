@@ -1,13 +1,9 @@
 <template>
-  <el-container>
-    <SideBar :role="2"></SideBar>
-    <el-container>
-    </el-container>
-    <el-header>
-      <Header></Header>
-    </el-header>
-    <router-view></router-view>
-  </el-container>
+  <SideBar :role="2"/>
+  <el-header>
+    <Header/>
+  </el-header>
+  <router-view/>
 </template>
 
 <script>
