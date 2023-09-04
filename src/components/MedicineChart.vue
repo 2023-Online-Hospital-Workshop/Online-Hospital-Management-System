@@ -36,7 +36,7 @@
     <va-data-table class="table" :items="items" :columns="columns" striped>
       <template #cell(actions)="{ row }">
         <va-button
-          @click="toggleRowDetails(row)"
+          @click="toggleRowDetails(row.initialIndex)"
           :icon="
             expandedRow === row.initialIndex ? 'va-arrow-up' : 'va-arrow-down'
           "
@@ -47,16 +47,19 @@
         </va-button>
       </template>
       <template #expandableRow="{ rowData }">
-        <div class="graph" v-if="getFolder(rowData)">
-          <div id="chart" style="width: 45vw; height: 40vh"></div>
+        <div class="graph" v-if="true">
+          <div
+            :id="'chart-' + rowData.initialIndex"
+            style="width: 45vw; height: 40vh"
+          ></div>
           <p>{{ getTimelineData(rowData) }}</p>
         </div>
       </template>
     </va-data-table>
   </div>
 </template>
-  
-<script>
+    
+  <script>
 import axios from "axios";
 import * as echarts from "echarts";
 
@@ -64,8 +67,7 @@ export default {
   data() {
     return {
       expandedRow: null,
-      selectedMedicineName: null,
-      selectManufacturer: null,
+
       totIncome: 0,
       totOutcome: 0,
       medicineData: [],
@@ -126,37 +128,27 @@ export default {
     profitColor() {
       return this.profit >= 0 ? "#3CB371" : "#DC143C";
     },
+    areaStyleColor() {
+      return new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        {
+          offset: 0,
+          color: "rgb(0, 47, 176)",
+        },
+        {
+          offset: 1,
+          color: "#ffffff",
+        },
+      ]);
+    },
   },
   created() {
     this.getMedicineData();
     this.getMedicineDataIntial();
   },
   methods: {
-    toggleRowDetails(row) {
-      row.toggleRowDetails();
-      var index = row.initialIndex;
-
-      if (this.expandedRow === index) {
-        this.expandedRow = null;
-        this.selectManufacturer = null;
-        this.selectedMedicineName = null;
-      } else {
-        this.expandedRow = index;
-        this.selectedMedicineName = row.itemKey.药品名称;
-        this.selectManufacturer = row.itemKey.制药公司;
-      }
-    },
-    getFolder(rowData) {
-      console.log(
-        this.selectedMedicineName,
-        rowData.药品名称,
-        rowData.制药公司 == this.selectManufacturer
-      );
-      console.log(rowData.药品名称, rowData.制药公司);
-      return (
-        rowData.药品名称 === this.selectedMedicineName &&
-        rowData.制药公司 === this.selectManufacturer
-      );
+    toggleRowDetails(index) {
+      this.expandedRow = this.expandedRow === index ? null : index;
+      console.log(this.expandedRow);
     },
     getMedicineData() {
       var self = this;
@@ -165,7 +157,6 @@ export default {
         .then(function (response) {
           self.purchaseStatistics = response.data.purchaseStatistics;
           self.sellStatistics = response.data.sellStatistics;
-          console.log(self.purchaseStatistics, self.sellStatistics);
 
           var items = [];
 
@@ -244,7 +235,6 @@ export default {
         .then(function (response) {
           self.purchaseStatistics = response.data.purchaseStatistics;
           self.sellStatistics = response.data.sellStatistics;
-          console.log(self.purchaseStatistics, self.sellStatistics);
 
           var aggregatedData = [];
 
@@ -310,6 +300,7 @@ export default {
         });
     },
     getTimelineData(rowData) {
+      console.log("getTimelineData");
       const temp = this.timeline.filter(
         (item) =>
           item.manufacturer === rowData.制药公司 &&
@@ -324,21 +315,19 @@ export default {
         data.push({
           date: item.date,
           sellIncome: item.sellIncome,
-          purchaseCost: item.purchaseCost,
-          difference: item.sellIncome - item.purchaseCost,
         });
       });
       console.log(data);
-
       this.$nextTick(() => {
-        var chartDom = document.getElementById("chart");
+        var chartDom = document.getElementById("chart-" + rowData.id);
         if (chartDom) {
           // 初始化图表
           var myChart = echarts.init(chartDom);
           // 设置图表选项
           var option = {
-            legend: {
-              data: ["采购金额", "销售金额", "营收"],
+            title: {
+              left: "center",
+              text: "走势图",
             },
             tooltip: {},
             xAxis: {
@@ -350,28 +339,16 @@ export default {
             },
             series: [
               {
-                name: "采购金额",
-                data: data.map((item) => item.purchaseCost),
-                type: "bar",
-                itemStyle: {
-                  color: "#83bff6",
-                },
-              },
-              {
-                name: "销售金额",
                 data: data.map((item) => item.sellIncome),
                 type: "bar",
+                name: "销售收入",
+                symbol: "none",
+                sampling: "lttb",
                 itemStyle: {
-                  color: "#188df0",
+                  color: "#000080",
                 },
-              },
-
-              {
-                name: "营收",
-                data: data.map((item) => item.difference),
-                type: "line",
-                itemStyle: {
-                  color: "rgb(0, 47, 176)",
+                areaStyle: {
+                  color: this.areaStyleColor,
                 },
               },
             ],
@@ -394,7 +371,7 @@ export default {
   },
 };
 </script>
-<style scoped>
+  <style scoped>
 .title {
   font-size: 5vh;
   text-align: center;
@@ -423,9 +400,7 @@ export default {
   --va-data-table-no-data-text-align: center;
 }
 .graph {
-  margin-left: 25vw;
-  background-color: rgb(250, 250, 250);
-  margin-right: 20vw;
+  margin-left: 30vw;
 }
 .va-data-table__table-tr--expanded td {
   background: var(--va-background-border);
