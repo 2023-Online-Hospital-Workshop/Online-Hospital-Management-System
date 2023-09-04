@@ -153,9 +153,9 @@ export default {
               path: AfterLogin[this.role_num],
             });
 
-            //hcr更改，存储用户账号信息到user.js
-            userInfo.state.userID = this.loginForm.username;
-            userInfo.state.role = this.role_num;
+            sessionStorage.setItem("userID", this.loginForm.username)
+            sessionStorage.setItem("role", this.role_num)
+            
           } else {
             // 登录失败
             console.error("登录失败");
