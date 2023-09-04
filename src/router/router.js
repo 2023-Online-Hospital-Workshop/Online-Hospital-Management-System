@@ -23,7 +23,7 @@ import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 
 // 医生页面
-import DoctorOperator from '../views/DoctorOperator.vue'
+import DoctorOperator from '../views/Doctor/DoctorOperator.vue'
 
 // 路由配置项
 const routes = [
