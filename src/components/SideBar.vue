@@ -1,13 +1,8 @@
 <template>
-  <div class="mb-6 h-64 sidebar" :style="{ backgroundColor: 'transparent'}">
+  <div class="mb-6 h-64 sidebar" :style="{ backgroundColor: 'transparent', 'pointer-events': is_expand ? 'none' : 'auto' }">
     <va-sidebar color="primary" gradient minimized-width="64px" :width="is_expand ? '0px' : '200px'">
-      <va-sidebar-item
-        @click="clickMenu(item)"
-        v-for="item in noChildren"
-        :index="item.path"
-        :key="item.path"
-        active-color="backgroundPrimary"
-      >
+      <va-sidebar-item @click="clickMenu(item)" v-for="item in noChildren" :index="item.path" :key="item.path"
+        active-color="backgroundPrimary">
         <va-sidebar-item-content>
           <va-icon :name="item.icon" />
           <va-sidebar-item-title>
@@ -27,13 +22,16 @@ import { useStore } from "vuex";
 
 export default {
   name: "SideBar",
-  setup() {
+  props: {
+    role: String,
+  },
+  setup(props) {
     const store = useStore();
     const router = useRouter();
 
     const isCollapse = computed(() => store.state.state.isCollapse);
-    const menu = computed(() => store.state.state.aside_data);
-    const aside_title = computed(() => store.state.state.aside_title);
+    const menu = computed(() => store.state.state.aside_data[props.role]);
+    const aside_title = computed(() => store.state.state.aside_title[props.role]);
     const is_expand = ref(store.state.state.is_expand);
 
     const noChildren = computed(() => {
@@ -65,7 +63,8 @@ export default {
     watch(
       () => store.state.state.is_expand,
       (newValue) => {
-        is_expand.value = newValue;})
+        is_expand.value = newValue;
+      })
     return {
       isCollapse,
       menu,
@@ -110,7 +109,8 @@ export default {
 }
 
 * {
-  font-family: AliRegular; /* 应用字体 */
+  font-family: AliRegular;
+  /* 应用字体 */
   --va-font-family: AliRegular;
 }
 </style>

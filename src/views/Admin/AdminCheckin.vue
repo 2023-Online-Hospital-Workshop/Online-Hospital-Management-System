@@ -80,8 +80,10 @@ export default defineComponent({
 
     //自动扫码挂号
     sendData() {
+
       const scannedData = this.scannedDataInput;
       console.log(scannedData);
+
       // 检查是否有扫描到数据
       if (scannedData) {
         // 假设每个字段的长度是固定的
@@ -107,9 +109,10 @@ export default defineComponent({
             console.log('报道成功');
 
             this.showModal = true;
+
           })
           .catch(function (error) {
-            alert("报道失败！");
+            alert("报到失败！");
             console.error("Error message:", error.message);
             if (error.message == "Network Error") return;
             if (error.response) {
@@ -124,7 +127,7 @@ export default defineComponent({
         alert('请先扫描数据！');
       }
     },
-
+    
     //获取今日对应id用户的全部挂号信息
     FetchData() {
       // 发送请求
@@ -260,7 +263,6 @@ export default defineComponent({
 <style scoped>
 #main-page {
   margin-top: 5%;
-
 }
 
 

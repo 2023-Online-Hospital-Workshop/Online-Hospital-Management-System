@@ -1,15 +1,14 @@
 <!--  
   问题：
-  1. 前后端交互
-  2. 表格大小无法适配所有分辨率
-  3. 输入框可以添加输入类型限定
-  4. sidebar和header和用户端同步
-  5. 修改和删除可以添加确认提示
-  6. 表格字体大小可以再调整
-  7. 坐诊信息应该不包含科室？
-  8. 输入ID应该自动生成姓名
-  9. 新药品种类功能
-  ...
+  - 表格大小无法适配所有分辨率
+  - 输入框可以添加输入类型限定
+  - 修改和删除可以添加确认提示
+  - 表格可以包含姓名（根据ID自动获取）
+  - 可以有新增新药品种类的功能
+  - 修改坐诊时间period可以改成下拉菜单
+  - （坐诊记录的添加和删除无效）
+  - 表最多显示10页
+  - 侧边栏遮挡输入框
  -->
 
 <template>
@@ -34,7 +33,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10"/>
               </td>
             </tr>
           </template>
@@ -107,12 +106,11 @@ export default {
       }).then(response => response.text())
         .then(result => {
           result = JSON.parse(result);
-          console.log(result);
           this.tableItems = [];
           for (let i = 0; i < result.length; ++i) {
             this.tableItems.push({
               "订单号": result[i].prescriptionId,
-              "时间": result[i].diagnoseTime.replace("T", " "),
+              "时间": result[i].diagnoseTime,
               "就诊人ID": result[i].patientId,
               "金额": result[i].totalPrice,
               "状态": result[i].paystate ? "已支付" : "未支付",
@@ -153,9 +151,6 @@ export default {
 
     // 确认订单
     confirm() {
-      // 减少药品数量
-
-
       // 改变订单状态
       fetch("http://124.223.143.21/api/Prescription/UpdatePaystate"
         + "?prescriptionId=" + this.orderId.toString(), {
@@ -166,7 +161,20 @@ export default {
           if (result == "该订单已支付") {
             alert("该订单已支付！");
           }
-          this.getTable(); // 刷新表格
+          else {
+
+
+
+            // 减少药品数量
+            for (let i in this.modalItems) {
+              this.modalItems[i]["药品名"];
+              this.modalItems[i]["数量"];
+            }
+
+
+
+            this.getTable(); // 刷新表格
+          }
           this.showModal = false; // 关闭弹窗
         })
         .catch(error => console.log('error', error));
@@ -180,7 +188,7 @@ export default {
   },
 
   mounted() {
-    // 初始化表格和 filteredCount
+    // 初始化表格和filteredCount
     this.getTable();
     this.filteredCount = this.tableItems.length;
   },
