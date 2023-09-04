@@ -8,7 +8,7 @@
 
 .image-left {
   width: 140px;
-  height: 100px;
+  min-height: 140px;
 
 }
 
@@ -64,10 +64,8 @@
   <template>
     <va-modal v-model="showModal" ok-text="确认" cancel-text="取消">
       <p></p>
-      <p>
-        {{ alertText }}
-      </p>
-      <p><img :src="imgUrl" alt="图片"></p>
+      <p v-html="alertText"></p>
+      <p style="text-align: center;"><img :src="imgUrl" alt="图片"></p>
     </va-modal>
   </template>
   <div id="main-page" class="parent-box">
@@ -77,8 +75,8 @@
         <img class="image-left" src="../../assets/yuyue.png" />
         <div class="text">
           <va-card-content>预约科室： {{ this.$route.params.selectedDep }}</va-card-content>
-          <va-card-content>同济大学校医院 {{ this.$route.params.selectedDoctor }}医生</va-card-content>
-          <!-- <va-card-content>医生姓名： {{ this.$route.params.selectedDoctor }}</va-card-content> -->
+          <va-card-content>同济大学校医院 &nbsp;{{ this.$route.params.selectedDoctor }}&nbsp;医生</va-card-content>
+          <va-card-content>医生职称： {{ this.$route.params.doctorTitle }}</va-card-content>
         </div>
       </va-card>
     </div>
@@ -99,13 +97,13 @@
         <div class="title">预约挂号须知</div>
         <va-card-content>
           <span
-            style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为{{ fee[this.$route.params.doctorTitle] }}元，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
+            style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为<span style="font-weight: bold;">{{ fee[this.$route.params.doctorTitle] }}元</span>，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
           <span
-            style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消（上午号11:00前，下午号17:00前）<br><br></span>
+            style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消<br><br></span>
           <span
-            style="font-size: large;margin:5px;line-height: 20px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理，以免影响您下次预约和就诊<br><br></span>
+            style="font-size: large;margin:5px;line-height: 20px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理<br><br></span>
             <span
-            style="font-size: large;margin:5px;line-height: 20px;">4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处进行报道<br><br></span>
+            style="font-size: large;margin:5px;line-height: 20px;">4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处出示预约二维码进行报道<br><br></span>
         </va-card-content>
       </va-card>
 
@@ -171,10 +169,11 @@ export default {
       alertText: "",
       imgUrl:"",
       fee: {
-        "主任医师": "25",
-        "主任技师": "25",
-        "副主任医师": "15",
-        "副主任技师": "15",
+        "主任医师": "9",
+        "副主任医师": "7",
+        "主治医师": "6",
+        "住院医师":"4",
+        "医师": "4",
       },
       DoctorInfo:"",
       DoctorFee:"",
@@ -293,7 +292,7 @@ export default {
           // 在axios请求成功的回调函数内部调用Generate函数
       this.Generate(dataString, () => {
         console.log(this.imgUrl); // 在这里访问imgUrl
-        this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data +"\n预约二维码地址："+ this.imgUrl;
+        this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data +"<br>预约二维码：";
         this.showModal = true;
       });
         })
@@ -433,6 +432,7 @@ export default {
 <style scoped>
 #main-page {
   margin-right: 20%;
+  margin-left:17%
 }
 
 #kp {
