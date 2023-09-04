@@ -73,6 +73,7 @@ export default {
   line-height: 50px;
   text-align: center;
 }
+
 * {
   font-family: AliRegular; /* 应用字体 */
   --va-font-family: AliRegular;
