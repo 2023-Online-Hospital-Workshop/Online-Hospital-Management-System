@@ -67,7 +67,6 @@
   
   <script>
 import axios from "axios";
-import userState from "../../store/user.js";
 
 export default {
   name: "AdminstratorInfo",
@@ -117,7 +116,7 @@ export default {
       this.showInfo = !this.showInfo;
     },
     toggleInfo() {
-      this.administratorId = userState.state.userID;
+      this.administratorId = sessionStorage.getItem("userID");
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;
