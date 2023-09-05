@@ -8,7 +8,7 @@ import DoctorAppointment from '../views/Patient/DoctorAppointment.vue'
 import DiseaseInquiry from '../views/Patient/DiseaseInquiry.vue'
 import MedicalHistory from '../components/MedicalHistory.vue'
 import AppointmentSuccess from '../views/Patient/AppointmentSuccess.vue'
-import CallService from '../views/Patient/CallService.vue'
+import AskAI from '../views/Patient/AskAI.vue'
 
 // 管理员页面
 import AdminMedicine from '../views/Admin/AdminMedicine.vue'
@@ -16,7 +16,7 @@ import AdminDoctor from '../views/Admin/AdminDoctor.vue'
 import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
 import AdminCheckin from '../views/Admin/AdminCheckin.vue'
-import MedicineCount from '@/views/Admin/MedicineCount.vue'
+
 
 // import { use } from 'vue/types/umd'
 // 登录注册页面
@@ -78,10 +78,10 @@ const routes = [
         component: AppointmentSuccess,
       },
       {
-        path: 'call-service',
-        name: 'CallService',
-        component: CallService,
-      },
+        path: 'ask-ai',
+        name: 'AskAI',
+        component: AskAI,
+      }
     ]
   },
 
@@ -112,11 +112,6 @@ const routes = [
         name: 'AdminCheckin',
         component: AdminCheckin,
       },
-      {
-        path:'table',
-        name:'MedicineCount',
-        component:MedicineCount,
-      }
     ],
   },
 
