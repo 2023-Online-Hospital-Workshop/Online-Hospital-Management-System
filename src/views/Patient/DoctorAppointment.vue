@@ -96,26 +96,24 @@
       <va-card square outlined stripe class="promptcard">
         <div class="title">预约挂号须知</div>
         <va-card-content>
-          <span
-            style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为<span style="font-weight: bold;">{{ fee[this.$route.params.doctorTitle] }}元</span>，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
-          <span
-            style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消<br><br></span>
+          <span style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为<span style="font-weight: bold;">{{
+            fee[this.$route.params.doctorTitle] }}元</span>，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
+          <span style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消<br><br></span>
           <span
             style="font-size: large;margin:5px;line-height: 20px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理<br><br></span>
-            <span
+          <span
             style="font-size: large;margin:5px;line-height: 20px;">4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处出示预约二维码进行报道<br><br></span>
         </va-card-content>
       </va-card>
 
       <div class="flex gap-5 flex-wrap date-picker">
-        <va-date-picker stateful v-model="value" @click="fetchData(value)" class="date"
-        :allowed-days="(date) => (workday.indexOf(String(date.getDate())) !== -1 
-                                  && date.getDate() >= currentDate 
-                                  && date.getMonth() == currentMonth) 
-                                || date.getMonth() > currentMonth" />
+        <va-date-picker stateful v-model="value" @click="fetchData(value)" class="date" :allowed-days="(date) => (workday.indexOf(String(date.getDate())) !== -1
+          && date.getDate() >= currentDate
+          && date.getMonth() == currentMonth)
+          || date.getMonth() > currentMonth" />
       </div>
     </div>
-    <div class="button-groups">
+    <div class="button-groups" v-if="isWorkday()">
       <va-button-group preset="primary" class="time">
         <div style="display: inline-block;margin-top: 30px;font-weight: bold;">上午：</div>
         <va-button id="time1" class="time-slot" @click="onButtonClick(0)" hover-behavior="opacity" :hover-opacity="0.4">
@@ -146,8 +144,11 @@
         </va-button>
       </va-button-group>
     </div>
+
+    <div class="center-text" v-else>
+      <p>当日无可预约时间</p>
+    </div>
   </div>
-  
 </template>
 
 <script >
@@ -166,18 +167,18 @@ export default {
       value: new Date(),
       showModal: false,
       alertText: "",
-      imgUrl:"",
+      imgUrl: "",
       fee: {
         "主任医师": "9",
         "副主任医师": "7",
         "主治医师": "6",
-        "住院医师":"4",
+        "住院医师": "4",
         "医师": "4",
       },
-      DoctorInfo:"",
-      DoctorFee:"",
-      worktime:{},
-      workday:[],
+      DoctorInfo: "",
+      DoctorFee: "",
+      worktime: {},
+      workday: [],
     };
   },
 
@@ -226,10 +227,10 @@ export default {
         }
       });
     },
-    isWeekend(date) {
-      const dayOfWeek = new Date(date).getDay(); // 0: Sunday, 6: Saturday
-      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
-      return isWeekend;
+    isWorkday() {
+      // 获取当前日期，假设 workday 是一个包含工作日的数组，例如 ["4", "7", "9", "10", "11"]
+      const today = this.value.getDate().toString(); // 获取当前日期的日份并转为字符串
+      return this.workday.includes(today);
     },
 
     fetchData(date) {
@@ -255,8 +256,8 @@ export default {
         .then(function (response) {
           self.fetchedData = response.data;
           console.log(self.fetchedData);
-          for (let i = 0; i < self.fetchedData.length; i++) {    
-            self.number[self.fetchedData[i].Period-1] = self.fetchedData[i].Count;
+          for (let i = 0; i < self.fetchedData.length; i++) {
+            self.number[self.fetchedData[i].Period - 1] = self.fetchedData[i].Count;
           }
         })
         .catch(function (error) {
@@ -266,7 +267,6 @@ export default {
 
 
     sendData(per) {
-
       console.log("id: " + this.$route.params.selectedId);
       if (this.formattedDate == undefined) {
         alert("请选择就诊日期！");
@@ -286,97 +286,63 @@ export default {
       axios
         .post(url, data)
         .then((response) => {
-          const dataString = sessionStorage.getItem('userID') +this.$route.params.selectedId +this.formattedDate +(per + 1);
+          const dataString = sessionStorage.getItem('userID') + this.$route.params.selectedId + this.formattedDate + (per + 1);
           console.log(dataString);
           // 在axios请求成功的回调函数内部调用Generate函数
-      this.Generate(dataString, () => {
-        console.log(this.imgUrl); // 在这里访问imgUrl
-        this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data +"<br>预约二维码：";
-        this.showModal = true;
-      });
+          this.Generate(dataString, () => {
+            console.log(this.imgUrl); // 在这里访问imgUrl
+            this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data + "<br>预约二维码：";
+            this.showModal = true;
+            this.fetchData(this.value);
+          });
         })
         .catch(function (error) {
-          alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
-          console.error("Error message:", error.message);
-          if (error.message == "Network Error")
-            return;
           if (error.response) {
-            console.error("Response data:", error.response.data);
-            console.error("Response status:", error.response.status);
+          console.error(error.response.status);
+          console.error("Error message:", error.message);
+          if (error.response.status == 400) { 
+             alert("预约失败！今日已预约该医生该时间段，请重新选择时间段！");
+           }
+          //alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
+          else if (error.message == "Network Error"){
+            alert("网络错误，请检查您的网络连接！");
+            return;
           }
-          // if (error.response.status == 400) {
-          //   alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
+          else{
+            alert("预约失败，发生未知错误！");
+          }
+          // if (error.response) {
+          //   console.error("Response data:", error.response.data);
+          //   console.error("Response status:", error.response.status);
           // }
+          }
         });
     },
-    closeModal() {
-      this.showModal = false;
+   
+    Generate(dataString, callback) {
+      var self = this;
+      var formData = new FormData();
+      formData.append("showapi_appid", '1475668');
+      formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); //这两个不用改
+
+      formData.append("content", dataString);//这里放二维码内容
+      formData.append("size", "8");//这里可以修改图片大小
+      formData.append("imgExtName", "jpg");//这里修改图片格式
+      // 发送POST请求
+      axios
+        .post("http://route.showapi.com/887-1", formData)
+        .then(function (response) {
+          self.imgUrl = response.data.showapi_res_body.imgUrl;
+          if (callback) {
+            callback(); // 调用回调函数
+          }
+        })
+        .catch(function (error) {
+          console.error(error);
+          alert("操作失败!");
+        });
     },
-    Generate(dataString,callback) {
-       var self = this;
-       var formData=new FormData();
-       formData.append("showapi_appid", '1475668'); 
-       formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); //这两个不用改
-       
-       formData.append("content", dataString);//这里放二维码内容
-       formData.append("size", "8");//这里可以修改图片大小
-       formData.append("imgExtName","jpg");//这里修改图片格式
-       // 发送POST请求
-       axios
-         .post("http://route.showapi.com/887-1", formData)
-         .then(function (response) {
-           self.imgUrl =response.data.showapi_res_body.imgUrl;
-           if (callback) {
-             callback(); // 调用回调函数
-            }
-         })
-         .catch(function (error) {
-           console.error(error);
-           alert("操作失败!");
-         });
-     },
-    /*sendData() {
-      const scannedData = this.scannedDataInput;
-      
-      // 检查是否有扫描到数据
-      if (scannedData) {
-        // 假设每个字段的长度是固定的
-        const patientId = scannedData.substring(0, 7);
-        const doctorId = scannedData.substring(7, 12);
-        const time = scannedData.substring(12, 22);
-        const period = scannedData.substring(22);
 
-        // 构建请求数据对象
-        const data = {
-          patientId,
-          doctorId,
-          time,
-          period,
-        };
-
-        // 发送请求
-        axios
-          .post("http://124.223.143.21/Registration/regist", data)
-          .then((response) => {
-            this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + time + " " + response.data;
-            this.uploadSuccess = true;
-          })
-          .catch(function (error) {
-            alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
-            console.error("Error message:", error.message);
-            if (error.message == "Network Error") return;
-            if (error.response) {
-              console.error("Response data:", error.response.data);
-              console.error("Response status:", error.response.status);
-            }
-          });
-
-        // 清空输入框
-        this.scannedDataInput = '';
-      } else {
-        alert('请先扫描数据！');
-      }
-    },*/
     async GetDoctorInfo() {
       var self = this; // 存储当前对象的引用
       // 新增部分
@@ -388,7 +354,7 @@ export default {
         })
         .then(function (response) {
           self.DoctorInfo = response.data.consultationInfos;
-          self.DoctorFee =response.data.fee;
+          self.DoctorFee = response.data.fee;
           // console.log(self.DoctorInfo);
 
           // 创建一个Set来跟踪已经记录的日期
@@ -414,7 +380,7 @@ export default {
           for (let day in self.workday) {
             if (self.workday[day][0] == '0') {
               self.workday[day] = self.workday[day].slice(1, 2);
-              // console.log(self.workday[day]);
+              console.log(self.workday[day]);
             }
           }
 
@@ -422,7 +388,7 @@ export default {
         .catch(function (error) {
           console.error(error);
         });
-      },
+    },
   },
 };
 </script>
@@ -431,7 +397,7 @@ export default {
 <style scoped>
 #main-page {
   margin-right: 20%;
-  margin-left:17%
+  margin-left: 17%
 }
 
 #kp {
@@ -514,5 +480,6 @@ export default {
   font-family: AliRegular;
   /* 应用字体 */
   --va-font-family: AliRegular;
-}</style>
+}
+</style>
 
