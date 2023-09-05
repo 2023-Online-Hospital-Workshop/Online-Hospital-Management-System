@@ -57,21 +57,21 @@ export default {
           path: '/Admin/order',
           name: 'AdminOrder',
           label: '处方订单管理',
-          icon: 'list',
+          icon: 'list_alt',
           url: '/Admin/order',
         },
         {
           path: '/Admin/medicine',
           name: 'AdminMedicine',
           label: '药品库存管理',
-          icon: 'list',
+          icon: 'warehouse',
           url: '/Admin/medicine',
         },
         {
           path: '/Admin/doctor',
           name: 'AdminDoctor',
           label: '医生坐诊管理',
-          icon: 'list',
+          icon: 'medication',
           url: '/Admin/doctor',
         },
         {
@@ -85,7 +85,7 @@ export default {
           path: '/Admin/checkin',
           name: 'AdminCheckin',
           label: '挂号患者报到',
-          icon: 'list',
+          icon: 'task_alt',
           url: '/Admin/checkin',
         },
         {

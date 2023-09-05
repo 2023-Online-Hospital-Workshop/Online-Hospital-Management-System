@@ -155,7 +155,6 @@ import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { myFont } from "../assets/font/myfont-normal"
-import user from "../store/user.js"
 
 export default {
   data() {
@@ -167,6 +166,9 @@ export default {
       itemsPerPage: 6,
       periodDict: {},
       showModal: false,
+
+      //hcr添加
+      userID:sessionStorage.getItem('userID'),
     };
   },
   computed: {
@@ -188,15 +190,15 @@ export default {
     for (let i = 4; i <= 7; i++) {
       this.periodDict[i] = `${i + 9}:00-${i + 10}:00`
     }
-
-    axios.get(`http://124.223.143.21:4999/Registration/Patient/${user.state.userID}`)
+console.log(this.userID);
+    axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
       .then((response) => {
         console.log(response.data);
         const newData = response.data; // 获取响应数据
         // 将新数据转化为 record 对象并添加到 allRecords 数组中
         this.allRecords = newData.map(item => ({
           patient: item.patient.name,
-          patientID: user.state.userID,
+          patientID: this.userID,
           patientGender: item.patient.gender ? "男" : "女",
           patientBirth: item.patient.birthDate,
           doctor: item.doctor.name,
@@ -205,7 +207,7 @@ export default {
           appointmentTime: item.period,
           waitingCount: item.queueCount,
           status: item.state,
-          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${user.state.userID}${item.doctor.doctorId}${item.period}`,
+          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
         }));
         this.allRecords.sort((record1, record2) => {
           const date1 = new Date(record1.date);
@@ -231,7 +233,7 @@ export default {
 
         axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
           params: {
-            PatientId: user.state.userID
+            PatientId: this.userID
           }
         })
           .then((response) => {
@@ -249,7 +251,7 @@ export default {
 
         axios.get('http://124.223.143.21:4999/api/Comment/whether', {
           params: {
-            PatientId: user.state.userID
+            PatientId: this.userID
           }
         })
           .then((response) => {

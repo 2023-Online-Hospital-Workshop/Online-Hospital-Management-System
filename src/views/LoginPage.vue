@@ -17,7 +17,7 @@
           <el-tooltip
             class="item"
             effect="dark"
-            content="账号即为注册时的手机号码"
+            content="账号即为注册时的ID号"
             placement="right"
           >
             <el-input
@@ -63,7 +63,7 @@
             >3天内自动登录</el-radio
           >
           <el-button type="text" @click="applyInsButtonClick"
-            >申请护理机构</el-button
+            >忘记密码</el-button
           >
         </div>
       </el-form>
@@ -145,7 +145,6 @@ export default {
         .then((response) => {
           console.log(response.data);
           if (response.data) {
-            // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
             console.log("登录成功");
             this.router.push({
               path: AfterLogin[this.role_num],
@@ -157,6 +156,7 @@ export default {
           } else {
             // 登录失败
             console.error("登录失败");
+            this.$msgbox.alert("用户名或密码错误，登录失败")
           }
         })
         .catch((error) => {
