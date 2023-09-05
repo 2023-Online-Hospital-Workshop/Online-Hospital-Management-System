@@ -8,6 +8,7 @@ import DoctorAppointment from '../views/Patient/DoctorAppointment.vue'
 import DiseaseInquiry from '../views/Patient/DiseaseInquiry.vue'
 import MedicalHistory from '../components/MedicalHistory.vue'
 import AppointmentSuccess from '../views/Patient/AppointmentSuccess.vue'
+import CallService from '../views/Patient/CallService.vue'
 
 // 管理员页面
 import AdminMedicine from '../views/Admin/AdminMedicine.vue'
@@ -75,6 +76,11 @@ const routes = [
         path: 'appointment-success',
         name: 'AppointmentSuccess',
         component: AppointmentSuccess,
+      },
+      {
+        path: 'call-service',
+        name: 'CallService',
+        component: CallService,
       },
     ]
   },
