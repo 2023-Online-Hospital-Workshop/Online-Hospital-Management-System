@@ -2,7 +2,7 @@
   <header class="header">
     <va-icon name="menu" class="header-icon" @click="toggleSidebar"></va-icon>
     <h1 class="main-title">济康同行</h1>
-    <PatientInfo v-if="role === 0" />
+    <PatientInfo v-if="role === '0'" />
     <AdministratorInfo v-else />
   </header>
 </template>

@@ -3,7 +3,7 @@ export default {
     is_expand: true,
     aside_data: {
       // 用户
-      "0" : [
+      "0": [
         {
           path: '/home',
           name: 'Home',
@@ -12,7 +12,7 @@ export default {
           url: '/home'
         },
         {
-          path: '/callService',
+          path: '/call-service',
           name: 'CallService',
           label: '校医院就诊流程',
           icon: 'account_tree',
@@ -81,6 +81,13 @@ export default {
           icon: 'list',
           url: '/Admin/checkin',
         },
+        {
+          path: '/Admin/MedicineCount',
+          name: 'MedicineCount',
+          label: '药品营收统计',
+          icon: 'receipt_long',
+          url: '/Admin/MedicineCount',
+        }
       ],
 
       // {

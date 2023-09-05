@@ -136,7 +136,6 @@ export default {
     toggleInfo() {
       this.studentId = sessionStorage.getItem('userID');
       this.showInfo = !this.showInfo;
-      console.log(sessionStorage.getItem('role'));
       if (this.showInfo === true) {
         var self = this;
         axios

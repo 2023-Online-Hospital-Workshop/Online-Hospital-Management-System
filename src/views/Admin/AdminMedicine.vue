@@ -16,8 +16,12 @@
       <!-- 条件区 -->
       <div class="conditions">
         <center>
-          <span class="search">
+          <span>
             <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
+          </span>
+          <span v-if="curTab == 0">
+          <va-input placeholder="扫码入库" class="mb-6" id="scannedData" v-model="scannedDataInput"
+              @keydown.enter="sendData()" />
           </span>
           <span v-if="curTab == 0" class="checkbox">
             <va-checkbox v-model="warningOnly" :label="checkboxLabel" />
@@ -85,6 +89,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
   data() {
     const tabTitles = [
@@ -130,6 +135,12 @@ export default {
 
       // 弹窗
       showModal: false,
+
+      scannedDataInput: '', // 用于绑定输入框的数据  
+      MedicineData: {
+        showapi_res_body: {
+        }
+      },
       showConfirm: false,
     }
   },
@@ -161,6 +172,42 @@ export default {
   },
 
   methods: {
+
+    //自动扫码挂号
+    sendData() {
+      const scannedData = this.scannedDataInput;
+
+      // 检查是否有扫描到数据
+      if (scannedData) {
+        console.log(scannedData);
+        const formData = new FormData();
+
+        formData.append("showapi_appid", '1475668'); // 这里需要改成自己的appid
+        formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); // 这里需要改成自己的应用的密钥secret
+        formData.append("code", scannedData);
+
+        axios
+          .post("https://route.showapi.com/66-22?", formData)
+          .then((response) => {
+            this.MedicineData = response.data;
+            console.log(this.MedicineData);
+            console.log(this.MedicineData.showapi_res_body.goodsName);
+            console.log(this.MedicineData.showapi_res_body.manuName);
+            this.createdItem["药品名"] = this.MedicineData.showapi_res_body.goodsName;
+            this.createdItem["生产单位"] = this.MedicineData.showapi_res_body.manuName;
+
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("操作失败!");
+          });
+        //清空
+        this.scannedDataInput = '';
+      } else {
+        alert('请先扫描数据！');
+      }
+    },
+
     // 筛选函数
     filterFunction(source) {
       if (source) {
@@ -378,9 +425,9 @@ export default {
   margin-top: 1%;
   height: 7%;
 }
-
-.checkbox {
-  margin-left: 5%;
+.conditions span {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .table {

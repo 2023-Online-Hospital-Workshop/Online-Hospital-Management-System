@@ -6,6 +6,7 @@
         <center>
           <span class="search">
             <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
+            <!-- <va-date-picker v-model="value" /> -->
           </span>
         </center>
       </div>
@@ -14,19 +15,49 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller
+          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller noDataFilteredHtml="无数据" noDataHtml="无数据"
           @filtered="filteredCount = $event.items.length">
+
 
           <!-- 新建区 -->
           <template #headerAppend>
             <tr class="table-curd__slot">
+              <th>
+                <va-select style="width:100%; font-weight: 100;" placeholder="请选择医生ID" v-model="newID"
+                  :options="doctorIDs" />
+              </th>
+              <th>
+                <va-select style="width:100%; font-weight: 100;" placeholder="请选择诊室" v-model="newRoom"
+                  :options="availableRooms" />
+              </th>
+              <th>
+                <va-popover color="backgroundElement" placement="top" trigger="click">
+                  <va-button style="width:100%; font-weight:100;" color="backgroundElement">{{ newDate }}</va-button>
+                  <template #body>
+                    <div>
+                      <va-date-picker stateful v-model="formattedNewDate" @update:model-value="updateDate()"
+                        :allowed-years="(date) => date.getFullYear() !== currentDate.getFullYear()" />
+                    </div>
+                  </template>
+                </va-popover>
+              </th>
+              <th>
+                <va-select style="width:100%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper"
+                  :options="timePers" />
+              </th>
+              <th>
+                <va-button style="width:100%; font-weight: 100;" color="backgroundElement" @click="addItem"> 添加
+                </va-button>
+              </th>
+            </tr>
+            <!-- <tr class="table-curd__slot">
               <th v-for="col in tableColumns.slice(0, -1)" :key="col">
                 <va-input v-model="createdItem[col]" :placeholder="col" />
               </th>
               <th>
                 <va-button :disabled="!createdItemValid" block @click="addItem">添加</va-button>
               </th>
-            </tr>
+            </tr> -->
           </template>
           <!-- 新建区 -->
 
@@ -69,7 +100,7 @@
 </template>
 
 <script>
-
+import axios from 'axios';
 export default {
   data() {
     const perPage = 10;
@@ -107,6 +138,29 @@ export default {
       // 弹窗
       showModal: false,
 
+      // 数据库中的医生ID
+      doctorIDs: [],
+
+      // 数据库中的科室列表
+      departments: [],
+
+      currentYear: 2023,
+
+      newID: "请选择医生ID",
+
+      newRoom: "请选择诊室",
+
+      newDate: "请选择日期",
+
+      formattedNewDate: new Date(),
+
+      availableRooms: [],
+
+      showDatepicker: false,
+
+      newTimeper: "请选择坐诊时间",
+
+      timePers: ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"],
     }
   },
 
@@ -142,20 +196,20 @@ export default {
     // 添加表项
     addItem() {
       // 新建对象
-      let newItem = {};
-      for (let col in this.createdItem) {
-        newItem[col] = this.createdItem[col];
-        this.createdItem[col] = ""; // 重置createdItem
-      }
+      // let newItem = {};
+      // for (let col in this.createdItem) {
+      //   newItem[col] = this.createdItem[col];
+      //   this.createdItem[col] = ""; // 重置createdItem
+      // }
 
       // 传入后端
       let myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       let raw = JSON.stringify({
-        "doctorId": newItem["ID"],
-        "clinicName": newItem["诊室"],
-        "dateTime": newItem["日期"],
-        "period": this.toPeriod(newItem["坐诊日期"]),
+        "doctorId": this.newID,// newItem["ID"],
+        "clinicName": this.newRoom,// newItem["诊室"],
+        "dateTime": this.newDate, // newItem["日期"],
+        "period": this.toPeriod(this.newTimeper), // (newItem["坐诊日期"]),
       });
       let requestOptions = {
         method: 'POST',
@@ -166,13 +220,11 @@ export default {
       fetch("http://124.223.143.21/api/Consultationinfo/AddConsult", requestOptions)
         .then(response => response.text())
         .then(result => {
-          console.log(result);
+          console.warn(result);
           this.getTable();
         })
         .catch(error => console.log('error', error));
 
-      // 加入表项
-      this.tableItems.push(newItem);
     },
 
     // 打开编辑窗口
@@ -216,7 +268,7 @@ export default {
       fetch("http://124.223.143.21/api/Consultationinfo/CancelConsult", requestOptions)
         .then(response => response.text())
         .then(result => {
-          console.log(result);
+          console.warn(result);
           this.getTable();
         })
         .catch(error => console.log('error', error));
@@ -254,11 +306,11 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-      console.log(raw);
+      // console.log(raw);
       fetch("http://124.223.143.21/api/Consultationinfo/ChangeConsult", requestOptions)
         .then(response => response.text())
         .then(result => {
-          console.log(result);
+          console.warn(result);
           this.getTable();
         })
         .catch(error => console.log('error', error));
@@ -277,23 +329,58 @@ export default {
       }).then(response => response.text())
         .then(result => {
           result = JSON.parse(result);
-          console.log(result);
+          // console.log(result);
           this.tableItems = [];
           for (let i = 0; i < result.length; ++i) {
             this.tableItems.push({
               "ID": result[i].doctorId,
               "诊室": result[i].clinicName,
-              "日期": result[i].date,
+              "日期": result[i].date.slice(0, 10),
               "坐诊时间": result[i].startTime + " - " + result[i].endTime,
             });
           }
         })
         .catch(error => console.log('error', error));
     },
+
+    // 获取表格候选信息（医生ID，诊室列表，日期）
+    getInfo() {
+      axios.get('http://124.223.143.21:4999/api/Doctors')
+        .then(response => {
+          console.log(response);
+          for (let i = 0; i < response.data.length; i++) {
+            const item = response.data[i];
+            this.doctorIDs.push(item.doctorId);
+          }
+        })
+        .catch(error => console.log('error', error));
+
+      axios.get('http://124.223.143.21/api/Consultationinfo/GetAllRooms')
+        .then(response => {
+          console.log(response);
+          for (let i = 0; i < response.data.length; i++) {
+            const item = response.data[i];
+            this.availableRooms.push(item.consultingRoomName);
+          }
+        })
+        .catch(error => console.log('error', error));
+
+      // this.newDate = new Date();
+      // this.currentYear = this.newDate.getFullYear();
+    },
+
+    updateDate() {
+      var y = this.formattedNewDate.getFullYear();
+      var m = (this.formattedNewDate.getMonth() + 1).toString().padStart(2, '0');
+      var d = this.formattedNewDate.getDate().toString().padStart(2, '0');
+      this.newDate = y + '-' + m + '-' + d;
+    }
+
   },
 
   mounted() {
     this.getTable();
+    this.getInfo();
   },
 
   watch: {
@@ -317,7 +404,7 @@ export default {
 .table {
   --va-form-element-default-width: 0;
 
-  .va-input {
+  .va-select {
     display: block;
   }
 

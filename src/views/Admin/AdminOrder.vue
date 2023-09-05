@@ -171,7 +171,7 @@ export default {
           if (result == "该订单已支付") {
             alert(result);
             this.showModal = false; // 关闭弹窗
-            // return;
+            return;
           }
 
           /* 获取所有药品 */

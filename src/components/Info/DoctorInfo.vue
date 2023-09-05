@@ -135,7 +135,7 @@ export default {
       this.showInfo = !this.showInfo;
     },
     toggleInfo() {
-      this.doctorId = sessionStorage.getItem('userID');
+      this.doctorId = sessionStorage.getItem("userID");
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;
