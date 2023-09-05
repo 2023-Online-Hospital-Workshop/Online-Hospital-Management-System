@@ -76,7 +76,9 @@
                   <el-input type="text" v-model="registerForm.verificationCode" auto-complete="off" placeholder="请输入验证码" class="short-input"></el-input>
               </el-col>
               <el-col :span="11">
-                  <el-text type="text" @click="sendVerificationCode" class="verification-btn">发送验证码</el-text>
+                <el-text type="text" @click="sendVerificationCode" class="verification-btn" ref="verificationBtn" :style="{ color: countdown > 0 ? '#89A9FB' : '#002FA7' }">
+                  {{ countdown > 0 ? `${countdown}s 后重试` : '发送验证码' }}
+                </el-text>
               </el-col>
           </el-row>
         </el-form-item>
@@ -90,7 +92,7 @@
           <el-input type="password" v-model="registerForm.password" auto-complete="off" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item label="请重复密码">
-          <el-input type="password" v-model="registerForm.password" auto-complete="off" placeholder="请重复输入密码"></el-input>
+          <el-input type="password" v-model="registerForm.password2" auto-complete="off" placeholder="请重复输入密码"></el-input>
         </el-form-item>
         <el-button type="primary" @click="submitForm">提交</el-button>
       </el-form>
@@ -105,12 +107,15 @@
 <script>
 import axios from "axios";
 import dayjs from 'dayjs';
+import {useRouter} from "vue-router";
 
 export default {
   name: "RegisterPage",
   data() {
     return {
-      step: 1,  // current step
+      router: useRouter(),
+      step: 1,
+      countdown: 0,
       registerForm: {
         name: '',
         gender: '',
@@ -118,6 +123,7 @@ export default {
         phoneNumber: '',
         verificationCode: '',
         password: '',
+        password2: '',
         patientId: '',
         university: '同济大学',
         doctorId: '',
@@ -138,10 +144,10 @@ export default {
         console.log(this.registerForm.phoneNumber.toString())
         console.log(this.registerForm.verificationCode.toString())
         axios
-        .get("http://124.223.143.21:4999/api/Login/verify", {
+        .get("http://124.223.143.21:4999/api/Login/verifyCode", {
               params: {
                 PhoneNumber: this.registerForm.phoneNumber.toString(),
-                code: this.registerForm.verificationCode.toString(),
+                Code: this.registerForm.verificationCode.toString(),
               },
             })
         .then(response => {
@@ -167,90 +173,107 @@ export default {
     submitForm() {
       // Implement form submission here
       console.log(this.registerForm)
-      if (this.registerForm.identity == 'identity1' && this.step == 4) {
-        console.log('111')
-        axios
-        .post("http://124.223.143.21:4999/api/Enroll/PatientEnroll", {
-              patientId: this.registerForm.patientId.toString(),
-              name: this.registerForm.name.toString(),
-              gender: JSON.parse(this.registerForm.gender),
-              birthdate: dayjs(this.registerForm.birthdate).toISOString(),
-              contact: this.registerForm.phoneNumber.toString(),
-              password: this.registerForm.password.toString(),
-              college: this.registerForm.university.toString(),
-            })
-        .then(response => {
-          console.log(response.data)
-          if (response.data) {
-            this.$message.success('注册成功');
-            console.log('注册成功')
-          } else {
-            this.$message.error('注册失败');
-            console.log('注册失败')
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-      }
 
-      if (this.registerForm.identity == 'identity2' && this.step == 4) {
-        axios
-        .post("http://124.223.143.21:4999/api/Enroll/DoctorEnroll", {
-                doctorId: this.registerForm.doctorId.toString(),
-                name: this.registerForm.name.toString(),
-                gender: JSON.parse(this.registerForm.gender),
-                birthdate: dayjs(this.registerForm.birthdate).toISOString(),
-                title: this.registerForm.title,
-                contact: this.registerForm.phoneNumber.toString(),
-                secondaryDepartment: this.registerForm.secondaryDepartment.toString(),
-                password: this.registerForm.password.toString()
-            })
-        .then(response => {
-          console.log(response.data)
-          if (response.data) {
-            this.$message.success('注册成功');
-            console.log('注册成功')
-          } else {
-            this.$message.error('注册失败');
-            console.log('注册失败')
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          console.log(dayjs(this.registerForm.birthdate).toISOString())
-        });
-      }
-
-      if (this.registerForm.identity == 'identity3' && this.step == 4) {
-        axios
-        .post("http://124.223.143.21:4999/api/Enroll/AdminEnroll", {
-                administratorId: this.registerForm.administratorId.toString(),
+      if (this.registerForm.password == this.registerForm.password2) {
+        if (this.registerForm.identity == 'identity1' && this.step == 4) {
+          console.log('111')
+          axios
+          .post("http://124.223.143.21:4999/api/Enroll/PatientEnroll", {
+                patientId: this.registerForm.patientId.toString(),
                 name: this.registerForm.name.toString(),
                 gender: JSON.parse(this.registerForm.gender),
                 birthdate: dayjs(this.registerForm.birthdate).toISOString(),
                 contact: this.registerForm.phoneNumber.toString(),
-                password: this.registerForm.password.toString()
-            })
-        .then(response => {
-          console.log(response.data)
-          if (response.data) {
-            this.$message.success('注册成功');
-            console.log('注册成功')
-          } else {
-            this.$message.error('注册失败');
-            console.log('注册失败')
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+                password: this.registerForm.password.toString(),
+                college: this.registerForm.university.toString(),
+              })
+          .then(response => {
+            console.log(response.data)
+            if (response.data) {
+              this.$message.success('注册成功');
+              console.log('注册成功')
+              let timer = setInterval(() => {
+                this.router.push({
+                    path: '/',
+                  });
+                clearInterval(timer);
+              }, 2000);
+
+            } else {
+              this.$message.error('注册失败');
+              console.log('注册失败')
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        }
+
+        if (this.registerForm.identity == 'identity2' && this.step == 4) {
+          axios
+          .post("http://124.223.143.21:4999/api/Enroll/DoctorEnroll", {
+                  doctorId: this.registerForm.doctorId.toString(),
+                  name: this.registerForm.name.toString(),
+                  gender: JSON.parse(this.registerForm.gender),
+                  birthdate: dayjs(this.registerForm.birthdate).toISOString(),
+                  title: this.registerForm.title,
+                  contact: this.registerForm.phoneNumber.toString(),
+                  secondaryDepartment: this.registerForm.secondaryDepartment.toString(),
+                  password: this.registerForm.password.toString()
+              })
+          .then(response => {
+            console.log(response.data)
+            if (response.data) {
+              this.$message.success('注册成功');
+              console.log('注册成功')
+            } else {
+              this.$message.error('注册失败');
+              console.log('注册失败')
+            }
+          })
+          .catch(error => {
+            console.error(error);
+            console.log(dayjs(this.registerForm.birthdate).toISOString())
+          });
+        }
+
+        if (this.registerForm.identity == 'identity3' && this.step == 4) {
+          axios
+          .post("http://124.223.143.21:4999/api/Enroll/AdminEnroll", {
+                  administratorId: this.registerForm.administratorId.toString(),
+                  name: this.registerForm.name.toString(),
+                  gender: JSON.parse(this.registerForm.gender),
+                  birthdate: dayjs(this.registerForm.birthdate).toISOString(),
+                  contact: this.registerForm.phoneNumber.toString(),
+                  password: this.registerForm.password.toString()
+              })
+          .then(response => {
+            console.log(response.data)
+            if (response.data) {
+              this.$message.success('注册成功');
+              console.log('注册成功')
+            } else {
+              this.$message.error('注册失败');
+              console.log('注册失败')
+            }
+          })
+          .catch(error => {
+            console.error(error);
+          });
+        }
       }
+      else {
+        this.$msgbox.alert("两次输入密码不一致")
+      }
+
     },
     sendVerificationCode() {
       console.log(this.registerForm.phoneNumber.toString())
+      console.log(this.$refs.verificationBtn);
+      if (this.countdown != 0)
+        return;
       axios
-      .get("http://124.223.143.21:4999/api/Login/generate/", {
+      .get("http://124.223.143.21:4999/api/Login/generateVerifyCode/", {
             params: {
               PhoneNumber: this.registerForm.phoneNumber,
             },
@@ -258,8 +281,20 @@ export default {
       .then(response => {
         console.log(response.data)
         if (response.data) {
-          // 登录成功, 你可以做一些后续的处理，比如导航到其他页面等
-          console.log("登录成功");
+
+          this.countdown = 60;
+
+          // 启动定时器
+          let timer = setInterval(() => {
+            if (this.countdown > 0) {
+              this.countdown--;
+            } else {
+              // 倒计时结束，重置计数并启用按钮点击
+              this.countdown = 0;
+
+              clearInterval(timer);
+            }
+          }, 1000);
         } else {
           // 登录失败
           console.error("登录失败");
