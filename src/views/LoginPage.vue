@@ -143,7 +143,7 @@ export default {
           }
         )
         .then((response) => {
-          console.log(response.data);
+          console.log(response.data.slice(14));
           if (response.data) {
             console.log("登录成功");
             this.router.push({
