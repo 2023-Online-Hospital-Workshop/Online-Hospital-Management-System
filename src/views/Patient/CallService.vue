@@ -2,7 +2,7 @@
     <SideBar />
     <Header />
     <div class="center-image">
-        <img src="../assets/call.png" alt="Description" :style="{ width: '1200px', height: '800px' }"  >
+        <img src="../../assets/call.png" alt="Description" :style="{ width: '1200px', height: '800px' }"  >
     </div>
   </template>
   
