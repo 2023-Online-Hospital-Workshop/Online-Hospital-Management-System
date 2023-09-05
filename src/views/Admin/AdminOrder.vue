@@ -126,9 +126,6 @@ export default {
         .catch(error => console.log('error', error));
     },
 
-    // 由就诊人ID获取姓名
-
-
     // 点击表行
     openModal(event) {
       // 弹窗已弹出则操作无效

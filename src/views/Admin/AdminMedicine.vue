@@ -20,7 +20,7 @@
             <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
           </span>
           <span v-if="curTab == 0">
-          <va-input placeholder="扫码入库" class="mb-6" id="scannedData" v-model="scannedDataInput"
+            <va-input placeholder="扫码入库" class="mb-6" id="scannedData" v-model="scannedDataInput"
               @keydown.enter="sendData()" />
           </span>
           <span v-if="curTab == 0" class="checkbox">
@@ -81,7 +81,9 @@
       </va-modal>
 
       <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消"
-        @ok="deleteItem(deletedRow)"><span>确定删除吗？</span></va-modal>
+        @ok="deleteItem(deletedRow)">
+        <span>确定删除吗？</span>
+      </va-modal>
       <!-- 弹窗 -->
 
     </el-main>
@@ -425,6 +427,7 @@ export default {
   margin-top: 1%;
   height: 7%;
 }
+
 .conditions span {
   margin-left: 10px;
   margin-right: 10px;

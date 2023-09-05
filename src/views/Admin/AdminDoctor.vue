@@ -23,16 +23,19 @@
           <template #headerAppend>
             <tr class="table-curd__slot">
               <th>
-                <va-select style="width:100%; font-weight: 100;" placeholder="请选择医生ID" v-model="newID"
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择医生ID" v-model="newID"
                   :options="doctorIDs" />
               </th>
               <th>
-                <va-select style="width:100%; font-weight: 100;" placeholder="请选择诊室" v-model="newRoom"
+                <va-input style="width:99%; font-weight: 100;" v-model="newName" readonly />
+              </th>
+              <th>
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择诊室" v-model="newRoom"
                   :options="availableRooms" />
               </th>
               <th>
                 <va-popover color="backgroundElement" placement="top" trigger="click">
-                  <va-button style="width:100%; font-weight:100;" color="backgroundElement">{{ newDate }}</va-button>
+                  <va-button style="width:99%; font-weight:100;" color="backgroundElement">{{ newDate }}</va-button>
                   <template #body>
                     <div>
                       <va-date-picker stateful v-model="formattedNewDate" @update:model-value="updateDate()"
@@ -42,11 +45,11 @@
                 </va-popover>
               </th>
               <th>
-                <va-select style="width:100%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper"
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper"
                   :options="timePers" />
               </th>
               <th>
-                <va-button style="width:100%; font-weight: 100;" color="backgroundElement" @click="addItem"> 添加
+                <va-button style="width:99%; font-weight: 100;" color="backgroundElement" @click="addItem"> 添加
                 </va-button>
               </th>
             </tr>
@@ -63,8 +66,7 @@
 
           <!-- 修改操作 -->
           <template #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
-            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="showConfirm = true; deletedRow = rowIndex" />
           </template>
 
           <!-- 分页 -->
@@ -82,16 +84,8 @@
       <!-- 表格 -->
 
       <!-- 弹窗 -->
-      <va-modal v-model="showModal" title="编辑坐诊信息" size="small" ok-text="确认" cancel-text="取消" @ok="confirmUpdate"
-        no-outside-dismiss @cancel="cancelUpdate">
-        <div v-for="col in tableColumns.slice(0, -2)" :key="col">
-          <br>
-          <div class="modal-label">{{ col }}</div>
-          <va-input v-model="editedItem[col]" />
-        </div>
-        <br>
-        <div class="modal-label">坐诊时间</div>
-        <va-select v-model='editedItem["坐诊时间"]' :options="editedOptions" />
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消" @ok="deleteItem(deletedRow)">
+        <span>确定删除吗？</span>
       </va-modal>
       <!-- 弹窗 -->
 
@@ -104,7 +98,7 @@ import axios from 'axios';
 export default {
   data() {
     const perPage = 10;
-    const tableColumns = ["ID", "诊室", "日期", "坐诊时间", "修改"];
+    const tableColumns = ["ID", "医生姓名", "诊室", "日期", "坐诊时间", "修改"];
 
     return {
       // 筛选
@@ -116,20 +110,7 @@ export default {
       tableItems: [],
 
       // 编辑
-      createdItem: {
-        "ID": "",
-        "诊室": "",
-        "日期": "",
-        "坐诊时间": "",
-      },
-      editedRow: 0,
-      editedItem: {
-        "ID": "",
-        "诊室": "",
-        "日期": "",
-        "坐诊时间": "",
-      },
-      editedOptions: [],
+      deletedRow: 0,
 
       // 分页
       perPage,
@@ -137,6 +118,7 @@ export default {
 
       // 弹窗
       showModal: false,
+      showConfirm: false,
 
       // 数据库中的医生ID
       doctorIDs: [],
@@ -147,6 +129,8 @@ export default {
       currentYear: 2023,
 
       newID: "请选择医生ID",
+
+      newName: "医生姓名",
 
       newRoom: "请选择诊室",
 
@@ -179,7 +163,7 @@ export default {
         }
       }
       return true;
-    }
+    },
   },
 
   methods: {
@@ -195,13 +179,6 @@ export default {
 
     // 添加表项
     addItem() {
-      // 新建对象
-      // let newItem = {};
-      // for (let col in this.createdItem) {
-      //   newItem[col] = this.createdItem[col];
-      //   this.createdItem[col] = ""; // 重置createdItem
-      // }
-
       // 传入后端
       let myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -339,6 +316,17 @@ export default {
               "坐诊时间": result[i].startTime + " - " + result[i].endTime,
             });
           }
+          for (let i = 0; i < this.tableItems.length; ++i) {
+            fetch("http://124.223.143.21/api/Doctors/id?id=" + this.tableItems[i]["ID"], {
+              method: 'GET',
+              redirect: 'follow'
+            }).then(response => response.text())
+              .then(result => {
+                result = JSON.parse(result);
+                this.tableItems[i]["医生姓名"] = result.name;
+              })
+              .catch(error => console.log('error', error));
+          }
         })
         .catch(error => console.log('error', error));
     },
@@ -387,6 +375,21 @@ export default {
     filter() {
       this.curPage = 1;
     },
+
+    newID(newVal) {
+      if(newVal == "请选择医生ID") {
+        return;
+      }
+      fetch("http://124.223.143.21/api/Doctors/id?id=" + newVal, {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          this.newName = result.name;
+        })
+        .catch(error => console.log('error', error));
+    }
   },
 
 }
