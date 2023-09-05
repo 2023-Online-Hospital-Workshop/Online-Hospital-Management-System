@@ -16,6 +16,7 @@ import AdminDoctor from '../views/Admin/AdminDoctor.vue'
 import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
 import AdminCheckin from '../views/Admin/AdminCheckin.vue'
+import MedicineCount from '../views/Admin/MedicineCount.vue'
 
 
 // import { use } from 'vue/types/umd'
@@ -112,6 +113,11 @@ const routes = [
         name: 'AdminCheckin',
         component: AdminCheckin,
       },
+      {
+        path: 'MedicineCount',
+        name: 'MedicineCount',
+        component: MedicineCount,
+      }
     ],
   },
 
