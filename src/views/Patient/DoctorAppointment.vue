@@ -101,7 +101,7 @@
           <span style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消<br><br></span>
           <span
             style="font-size: large;margin:5px;line-height: 20px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理<br><br></span>
-            <span
+          <span
             style="font-size: large;margin:5px;line-height: 20px;">4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处出示预约二维码进行报到<br><br></span>
         </va-card-content>
       </va-card>
@@ -266,59 +266,111 @@ export default {
     },
 
 
+    // sendData(per) {
+    //   console.log("id: " + this.$route.params.selectedId);
+    //   if (this.formattedDate == undefined) {
+    //     alert("请选择就诊日期！");
+    //     return;
+    //   }
+    //   const url = "http://124.223.143.21/Registration/regist";
+    //   const data = {
+    //     patientId: sessionStorage.getItem('userID'),
+    //     doctorId: this.$route.params.selectedId,
+    //     // doctorId: "23008",
+    //     // Time: "2023-08-30T07:22:13.624Z",
+    //     time: this.formattedDate,
+    //     // period: 2,
+    //     period: per + 1,
+    //   };
+    //   console.log(data);
+    //   axios
+    //     .post(url, data)
+    //     .then((response) => {
+    //       const dataString = sessionStorage.getItem('userID') + this.$route.params.selectedId + this.formattedDate + (per + 1);
+    //       console.log(dataString);
+    //       // 在axios请求成功的回调函数内部调用Generate函数
+    //       this.Generate(dataString, () => {
+    //         console.log(this.imgUrl); // 在这里访问imgUrl
+    //         this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data + "<br>预约二维码：";
+    //         this.showModal = true;
+    //         this.fetchData(this.value);
+    //       });
+    //     })
+    //     .catch(function (error) {
+    //       if (error.response) {
+    //       console.error(error.response.status);
+    //       console.error("Error message:", error.message);
+    //       if (error.response.status == 400) { 
+    //          alert("预约失败！今日已预约该医生该时间段，请重新选择时间段！");
+    //        }
+    //       //alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
+    //       else if (error.message == "Network Error"){
+    //         alert("网络错误，请检查您的网络连接！");
+    //         return;
+    //       }
+    //       else{
+    //         alert("预约失败，发生未知错误！");
+    //       }
+    //       // if (error.response) {
+    //       //   console.error("Response data:", error.response.data);
+    //       //   console.error("Response status:", error.response.status);
+    //       // }
+    //       }
+    //     });
+    // },
     sendData(per) {
       console.log("id: " + this.$route.params.selectedId);
       if (this.formattedDate == undefined) {
         alert("请选择就诊日期！");
         return;
       }
-      const url = "http://124.223.143.21/Registration/regist";
-      const data = {
-        patientId: sessionStorage.getItem('userID'),
-        doctorId: this.$route.params.selectedId,
-        // doctorId: "23008",
-        // Time: "2023-08-30T07:22:13.624Z",
-        time: this.formattedDate,
-        // period: 2,
-        period: per + 1,
-      };
-      console.log(data);
-      axios
-        .post(url, data)
-        .then((response) => {
-          const dataString = sessionStorage.getItem('userID') + this.$route.params.selectedId + this.formattedDate + (per + 1);
-          console.log(dataString);
-          // 在axios请求成功的回调函数内部调用Generate函数
-          this.Generate(dataString, () => {
-            console.log(this.imgUrl); // 在这里访问imgUrl
-            this.alertText = "预约 " + this.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + this.formattedDate + " " + response.data + "<br>预约二维码：";
-            this.showModal = true;
-            this.fetchData(this.value);
+
+      const self = this; // 存储当前对象的引用
+      const dataString = sessionStorage.getItem('userID') + this.$route.params.selectedId + this.formattedDate + (per + 1);
+
+      // 生成二维码
+      this.Generate(dataString, (qrCodeSuccess) => {
+        if (!qrCodeSuccess) {
+          alert("生成二维码失败！");
+          return;
+        }
+
+        const url = "http://124.223.143.21/Registration/regist";
+        const data = {
+          patientId: sessionStorage.getItem('userID'),
+          doctorId: this.$route.params.selectedId,
+          time: this.formattedDate,
+          period: per + 1,
+          qrCodeUrl:this.imgUrl,
+        };
+        console.log(data);
+
+        // 调用挂号的 API
+        axios
+          .post(url, data)
+          .then((response) => {
+            // 在axios请求成功的回调函数内部
+            self.alertText = "预约 " + self.$route.params.selectedDoctor + " 医生成功！\n" + "时间：" + self.formattedDate + " " + response.data + "<br>预约二维码：";
+            self.showModal = true;
+            self.fetchData(self.value);
+          })
+          .catch(function (error) {
+            if (error.response) {
+              console.error(error.response.status);
+              console.error("Error message:", error.message);
+              if (error.response.status == 400) {
+                alert("预约失败！今日已预约该医生该时间段，请重新选择时间段！");
+              } else if (error.message == "Network Error") {
+                alert("网络错误，请检查您的网络连接！");
+              } else {
+                alert("预约失败，发生未知错误！");
+              }
+            }
           });
-        })
-        .catch(function (error) {
-          if (error.response) {
-          console.error(error.response.status);
-          console.error("Error message:", error.message);
-          if (error.response.status == 400) { 
-             alert("预约失败！今日已预约该医生该时间段，请重新选择时间段！");
-           }
-          //alert("预约失败！该时间段没有剩余名额，请重新选择时间段！");
-          else if (error.message == "Network Error"){
-            alert("网络错误，请检查您的网络连接！");
-            return;
-          }
-          else{
-            alert("预约失败，发生未知错误！");
-          }
-          // if (error.response) {
-          //   console.error("Response data:", error.response.data);
-          //   console.error("Response status:", error.response.status);
-          // }
-          }
-        });
+      });
     },
-   
+
+
     Generate(dataString, callback) {
       var self = this;
       var formData = new FormData();
@@ -334,12 +386,12 @@ export default {
         .then(function (response) {
           self.imgUrl = response.data.showapi_res_body.imgUrl;
           if (callback) {
-            callback(); // 调用回调函数
+            callback(true); // 调用回调函数
           }
         })
         .catch(function (error) {
           console.error(error);
-          alert("操作失败!");
+          alert("生成预约二维码失败!");
         });
     },
 
