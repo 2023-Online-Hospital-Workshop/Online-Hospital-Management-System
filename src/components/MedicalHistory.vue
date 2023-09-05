@@ -1,14 +1,35 @@
 <template>
   <!-- <chat-box v-if="chatShown" style="z-index: 999;"></chat-box> -->
-  <va-modal v-model="chatShown">
-    <va-card style="width: 500px;">
-      <div class="chatBox chatBox-left">
-        你好
+  <va-modal v-model="chatShown" hide-default-actions="true">
+    <div style="width: 500px; height: 600px;">
+      <div style="overflow: auto; height: 80%;">
+        <div class="chat-box">
+          <!-- <span class="chatBox chatBox-left">
+            你好
+          </span>
+          <br>
+          <span class="chatBox chatBox-right">
+            你好
+          </span> -->
+          <table class="chat-box" style="margin-left: 5%; height: 80%; width: 90%;">
+            <tr v-for="(message, index) in chatMessages" :key="index">
+              <div :class="{'chatBox': true, 'chatBox-left': message.userId === 2, 'chatBox-right': message.userId === 1}"> // 此处应该改成当前用户ID
+                <td>
+                  {{ message.text }}
+                </td>
+              </div> 
+              <br>       
+            </tr>
+          </table>
+        </div>
       </div>
-      <div class="chatBox chatBox-right">
-        你好
-      </div>
-    </va-card>
+      <va-input v-model="message" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
+
+      </va-input>
+      <va-button style="width: 100%;" @click="sendMessage()">
+        发送
+      </va-button>
+    </div>
   </va-modal>
   <div style="margin-top:80px">
     <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(record, index) in displayedAllRecords "
@@ -173,17 +194,44 @@ import user from "../store/user.js"
 // import ChatBox from "./ChatBox.vue";
 
 export default {
+    el: '#app',
     data() {
-        return {
-            allRecords: [],
-            feedbacks: [],
-            leaveNotes: [],
-            currentPage: 1,
-            itemsPerPage: 6,
-            periodDict: {},
-            modalShown: false,
-            chatShown: false,
-        };
+      
+      return {
+          allRecords: [],
+          feedbacks: [],
+          leaveNotes: [],
+          currentPage: 1,
+          itemsPerPage: 6,
+          periodDict: {},
+          // 显示反馈评价窗口
+          modalShown: false,
+          // 显示聊天窗口
+          chatShown: false,
+          // 聊天记录
+          chatMessages: [
+            { userId: 1, text: '你好' },
+            { userId: 2, text: '你好' },
+            { userId: 1, text: '是中国人就说阿涅亚塞哟' },
+            { userId: 1, text: '是不是犟嘴了？' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+            { userId: 2, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+            { userId: 1, text: '一得阁拉米' },
+          ],
+          // 聊天框内的信息
+          message: "", 
+      };
     },
     computed: {
         displayedAllRecords() {
@@ -479,7 +527,19 @@ export default {
         },
         showChat() {
           this.chatShown = true;
-          console.log("CHAT SHOWN");
+          
+        },
+        sendMessage() {
+          axios.post("", this.message)
+            .then(function(response) {
+              this.chatMessages = [];
+              for (let i = 0; i < response.data.length; i++) {
+                this.chatMessages.append(response.data[i]);
+              }
+            }) 
+            .catch(error => {
+              console.log(error);
+            });
         }
     },
     // components: { ChatBox }
@@ -563,13 +623,19 @@ export default {
 }
 .chatBox{
   position: relative;
-  margin:12px;
+  /* margin:12px; */
   padding:5px 8px;
   word-break: break-all;
   background: #ffffff;
   border: 1px solid #989898;
   border-radius: 5px;
   max-width:180px;
+}
+.chatBox-left {
+  float: left;
+}
+.chatBox-right {
+  float: right;
 }
 .chatBox-left::before{
   content: '';
@@ -579,7 +645,8 @@ export default {
   left: -20px;
   top:5px;
   border: 10px solid;
-  border-color: transparent #bc3b4a transparent transparent ;
+  border-color: transparent #002fb0 transparent transparent ;
+  float:left;
 }
 .chatBox-right::before{
   content: '';
@@ -589,6 +656,7 @@ export default {
   right: -20px;
   top:5px;
   border: 10px solid;
-  border-color: transparent #bc3b4a transparent transparent ;
+  border-color: transparent transparent transparent #002fb0;
+  float: right;
 }
 </style>

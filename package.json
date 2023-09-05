@@ -19,7 +19,6 @@
     "material-design-icons-iconfont": "^6.7.0",
     "material-icons": "^1.13.8",
     "qrcode": "^1.5.3",
-    "quasar": "^2.12.6",
     "sass": "^1.63.6",
     "sass-loader": "^13.3.2",
     "vue": "^3.2.13",
