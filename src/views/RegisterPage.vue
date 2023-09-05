@@ -54,15 +54,12 @@
         <el-form-item v-if="registerForm.identity == 'identity2'" label="职称">
           <el-input type="text" v-model="registerForm.title" auto-complete="off" placeholder="请输入职称"></el-input>
         </el-form-item>
-        <el-form-item v-if="registerForm.identity == 'identity2'" label="一级科室">
-          <el-input type="text" v-model="registerForm.firstDepartment" auto-complete="off" placeholder="请输入一级科室"></el-input>
-        </el-form-item>
         <el-form-item v-if="registerForm.identity == 'identity2'" label="二级科室">
-          <el-input type="text" v-model="registerForm.secondDepartment" auto-complete="off" placeholder="请输入一级科室"></el-input>
+          <el-input type="text" v-model="registerForm.secondaryDepartment" auto-complete="off" placeholder="请输入二级科室"></el-input>
         </el-form-item>
 
         <el-form-item v-if="registerForm.identity == 'identity3'" label="管理员ID">
-          <el-input type="flex" v-model="registerForm.patientId" auto-complete="off" placeholder="请输入管理员ID"></el-input>
+          <el-input type="flex" v-model="registerForm.administratorId" auto-complete="off" placeholder="请输入管理员ID"></el-input>
         </el-form-item>
 
         <el-button type="primary" @click="nextStep">下一步</el-button>
@@ -107,6 +104,7 @@
 
 <script>
 import axios from "axios";
+import dayjs from 'dayjs';
 
 export default {
   name: "RegisterPage",
@@ -125,7 +123,7 @@ export default {
         doctorId: '',
         title: '',
         firstDepartment: '',
-        secondDepartment: '',
+        secondaryDepartment: '',
         administratorId: '',
         identity: 'identity1',
       }
@@ -136,7 +134,6 @@ export default {
       this.step = step
     },
     nextStep() {
-      let state = false;
       if (this.step == 3) {
         console.log(this.registerForm.phoneNumber.toString())
         console.log(this.registerForm.verificationCode.toString())
@@ -152,7 +149,7 @@ export default {
           if (response.data) {
             // 登录成功, 可以做一些后续的处理，比如导航到其他页面等
             this.$message.success('验证通过');
-            state = true;
+            this.step++;
           } else {
             // 登录失败
             this.$message.error('验证失败');
@@ -163,22 +160,24 @@ export default {
         });
       }
 
-      if (this.step < 4 & !state) {
+      if (this.step < 3) {
         this.step++;
       }
-
+    },
+    submitForm() {
+      // Implement form submission here
+      console.log(this.registerForm)
       if (this.registerForm.identity == 'identity1' && this.step == 4) {
+        console.log('111')
         axios
         .post("http://124.223.143.21:4999/api/Enroll/PatientEnroll", {
-              params: {
-                patientId: this.registerForm.patientId.toString(),
-                name: this.registerForm.name.toString(),
-                gender: this.registerForm.gender,
-                birthdate: this.registerForm.birthdate,
-                university: this.registerForm.university,
-                contact: this.registerForm.phoneNumber,
-                password: this.registerForm.password,
-              },
+              patientId: this.registerForm.patientId.toString(),
+              name: this.registerForm.name.toString(),
+              gender: JSON.parse(this.registerForm.gender),
+              birthdate: dayjs(this.registerForm.birthdate).toISOString(),
+              contact: this.registerForm.phoneNumber.toString(),
+              password: this.registerForm.password.toString(),
+              college: this.registerForm.university.toString(),
             })
         .then(response => {
           console.log(response.data)
@@ -198,15 +197,14 @@ export default {
       if (this.registerForm.identity == 'identity2' && this.step == 4) {
         axios
         .post("http://124.223.143.21:4999/api/Enroll/DoctorEnroll", {
-              params: {
                 doctorId: this.registerForm.doctorId.toString(),
                 name: this.registerForm.name.toString(),
-                gender: this.registerForm.gender,
-                birthdate: this.registerForm.birthdate,
-                contact: this.registerForm.phoneNumber,
-                secondDepartment: this.registerForm.secondDepartment,
-                password: this.registerForm.password,
-              },
+                gender: JSON.parse(this.registerForm.gender),
+                birthdate: dayjs(this.registerForm.birthdate).toISOString(),
+                title: this.registerForm.title,
+                contact: this.registerForm.phoneNumber.toString(),
+                secondaryDepartment: this.registerForm.secondaryDepartment.toString(),
+                password: this.registerForm.password.toString()
             })
         .then(response => {
           console.log(response.data)
@@ -220,19 +218,19 @@ export default {
         })
         .catch(error => {
           console.error(error);
+          console.log(dayjs(this.registerForm.birthdate).toISOString())
         });
       }
-      
+
       if (this.registerForm.identity == 'identity3' && this.step == 4) {
         axios
         .post("http://124.223.143.21:4999/api/Enroll/AdminEnroll", {
-              params: {
                 administratorId: this.registerForm.administratorId.toString(),
                 name: this.registerForm.name.toString(),
-                gender: this.registerForm.gender,
-                birthdate: this.registerForm.birthdate,
-                contact: this.registerForm.phoneNumber,
-              },
+                gender: JSON.parse(this.registerForm.gender),
+                birthdate: dayjs(this.registerForm.birthdate).toISOString(),
+                contact: this.registerForm.phoneNumber.toString(),
+                password: this.registerForm.password.toString()
             })
         .then(response => {
           console.log(response.data)
@@ -248,10 +246,6 @@ export default {
           console.error(error);
         });
       }
-    },
-    submitForm() {
-      // Implement form submission here
-      console.log(this.registerForm)
     },
     sendVerificationCode() {
       console.log(this.registerForm.phoneNumber.toString())
