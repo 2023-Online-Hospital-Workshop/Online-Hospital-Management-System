@@ -13,7 +13,7 @@
           </span> -->
           <table class="chat-box" style="margin-left: 5%; height: 80%; width: 90%;">
             <tr v-for="(message, index) in chatMessages" :key="index">
-              <div :class="{'chatBox': true, 'chatBox-left': message.userId === 2, 'chatBox-right': message.userId === 1}"> // 此处应该改成当前用户ID
+              <div :class="{'chatBox': true, 'chatBox-left': message.userId === 2, 'chatBox-right': message.userId === 1}">
                 <td>
                   {{ message.text }}
                 </td>
@@ -190,7 +190,6 @@ import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { myFont } from "../assets/font/myfont-normal"
-import user from "../store/user.js"
 // import ChatBox from "./ChatBox.vue";
 
 export default {
@@ -232,9 +231,9 @@ export default {
           // 聊天框内的信息
           message: "", 
   
-      //hcr添加
-      userID:sessionStorage.getItem('userID'),
-    };
+          //hcr添加
+          userID: sessionStorage.getItem('userID'),
+        };
     },
     computed: {
         displayedAllRecords() {
@@ -255,7 +254,7 @@ export default {
         for (let i = 4; i <= 7; i++) {
             this.periodDict[i] = `${i + 9}:00-${i + 10}:00`;
         }
-console.log(this.userID);        axios.get(`http://124.223.143.21:4999/Registration/Patient/2152896`) //${this.userID}`)
+    axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
             .then((response) => {
             console.log(response.data);
             const newData = response.data; // 获取响应数据
@@ -263,7 +262,7 @@ console.log(this.userID);        axios.get(`http://124.223.143.21:4999/Registrat
             this.allRecords = newData.map(item => ({
                 patient: item.patient.name,
                 // patientID: this.userID,
-                patientID: "2152896",
+                patientID: this.userID,
                 patientGender: item.patient.gender ? "男" : "女",
                 patientBirth: item.patient.birthDate,
                 doctor: item.doctor.name,
