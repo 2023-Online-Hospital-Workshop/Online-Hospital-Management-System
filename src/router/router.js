@@ -15,6 +15,7 @@ import AdminMedicine from '../views/Admin/AdminMedicine.vue'
 import AdminDoctor from '../views/Admin/AdminDoctor.vue'
 import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
+import AdminFeedback from '../views/Admin/AdminFeedback.vue'
 import AdminCheckin from '../views/Admin/AdminCheckin.vue'
 import MedicineCount from '../views/Admin/MedicineCount.vue'
 
@@ -107,6 +108,11 @@ const routes = [
         path: 'doctor',
         name: 'AdminDoctor',
         component: AdminDoctor,
+      },
+      {
+        path: 'feedback',
+        name: 'AdminFeedback',
+        component: AdminFeedback,
       },
       {
         path: 'checkin',

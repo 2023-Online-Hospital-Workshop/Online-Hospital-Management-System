@@ -75,6 +75,13 @@ export default {
           url: '/Admin/doctor',
         },
         {
+          path: '/Admin/feedback',
+          name: 'AdminFeedback',
+          label: '就诊反馈管理',
+          icon: 'comment',
+          url: '/Admin/feedback',
+        },
+        {
           path: '/Admin/checkin',
           name: 'AdminCheckin',
           label: '挂号患者报到',

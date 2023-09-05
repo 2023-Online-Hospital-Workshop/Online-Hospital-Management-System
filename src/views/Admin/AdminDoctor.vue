@@ -1,4 +1,4 @@
-<template>  
+<template>
   <el-container>
     <el-main>
       <!-- 条件区 -->
@@ -15,36 +15,42 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller
+          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller noDataFilteredHtml="无数据" noDataHtml="无数据"
           @filtered="filteredCount = $event.items.length">
 
-          
+
           <!-- 新建区 -->
           <template #headerAppend>
             <tr class="table-curd__slot">
               <th>
-                <va-select style="width:100%; font-weight: 100;" placeholder="请选择医生ID" v-model="newID" :options="doctorIDs" />
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择医生ID" v-model="newID"
+                  :options="doctorIDs" />
               </th>
               <th>
-                <va-select style="width:100%; font-weight: 100;" placeholder="请选择诊室" v-model="newRoom" :options="availableRooms" />
+                <va-input style="width:99%; font-weight: 100;" v-model="newName" readonly />
+              </th>
+              <th>
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择诊室" v-model="newRoom"
+                  :options="availableRooms" />
               </th>
               <th>
                 <va-popover color="backgroundElement" placement="top" trigger="click">
-                  <va-button style="width:100%; font-weight:100;" color="backgroundElement">{{ newDate }}</va-button>
+                  <va-button style="width:99%; font-weight:100;" color="backgroundElement">{{ newDate }}</va-button>
                   <template #body>
                     <div>
-                      <va-date-picker stateful v-model="formattedNewDate"
-                      @update:model-value="updateDate()"
-                      :allowed-years="(date) => date.getFullYear() !== currentDate.getFullYear()"/>
-                    </div>           
-                  </template>            
-                </va-popover>              
+                      <va-date-picker stateful v-model="formattedNewDate" @update:model-value="updateDate()"
+                        :allowed-years="(date) => date.getFullYear() !== currentDate.getFullYear()" />
+                    </div>
+                  </template>
+                </va-popover>
               </th>
               <th>
-                <va-select style="width:100%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper" :options="timePers" />
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper"
+                  :options="timePers" />
               </th>
               <th>
-                <va-button style="width:100%; font-weight: 100;" color="backgroundElement" @click="addItem"> 添加 </va-button>
+                <va-button style="width:99%; font-weight: 100;" color="backgroundElement" @click="addItem"> 添加
+                </va-button>
               </th>
             </tr>
             <!-- <tr class="table-curd__slot">
@@ -60,8 +66,7 @@
 
           <!-- 修改操作 -->
           <template #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
-            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="showConfirm = true; deletedRow = rowIndex" />
           </template>
 
           <!-- 分页 -->
@@ -79,13 +84,8 @@
       <!-- 表格 -->
 
       <!-- 弹窗 -->
-      <va-modal v-model="showModal" title="编辑坐诊信息" size="small" ok-text="确认" cancel-text="取消" @ok="confirmUpdate"
-        no-outside-dismiss @cancel="cancelUpdate">
-        <div v-for="col in tableColumns.slice(0, -1)" :key="col">
-          <br>
-          <div class="modal-label">{{ col }}</div>
-          <va-input v-model="editedItem[col]" />
-        </div>
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消" @ok="deleteItem(deletedRow)">
+        <span>确定删除吗？</span>
       </va-modal>
       <!-- 弹窗 -->
 
@@ -98,7 +98,7 @@ import axios from 'axios';
 export default {
   data() {
     const perPage = 10;
-    const tableColumns = ["ID", "诊室", "日期", "坐诊时间", "修改"];
+    const tableColumns = ["ID", "医生姓名", "诊室", "日期", "坐诊时间", "修改"];
 
     return {
       // 筛选
@@ -110,19 +110,7 @@ export default {
       tableItems: [],
 
       // 编辑
-      createdItem: {
-        "ID": "",
-        "诊室": "",
-        "日期": "",
-        "坐诊时间": "",
-      },
-      editedRow: 0,
-      editedItem: {
-        "ID": "",
-        "诊室": "",
-        "日期": "",
-        "坐诊时间": "",
-      },
+      deletedRow: 0,
 
       // 分页
       perPage,
@@ -130,6 +118,7 @@ export default {
 
       // 弹窗
       showModal: false,
+      showConfirm: false,
 
       // 数据库中的医生ID
       doctorIDs: [],
@@ -140,6 +129,8 @@ export default {
       currentYear: 2023,
 
       newID: "请选择医生ID",
+
+      newName: "医生姓名",
 
       newRoom: "请选择诊室",
 
@@ -172,7 +163,7 @@ export default {
         }
       }
       return true;
-    }
+    },
   },
 
   methods: {
@@ -188,13 +179,6 @@ export default {
 
     // 添加表项
     addItem() {
-      // 新建对象
-      // let newItem = {};
-      // for (let col in this.createdItem) {
-      //   newItem[col] = this.createdItem[col];
-      //   this.createdItem[col] = ""; // 重置createdItem
-      // }
-
       // 传入后端
       let myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -226,6 +210,20 @@ export default {
         this.editedItem[col] = this.tableItems[rowIndex][col];
       }
       this.editedRow = rowIndex;
+      this.editedOptions = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"];
+      for (let i = 0; i < this.tableItems.length; ++i) { // 遍历所有列表项
+        let flag = true; // 前几项属性是否都相同
+        for (let col in this.tableColumns.slice(0, -2)) { // 遍历所有属性
+          let att = this.tableColumns[col];
+          if (this.editedItem[att] != this.tableItems[i][att]) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) { // 筛掉所有重复的
+          this.editedOptions = this.editedOptions.filter(item => item != this.tableItems[i]["坐诊时间"]);
+        }
+      }
       this.showModal = true;
     },
 
@@ -257,7 +255,7 @@ export default {
     // 时间转换为 period
     toPeriod(time) {
       let startTime = parseInt(time.slice(0, 2));
-      return [0, 8, 9, 10, 13, 14, 15, 0, 16].findIndex(val => val == startTime);
+      return [8, 9, 10, 13, 14, 15, 16].findIndex(val => val == startTime) + 1;
     },
 
     // 确认编辑
@@ -318,6 +316,17 @@ export default {
               "坐诊时间": result[i].startTime + " - " + result[i].endTime,
             });
           }
+          for (let i = 0; i < this.tableItems.length; ++i) {
+            fetch("http://124.223.143.21/api/Doctors/id?id=" + this.tableItems[i]["ID"], {
+              method: 'GET',
+              redirect: 'follow'
+            }).then(response => response.text())
+              .then(result => {
+                result = JSON.parse(result);
+                this.tableItems[i]["医生姓名"] = result.name;
+              })
+              .catch(error => console.log('error', error));
+          }
         })
         .catch(error => console.log('error', error));
     },
@@ -325,7 +334,7 @@ export default {
     // 获取表格候选信息（医生ID，诊室列表，日期）
     getInfo() {
       axios.get('http://124.223.143.21:4999/api/Doctors')
-      .then(response => {
+        .then(response => {
           console.log(response);
           for (let i = 0; i < response.data.length; i++) {
             const item = response.data[i];
@@ -335,7 +344,7 @@ export default {
         .catch(error => console.log('error', error));
 
       axios.get('http://124.223.143.21/api/Consultationinfo/GetAllRooms')
-      .then(response => {
+        .then(response => {
           console.log(response);
           for (let i = 0; i < response.data.length; i++) {
             const item = response.data[i];
@@ -354,7 +363,7 @@ export default {
       var d = this.formattedNewDate.getDate().toString().padStart(2, '0');
       this.newDate = y + '-' + m + '-' + d;
     }
-    
+
   },
 
   mounted() {
@@ -366,6 +375,21 @@ export default {
     filter() {
       this.curPage = 1;
     },
+
+    newID(newVal) {
+      if(newVal == "请选择医生ID") {
+        return;
+      }
+      fetch("http://124.223.143.21/api/Doctors/id?id=" + newVal, {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          this.newName = result.name;
+        })
+        .catch(error => console.log('error', error));
+    }
   },
 
 }
