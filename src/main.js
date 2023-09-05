@@ -10,7 +10,7 @@ import { createVuestic } from "vuestic-ui";
 import "vuestic-ui/css";
 import 'material-icons/iconfont/material-icons.css';
 import '../src/assets/font/font.css';
-import Chat from 'vue3-beautiful-chat';
+// import Chat from 'vue3-beautiful-chat';
 
 
 const store = createStore({
@@ -44,7 +44,7 @@ app.use(router)
 app.use(store)
 app.use(createVuestic())
 app.use(ElementPlus);
-app.use(Chat);
+// app.use(Chat);
 for (const iconName in ElIcons) {
     app.component(iconName, ElIcons[iconName])
 }

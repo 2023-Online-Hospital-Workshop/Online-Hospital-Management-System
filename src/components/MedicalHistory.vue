@@ -118,12 +118,7 @@
 
           <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
               class="feedback-button" @click="modalShown = !modalShown"> 
-              class="feedback-button" @click="modalShown = !modalShown"> 
             反馈评价
-          </va-button>
-
-          <va-button color="primary" class="button" @click="showChat()">
-            在线复诊
           </va-button>
 
           <va-button color="primary" class="button" @click="showChat()">
