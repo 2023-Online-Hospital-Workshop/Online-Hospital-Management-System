@@ -29,7 +29,7 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller
+          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller noDataFilteredHtml="无数据" noDataHtml="无数据"
           @filtered="filteredCount = $event.items.length">
 
           <!-- 新建区 -->
@@ -50,7 +50,7 @@
 
           <!-- 修改操作 -->
           <template v-if="curTab == 0" #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="showConfirm = true; deletedRow = rowIndex" />
           </template>
           <!-- 修改操作 -->
 
@@ -75,6 +75,9 @@
         <div class="modal-label">库存</div>
         <va-input v-model="editedStock" />
       </va-modal>
+
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消"
+        @ok="deleteItem(deletedRow)"><span>确定删除吗？</span></va-modal>
       <!-- 弹窗 -->
 
     </el-main>
@@ -119,6 +122,7 @@ export default {
       },
       editedStock: 0,
       editedRow: 0,
+      deletedRow: 0,
 
       // 分页
       perPage: 8,
@@ -126,6 +130,7 @@ export default {
 
       // 弹窗
       showModal: false,
+      showConfirm: false,
     }
   },
 
