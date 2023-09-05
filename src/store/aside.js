@@ -12,7 +12,7 @@ export default {
           url: '/home'
         },
         {
-          path: '/callService',
+          path: '/call-service',
           name: 'CallService',
           label: '校医院就诊流程',
           icon: 'account_tree',
