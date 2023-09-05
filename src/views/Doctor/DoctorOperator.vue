@@ -1,21 +1,209 @@
+<style scoped>
+.header {
+  position: fixed;
+  /* 使其始终在屏幕顶部 */
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #002fb0;
+  height: 60px;
+  /* 为Header设置一个固定高度 */
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+  /* 为Header添加轻微的阴影效果 */
+  z-index: 100;
+  /* 确保Header始终位于其他内容之上 */
+  padding: 0 20px;
+  /* 两侧添加一些边距 */
+}
+
+.patient-info {
+  display: flex;
+  justify-content: space-between;
+  /* 患者姓名和患者ID水平排列 */
+}
+
+.application-time {
+  font-size: 12px;
+  /* 设置申请时间的字体大小 */
+  margin-top: 10px;
+  /* 控制申请时间的上外边距 */
+}
+
+* {
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+  /* 应用字体 */
+}
+
+.logo {
+  height: 40px;
+  /* Adjust the height as necessary */
+  margin-right: 10px;
+  /* Adjust the margin as necessary */
+}
+
+.main-title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 24px;
+  /* 增大字体大小 */
+  margin: 0;
+  /* 移除所有边距 */
+  color: white;
+  /* 设置标题颜色为白色 */
+}
+
+.navbar-item-slot>a {
+  border: 1px dashed var(--va-secondary);
+  padding: 6px 10px;
+  color: aliceblue;
+}
+
+#app {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  margin-top: 60px;
+}
+
+/* 主元素*/
+.main {
+  display: flex;
+  flex-wrap: wrap;
+  /*在容器内的子元素超出容器宽度时换行*/
+  margin-left: 300px;
+  margin-top: 50px;
+}
+
+/*叫号*/
+#title {
+  text-align: center;
+  /* 居中文本 */
+  font-size: 20px;
+  /* 设置字体大小为 30px */
+  font-weight: bold;
+}
+
+.list__item+.list__item {
+  margin-top: 20px;
+}
+
+#register {
+  width: 300px;
+  height: 400px;
+}
+
+/*就诊单*/
+.diagnostic {
+  float: right;
+  width: 700px;
+  height: 1200px;
+  margin: 40px 0px 0px 60px;
+  text-align: left;
+  padding-left: 30px;
+  /* 设置文本左侧缩进为 30px */
+  font-weight: 500;
+  /* 设置字体粗细 */
+  color: #000000;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  /* 添加阴影效果 */
+}
+
+input {
+  border: none;
+  /* 取消边框 */
+  outline: none;
+  /* 取消获取焦点时的边框和阴影 */
+  width: 600px;
+  height: 70px;
+  /* 设置高度为 30px */
+  background-color: rgb(255, 255, 255);
+  /* 设置背景颜色为 "input"（请确保颜色名称正确） */
+  padding: 5px 10px;
+  /* 添加内边距以提供一些间隔 */
+}
+
+.myh1 {
+  text-align: center;
+  font-size: 20px;
+  /* 设置字体大小为 20px */
+  margin: 20px;
+  /* 设置下边距为 30px */
+}
+
+#info {
+  border-spacing: 40px 10px;
+  /* 设置单元格之间的间距 */
+  border-collapse: separate;
+  /* 设置表格边框合并模式 */
+}
+
+#test {
+  background: "input";
+  color: "input";
+  border: none;
+}
+
+.myform {
+  margin: 5px;
+}
+
+/*侧边栏按钮*/
+/* #cebian {
+  width: 120px;
+  height: 0;
+  margin: 100px 10px;
+  border-left: 80px solid transparent;
+  border-top: 150px solid #00C1AE;
+} */
+</style>
+  
+
+
 <template>
   <header class="header">
     <img src="@/assets/logo.jpg" alt="Logo" class="logo" />
     <h1 class="main-title">济康同行</h1>
     <DoctorInfo />
-    <el-button type="primary" style="margin-left: 16px" @click="drawer = true">
-      请假申请
+    <el-button type="primary" class="custom-button trapezoid-button" @click="drawer = true">
+      <span class="vertical-text">请假申请</span>
     </el-button>
+
     <el-drawer v-model="drawer" title="I am the title" :with-header="false">
       <va-card v-for="(i, index) in leave_app" :key="index" style="margin-bottom: 30px;">
         <va-card-title>请假申请</va-card-title>
         <va-card-content>
-          申请人:
-          <!-- <br />诊断：{{ i.treatmentRecord.clinicdia }} -->
+          <!-- 诊断 -->
+          诊断：{{ i.treatmentRecord.clinicdia }}
+
+          <!-- 患者信息和申请时间 -->
+          <div class="patient-info">
+            <div>
+              <!-- 患者姓名和患者ID放在右下角 -->
+              <div class="patient-info-item">
+                患者姓名: {{ i.patientName.name }}
+              </div>
+              <div class="patient-info-item">
+                患者ID: {{ i.patientName.patientId }}
+              </div>
+            </div>
+
+            <!-- 申请时间放在右下角 -->
+            <div class="application-time">
+              申请时间：{{ i.leaveApplication.leaveApplicationTime }}
+            </div>
+          </div>
+
+          <!-- 时间信息 -->
+          <br />诊断时间：{{ i.treatmentRecord.diagnoseTime }}
           <br />开始时间：{{ i.leaveApplication.leaveStartDate }}
           <br />结束时间：{{ i.leaveApplication.leaveEndDate }}
-          <br />申请时间：{{ i.leaveApplication.leaveApplicationTime }}
-          <br />诊断时间：{{ i.leaveApplication.diagnoseTime }}
 
           <va-card-actions align="stretch"
             style="justify-content: flex-end; /* 将按钮右对齐 */margin-right: 10px; /* 添加右侧间距 */">
@@ -32,6 +220,9 @@
       </va-card>
     </el-drawer>
   </header>
+
+
+
 
   <div class=" main">
     <div id="registe">
@@ -189,7 +380,7 @@
           </el-table-column>
         </el-table>
 
-        <va-checkbox v-model="value" label="是否开具假条" />
+        同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
 
         <!-- <va-button @click="showModal2 = !showModal2">
                     确认处方
@@ -209,6 +400,10 @@
         </va-button>
       </va-form>
     </div>
+    <div id="cebian">
+
+    </div>
+
   </div>
 </template>
 
@@ -233,7 +428,7 @@ export default {
       contact: "",
       counsellor: "",
       num: 0, //当前就诊患者的序号
-      doctorId: "23003",
+      doctorId: sessionStorage.getItem('userID'),
       //doctorId: userInfo.state.userID,
       dept: "普通外科",
 
@@ -261,6 +456,7 @@ export default {
 
       //病假信息
       leave_app: [],
+      leave_day: 0,
       drawer: false,
     };
   },
@@ -300,8 +496,11 @@ export default {
       return inputString.slice(0, 10);
     },
 
-    //初始化今日挂号的病人
+    //初始化
     async initial() {
+      //获取医生id
+      console.log(this.doctorId);
+      //初始化今日挂号病人
       let api =
         "http://124.223.143.21:4999/Registration/commit?doctorId=" +
         this.doctorId;
@@ -354,7 +553,7 @@ export default {
         this.leave_app[i].leaveApplication.leaveApplicationTime = this.time(this.leave_app[i].leaveApplication.leaveApplicationTime);
         this.leave_app[i].leaveApplication.leaveStartDate = this.time(this.leave_app[i].leaveApplication.leaveStartDate);
         this.leave_app[i].leaveApplication.leaveEndDate = this.time(this.leave_app[i].leaveApplication.leaveEndDate);
-        //this.leave_app[i].treatmentRecord.diagnoseTime = this.time(this.leave_app[i].treatmentRecord.diagnoseTime);
+        this.leave_app[i].treatmentRecord.diagnoseTime = this.time(this.leave_app[i].treatmentRecord.diagnoseTime);
       }
     },
 
@@ -557,6 +756,18 @@ export default {
       this.total_p = this.his_rep.records.length * 10;
 
       console.log(this.his_rep);
+
+      //发送假条数据
+      var requestOptions2 = {
+        method: 'POST',
+        redirect: 'follow'
+      };
+      const url2 = "http://124.223.143.21/api/Leave/Offline?patientId=" + this.patientId + "&doctorId=" + this.doctorId + "&period=" + this.period + "&leaveDays=" + this.leave_day;
+
+      fetch(url2, requestOptions2)
+        .then(response => { console.log(response); return response.text(); })
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
     },
 
     //就诊历史翻页
@@ -595,158 +806,4 @@ export default {
   },
 };
 </script>
-  
-<style scoped>
-.header {
-  position: fixed;
-  /* 使其始终在屏幕顶部 */
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #002fb0;
-  height: 60px;
-  /* 为Header设置一个固定高度 */
-  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
-  /* 为Header添加轻微的阴影效果 */
-  z-index: 100;
-  /* 确保Header始终位于其他内容之上 */
-  padding: 0 20px;
-  /* 两侧添加一些边距 */
-}
-
-* {
-  font-family: AliRegular;
-  --va-font-family: AliRegular;
-  /* 应用字体 */
-}
-
-.logo {
-  height: 40px;
-  /* Adjust the height as necessary */
-  margin-right: 10px;
-  /* Adjust the margin as necessary */
-}
-
-.main-title {
-  flex-grow: 1;
-  text-align: center;
-  font-size: 24px;
-  /* 增大字体大小 */
-  margin: 0;
-  /* 移除所有边距 */
-  color: white;
-  /* 设置标题颜色为白色 */
-}
-
-.navbar-item-slot>a {
-  border: 1px dashed var(--va-secondary);
-  padding: 6px 10px;
-  color: aliceblue;
-}
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-/* 主元素*/
-.main {
-  display: flex;
-  flex-wrap: wrap;
-  /*在容器内的子元素超出容器宽度时换行*/
-  margin-left: 300px;
-  margin-top: 50px;
-}
-
-/*叫号*/
-#title {
-  text-align: center;
-  /* 居中文本 */
-  font-size: 20px;
-  /* 设置字体大小为 30px */
-  font-weight: bold;
-}
-
-.list__item+.list__item {
-  margin-top: 20px;
-}
-
-#register {
-  width: 300px;
-  height: 400px;
-}
-
-.register #re-button {
-  position: absolute;
-  left: 20px;
-}
-
-.highlight {
-  background-color: #89bcef;
-  /* font-weight: bold; */
-}
-
-/*就诊单*/
-.diagnostic {
-  float: right;
-  width: 700px;
-  height: 1200px;
-  margin: 40px 0px 0px 60px;
-  text-align: left;
-  padding-left: 30px;
-  /* 设置文本左侧缩进为 30px */
-  font-weight: 500;
-  /* 设置字体粗细 */
-  color: #000000;
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  /* 添加阴影效果 */
-}
-
-input {
-  border: none;
-  /* 取消边框 */
-  outline: none;
-  /* 取消获取焦点时的边框和阴影 */
-  width: 600px;
-  height: 70px;
-  /* 设置高度为 30px */
-  background-color: rgb(255, 255, 255);
-  /* 设置背景颜色为 "input"（请确保颜色名称正确） */
-  padding: 5px 10px;
-  /* 添加内边距以提供一些间隔 */
-}
-
-.myh1 {
-  text-align: center;
-  font-size: 20px;
-  /* 设置字体大小为 20px */
-  margin: 20px;
-  /* 设置下边距为 30px */
-}
-
-#info {
-  border-spacing: 40px 10px;
-  /* 设置单元格之间的间距 */
-  border-collapse: separate;
-  /* 设置表格边框合并模式 */
-}
-
-#test {
-  background: "input";
-  color: "input";
-  border: none;
-}
-
-.myform {
-  margin: 5px;
-}
-</style>
   
