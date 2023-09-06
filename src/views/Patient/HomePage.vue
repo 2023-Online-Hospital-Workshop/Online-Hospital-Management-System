@@ -1,10 +1,18 @@
 <template>
-  <SideBar :role="0" />
-  <Header />
+  <div>1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111</div>
+
+  <div>
+    <SideBar :role="0" />
+    <Header />
+    <News />
+  </div>
+  <div class="center-image">
+    <img src="../../assets/call.png" alt="Description" :style="{ width: '1200px', height: '800px' }"  >
+  </div>
 </template>
 
-
 <script>
+import News from "@/components/News.vue";
 import { ref, computed, onMounted } from "vue";
 import SideBar from "@/components/SideBar.vue";
 import Header from "@/components/Header.vue";
@@ -13,8 +21,10 @@ import { useStore } from "vuex";
 export default {
   name: "HomePage",
   components: {
+    News,
     SideBar,
     Header,
+   
   },
   setup() {
     const store = useStore();
@@ -30,14 +40,37 @@ export default {
         Height.value = document.documentElement.clientHeight - 100;
       });
     });
-
+ 
     return { Height, isCollapse };
   },
+
+  data() {
+    return {
+      value: 0,
+      items: [
+        "https://picsum.photos/1500",
+        "https://picsum.photos/1501",
+        "https://picsum.photos/1502",
+        "https://picsum.photos/1503",
+        "https://picsum.photos/1504",
+      ],
+    };
+  }
+
+
+
 };
 </script>
 
 <style lang="less" scoped>
 .views {
+  .center-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    top: 500px;
+  }
   //Header
   .header {
     background-color: #ffffff;
@@ -68,5 +101,13 @@ export default {
     background-color: #fafcfb;
     margin-left: -8px;
   }
+
+
 }
+
+// va-carousel {
+//   width: 100%; /* 设定宽度为容器的100% */
+//   height: 300px; /* 设定一个固定的高度，例如300px */
+//   background-color: red;
+// }
 </style>

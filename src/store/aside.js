@@ -5,18 +5,18 @@ export default {
       // 用户
       "0": [
         {
-          path: '/home',
-          name: 'Home',
+          path: '/home-page',
+          name: 'HomePage',
           label: '首页',
           icon: 'home',
-          url: '/home'
+          url: '/home-page'
         },
         {
           path: '/call-service',
           name: 'CallService',
           label: '校医院就诊流程',
           icon: 'account_tree',
-          url: '/callService'
+          url: '/call-service'
         },
         {
           path: '/doctor-query',

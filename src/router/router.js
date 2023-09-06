@@ -2,13 +2,14 @@ import { createRouter, createWebHistory } from 'vue-router'
 
 // 患者页面
 import PatientLayout from '../views/Patient/PatientLayout.vue'
-import Home from '../views/Patient/Home.vue'
+import HomePage  from '../views/Patient/HomePage.vue'
 import DoctorQuery from '../views/Patient/DoctorQuery.vue'
 import DoctorAppointment from '../views/Patient/DoctorAppointment.vue'
 import DiseaseInquiry from '../views/Patient/DiseaseInquiry.vue'
 import MedicalHistory from '../components/MedicalHistory.vue'
 import AppointmentSuccess from '../views/Patient/AppointmentSuccess.vue'
 import AskAI from '../views/Patient/AskAI.vue'
+import CallService from "../views/Patient/CallService.vue"
 
 // 管理员页面
 import AdminMedicine from '../views/Admin/AdminMedicine.vue'
@@ -45,12 +46,17 @@ const routes = [
     path: '/Patient',
     name: 'PatientLayout',
     component: PatientLayout,
-    redirect: '/Patient/home',
+    redirect: '/Patient/home-page',
     children: [
       {
-        path: 'home',
-        name: 'Home',
-        component: Home,
+        path: 'home-page',
+        name: 'HomePage',
+        component: HomePage,
+      },
+      {
+        path: 'call-service',
+        name: 'CallService',
+        component: CallService,
       },
       {
         path: 'doctor-query',
