@@ -32,10 +32,10 @@
             </template>
           </el-table-column>
           
-        <el-table-column fixed="right" label="点击报道" width="100">
+        <el-table-column fixed="right" label="点击报到" width="100">
           <template #default="scope">
             <el-button type="primary" size="small" @click.prevent="manual(scope.$index)">
-              报道
+              报到
             </el-button>
           </template>
         </el-table-column>
@@ -54,7 +54,7 @@
           <el-table-column prop="checkin" label="状态" width="100"/>
             
           
-          <el-table-column fixed="right" label="点击报道" width="100">
+          <el-table-column fixed="right" label="点击报到" width="100">
             
           </el-table-column>
         </el-table>
@@ -104,9 +104,9 @@ export default defineComponent({
         axios
           .put("http://124.223.143.21/Registration/Checkin", data)
           .then((response) => {
-            this.alertText = "报道成功！" + "时间：" + time + " " + response.data;
+            this.alertText = "报到成功！" + "时间：" + time + " " + response.data;
             this.uploadSuccess = true;
-            console.log('报道成功');
+            console.log('报到成功');
 
             this.showModal = true;
 
@@ -236,15 +236,15 @@ export default defineComponent({
       axios
         .put("http://124.223.143.21/Registration/Checkin", data)
         .then((response) => {
-          this.alertText = response.data+"！";
+          this.alertText = response.data + "！";
           this.uploadSuccess = true;
-          console.log('报道成功');
+          console.log('报到成功');
           this.FetchData();
 
           this.showModal = true;
         })
         .catch(function (error) {
-          alert("报道失败！");
+          alert("报到失败！");
           console.error("Error message:", error.message);
           if (error.message == "Network Error") return;
           if (error.response) {

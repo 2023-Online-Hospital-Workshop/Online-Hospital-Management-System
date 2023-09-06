@@ -69,6 +69,7 @@
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+  height: 1400px;
 }
 
 /* 主元素*/
@@ -102,7 +103,7 @@
 .diagnostic {
   float: right;
   width: 700px;
-  height: 1200px;
+  height: 1300px;
   margin: 40px 0px 0px 60px;
   text-align: left;
   padding-left: 30px;
@@ -219,9 +220,18 @@ input {
         </va-card-content>
       </va-card>
     </el-drawer>
+
+    <el-button type="primary" class="custom-button trapezoid-button" @click="drawer2 = true">
+      <span class="vertical-text">门诊单模板</span>
+    </el-button>
+
+    <el-drawer v-model="drawer2" title="I am the title" :with-header="false">
+      <el-button type="primary" class="custom-button trapezoid-button" v-for="(buttonText, index) in template"
+        :key="index" @click="handle(index)">
+        {{ buttonText }}
+      </el-button>
+    </el-drawer>
   </header>
-
-
 
 
   <div class=" main">
@@ -400,9 +410,10 @@ input {
         </va-button>
       </va-form>
     </div>
-    <div id="cebian">
 
+    <div id="cebian">
     </div>
+
 
   </div>
 </template>
@@ -458,6 +469,29 @@ export default {
       leave_app: [],
       leave_day: 0,
       drawer: false,
+      drawer2: false,
+
+      //处方模板
+      template: ["感冒", "浅表性胃炎"],
+      content: [{
+        "problem": "喉咙痛，流鼻涕，打喷嚏，咳嗽，轻微头疼",
+        "illness": "无",
+        "past_illness": "体健",
+        "symptom": "喉咙红，体温",
+        "diagnose": "感冒",
+        "prescription": "注意休息、多喝水,维持良好的卫生习惯，或者出现其他严重症状（如高烧、呼吸急促、胸痛等）及时复诊",
+        "medicine": ["清开灵颗粒", "板蓝根颗粒"],
+      },
+      {
+        "problem": "胀气，腹部紧张，打嗝频繁",
+        "illness": "无",
+        "past_illness": "体健",
+        "symptom": "无",
+        "diagnose": "胃胀",
+        "prescription": "多吃蔬菜，少喝碳酸饮料，少食多餐，避免吞气",
+        "medicine": ["酪酸梭菌活菌胶囊"],
+      },
+      ]
     };
   },
   components: {
@@ -802,6 +836,56 @@ export default {
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
       this.leave_app.shift();
+    },
+
+    //假条模板
+    handle(index) {
+      for (let j = 0; j < 15; j++) {
+        this.all_med[j].name = "";
+        this.all_med[j].spec = "";
+        this.all_med[j].single = "";
+        this.all_med[j].ad = "";
+        this.all_med[j].tips = "";
+        this.all_med[j].fre = "";
+      }
+      console.log(this.medicine.length);
+      while (this.medicine.length > 0) {
+        this.medicine.pop();
+      }
+      console.log(this.medicine.length);
+
+      this.problem = this.content[index].problem;
+      this.illness = this.content[index].illness;
+      this.past_illness = this.content[index].past_illness;
+      this.symptom = this.content[index].symptom;
+      this.diagnose = this.content[index].diagnose;
+      this.prescription = this.content[index].prescription;
+      this.all_num = this.content[index].medicine.length;
+
+      let foundElement = null;
+      for (let j = 0; j < this.all_num; j++) {
+        let name = this.content[index].medicine[j];
+        //foundElement是当前选中的药品
+        for (let i = 0; i < this.all_medicine.length; i++) {
+          if (this.all_medicine[i].medicineName === name) {
+            foundElement = this.all_medicine[i];
+            break;
+          }
+        }
+        let a = {
+          "name": foundElement.medicineName,
+          "spec": foundElement.specification
+        };
+        this.medicine.push(a);
+        this.all_med[j].name = foundElement.medicineName;
+        this.all_med[j].spec = foundElement.specification;
+        this.all_med[j].single = foundElement.singledose;
+        this.all_med[j].ad = foundElement.administration;
+        this.all_med[j].tips = foundElement.attention;
+        this.all_med[j].fre = foundElement.frequency;
+      }
+
+      console.log(index);
     }
   },
 };

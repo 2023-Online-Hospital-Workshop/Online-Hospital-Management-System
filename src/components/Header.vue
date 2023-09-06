@@ -21,7 +21,7 @@ export default {
   setup() {
     const title = "济康同行";
     const store = useStore();
-    const role = sessionStorage.getItem("role");
+    const role = sessionStorage.getItem('role');
     const toggleSidebar = () => {
       console.log(store.state.state.is_expand);
       store.state.state.is_expand = !store.state.state.is_expand;

@@ -1,14 +1,8 @@
 <!--  
   问题：
   - 表格大小无法适配所有分辨率
-  - 输入框可以添加输入类型限定
-  - 修改和删除可以添加确认提示
-  - 表格可以包含姓名（根据ID自动获取）
   - 可以有新增新药品种类的功能
-  - 修改坐诊时间period可以改成下拉菜单
-  - （坐诊记录的添加和删除无效）
-  - 表最多显示10页
-  - 侧边栏遮挡输入框
+  - 坐诊信息添加错误处理
  -->
 
 <template>
@@ -25,15 +19,15 @@
       <!-- 表格区 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter="filter" :per-page="perPage"
-          :current-page="curPage" :wrapper-size="550" hoverable clickable virtual-scroller
-          @filtered="filteredCount = $event.items.length" @row:click="openModal">
+          :current-page="curPage" :wrapper-size="550" hoverable clickable virtual-scroller noDataFilteredHtml="无数据"
+          noDataHtml="无数据" @filtered="filteredCount = $event.items.length" @row:click="openModal">
 
           <!-- 分页 -->
           <template #bodyAppend>
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10"/>
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10" />
               </td>
             </tr>
           </template>
@@ -61,11 +55,10 @@
 </template>
 
 <script>
-
 export default {
   data() {
     const perPage = 12;
-    const tableColumns = ["订单号", "时间", "就诊人ID", "金额", "状态"];
+    const tableColumns = ["订单号", "时间", "就诊人ID", "就诊人姓名", "金额", "状态"];
     const modalColumns = ["药品名", "数量", "单价", "总价"];
 
     return {
@@ -83,6 +76,7 @@ export default {
 
       //弹窗
       showModal: false,
+      selectedRow: 0,
       orderId: "",
       modalColumns,
       modalItems: [],
@@ -110,11 +104,22 @@ export default {
           for (let i = 0; i < result.length; ++i) {
             this.tableItems.push({
               "订单号": result[i].prescriptionId,
-              "时间": result[i].diagnoseTime,
+              "时间": result[i].diagnoseTime.replace("T", " ").slice(0, 19),
               "就诊人ID": result[i].patientId,
               "金额": result[i].totalPrice,
               "状态": result[i].paystate ? "已支付" : "未支付",
             })
+          }
+          for (let i = 0; i < this.tableItems.length; ++i) {
+            fetch("http://124.223.143.21/api/Patient/PatientDetails/" + this.tableItems[i]["就诊人ID"], {
+              method: 'GET',
+              redirect: 'follow'
+            }).then(response => response.text())
+              .then(result => {
+                result = JSON.parse(result);
+                this.tableItems[i]["就诊人姓名"] = result[0].name;
+              })
+              .catch(error => console.log('error', error));
           }
         })
         .catch(error => console.log('error', error));
@@ -129,6 +134,7 @@ export default {
 
       // 从后端获取订单详细信息
       this.orderId = this.tableItems[event.itemIndex]["订单号"];
+      this.selectedRow = event.itemIndex;
       fetch("http://124.223.143.21/api/Prescription/GetDetail?prescriptionId=" + this.orderId, {
         method: 'GET',
         redirect: 'follow'
@@ -151,7 +157,7 @@ export default {
 
     // 确认订单
     confirm() {
-      // 改变订单状态
+      /* 改变订单状态 */
       fetch("http://124.223.143.21/api/Prescription/UpdatePaystate"
         + "?prescriptionId=" + this.orderId.toString(), {
         method: 'PUT',
@@ -159,25 +165,54 @@ export default {
       }).then(response => response.text())
         .then(result => {
           if (result == "该订单已支付") {
-            alert("该订单已支付！");
+            alert(result);
+            this.showModal = false; // 关闭弹窗
+            return;
           }
-          else {
 
+          /* 获取所有药品 */
+          fetch("http://124.223.143.21/api/Stock/GetAllStocks", {
+            method: 'GET',
+            redirect: 'follow'
+          }).then(response => response.text())
+            .then(result => {
+              result = JSON.parse(result);
+              for (let i in this.modalItems) {
+                let flag = false;
+                for (let j = 0; j < result.length; ++j) {
+                  if (result[j].medicineName == this.modalItems[i]["药品名"]
+                    && result[j].medicineAmount >= this.modalItems[i]["数量"]) {
 
+                    /* 减少药品数量 */
+                    fetch("http://124.223.143.21/api/Medicine/UpdateStock"
+                      + "?medicineName=" + result[j].medicineName
+                      + "&newAmount=" + (result[j].medicineAmount - this.modalItems[i]["数量"]).toString()
+                      + "&manufacturer=" + result[j].manufacturer
+                      + "&productionDate=" + result[j].productionDate
+                      + "&administratorId=" + sessionStorage.getItem('userID')
+                      + "&patientId=" + this.tableItems[this.selectedRow]["就诊人ID"], {
+                      method: 'PUT',
+                      redirect: 'follow'
+                    }).then(response => response.text())
+                      .then(result => console.assert(result == "Medicine stock and purchase record updated successfully."))
+                      .catch(error => console.log('error', error));
+                    /* 减少药品数量 */
 
-            // 减少药品数量
-            for (let i in this.modalItems) {
-              this.modalItems[i]["药品名"];
-              this.modalItems[i]["数量"];
-            }
+                    flag = true;
+                    break;
+                  }
+                }
+                console.assert(flag);
+              }
+            })
+            .catch(error => console.log('error', error));
+          /* 获取所有药品 */
 
-
-
-            this.getTable(); // 刷新表格
-          }
+          this.getTable(); // 刷新表格
           this.showModal = false; // 关闭弹窗
         })
         .catch(error => console.log('error', error));
+      /* 改变订单状态 */
     },
 
     // 取消操作

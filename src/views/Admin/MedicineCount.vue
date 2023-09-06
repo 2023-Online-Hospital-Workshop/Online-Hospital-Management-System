@@ -121,7 +121,7 @@ export default {
   },
   computed: {
     profit() {
-      return this.totIncome - this.totOutcome;
+      return (this.totIncome - this.totOutcome).toFixed(2);
     },
     profitColor() {
       return this.profit >= 0 ? "#3CB371" : "#DC143C";

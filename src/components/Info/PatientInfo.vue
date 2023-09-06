@@ -134,7 +134,7 @@ export default {
       this.showInfo = !this.showInfo;
     },
     toggleInfo() {
-      this.studentId = sessionStorage.getItem("userID");
+      this.studentId = sessionStorage.getItem('userID');
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;

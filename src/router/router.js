@@ -16,13 +16,16 @@ import AdminMedicine from '../views/Admin/AdminMedicine.vue'
 import AdminDoctor from '../views/Admin/AdminDoctor.vue'
 import AdminLayout from '../views/Admin/AdminLayout.vue'
 import AdminOrder from '../views/Admin/AdminOrder.vue'
+import AdminFeedback from '../views/Admin/AdminFeedback.vue'
 import AdminCheckin from '../views/Admin/AdminCheckin.vue'
+import MedicineCount from '../views/Admin/MedicineCount.vue'
 
 
 // import { use } from 'vue/types/umd'
 // 登录注册页面
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
+import ForgetPassword from '../views/ForgetPassword.vue'
 
 // 医生页面
 import DoctorOperator from '../views/Doctor/DoctorOperator.vue'
@@ -39,6 +42,11 @@ const routes = [
     path: '/register',
     name: 'RegisterPage',
     component: RegisterPage,
+  },
+  {
+    path: '/forget',
+    name: 'ForgetPassword',
+    component: ForgetPassword,
   },
 
   // 患者路由
@@ -114,10 +122,20 @@ const routes = [
         component: AdminDoctor,
       },
       {
+        path: 'feedback',
+        name: 'AdminFeedback',
+        component: AdminFeedback,
+      },
+      {
         path: 'checkin',
         name: 'AdminCheckin',
         component: AdminCheckin,
       },
+      {
+        path: 'MedicineCount',
+        name: 'MedicineCount',
+        component: MedicineCount,
+      }
     ],
   },
 

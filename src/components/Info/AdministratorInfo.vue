@@ -116,7 +116,7 @@ export default {
       this.showInfo = !this.showInfo;
     },
     toggleInfo() {
-      this.administratorId = sessionStorage.getItem("userID");
+      this.administratorId = sessionStorage.getItem('userID');
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;

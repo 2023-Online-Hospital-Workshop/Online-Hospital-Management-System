@@ -381,8 +381,8 @@
     font-size: 10px;
     color: #ffffff;
     position: absolute;
-    right: 5%;
-    top: 10%;
+    right: 10%;
+    top: 60%;
     cursor: pointer;
     border: none;
   }

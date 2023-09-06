@@ -16,16 +16,15 @@
       <!-- 条件区 -->
       <div class="conditions">
         <center>
-          <span class="search">
+          <span>
             <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
+          </span>
+          <span v-if="curTab == 0">
+            <va-input placeholder="扫码入库" class="mb-6" id="scannedData" v-model="scannedDataInput"
+              @keydown.enter="sendData()" />
           </span>
           <span v-if="curTab == 0" class="checkbox">
             <va-checkbox v-model="warningOnly" :label="checkboxLabel" />
-          </span>
-          <span style="margin-left: 10px;">
-            <va-input placeholder="扫码入库" class="mb-6" id="scannedData" v-model="scannedDataInput"
-              @keydown.enter="sendData()" />
-
           </span>
         </center>
       </div>
@@ -34,20 +33,26 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller
+          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller noDataFilteredHtml="无数据" noDataHtml="无数据"
           @filtered="filteredCount = $event.items.length">
 
           <!-- 新建区 -->
           <template v-if="curTab == 0" #headerAppend>
             <tr class="table-curd__slot">
-              <th v-for="col in stockColumns.slice(0, -1)" :key="col">
-                <va-input v-model="createdItem[col]" :placeholder="col" />
+              <th v-for="col in stockColumns.slice(0, -3)" :key="col">
+                <va-input style="width:99%" v-model="createdItem[col]" :placeholder="col" />
               </th>
               <th>
-                <va-input v-model="createdItemWarning" placeholder="预警" readonly />
+                <va-input style="width:99%" v-model='createdItem["库存"]' placeholder="库存" mask="numeral" />
               </th>
               <th>
-                <va-button :disabled="!createdItemValid" block @click="addItem">添加</va-button>
+                <va-input style="width:99%" v-model='createdItem["阈值"]' placeholder="阈值" mask="numeral" />
+              </th>
+              <th>
+                <va-input style="width:99%" v-model="createdItemWarning" placeholder="预警" readonly />
+              </th>
+              <th>
+                <va-button style="width:99%" :disabled="!createdItemValid" block @click="addItem">添加</va-button>
               </th>
             </tr>
           </template>
@@ -55,8 +60,7 @@
 
           <!-- 修改操作 -->
           <template v-if="curTab == 0" #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
-            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="showConfirm = true; deletedRow = rowIndex" />
           </template>
           <!-- 修改操作 -->
 
@@ -81,6 +85,11 @@
         <div class="modal-label">库存</div>
         <va-input v-model="editedStock" />
       </va-modal>
+
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消"
+        @ok="deleteItem(deletedRow)">
+        <span>确定删除吗？</span>
+      </va-modal>
       <!-- 弹窗 -->
 
     </el-main>
@@ -88,8 +97,7 @@
 </template>
 
 <script>
-import user from '../../store/user.js';
-import axios from "axios";
+import axios from 'axios'
 export default {
   data() {
     const tabTitles = [
@@ -127,6 +135,7 @@ export default {
       },
       editedStock: 0,
       editedRow: 0,
+      deletedRow: 0,
 
       // 分页
       perPage: 8,
@@ -140,6 +149,7 @@ export default {
         showapi_res_body: {
         }
       },
+      showConfirm: false,
     }
   },
 
@@ -310,7 +320,7 @@ export default {
         "medicineShelflife": 1, // 暂定
         "medicineAmount": parseInt(newItem["库存"]),
         "thresholdValue": parseInt(newItem["阈值"]),
-        "administratorId": user.state.userID,
+        "administratorId": sessionStorage.getItem('userID'),
         "purchasePrice": 1, // 暂定
         "medicineType": "1", // 暂定
         "applicableSymptom": "1", // 暂定
@@ -327,7 +337,6 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-
       fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
         .then(response => response.text())
         .then(result => {
@@ -356,13 +365,12 @@ export default {
         + "?medicineName=" + this.tableItems[rowIndex]["药品名"]
         + "&manufacturer=" + this.tableItems[rowIndex]["生产单位"]
         + "&productionDate=" + this.tableItems[rowIndex]["生产日期"]
-        + "&administratorId=" + user.state.userID, {
+        + "&administratorId=" + sessionStorage.getItem('userID'), {
         method: 'PUT',
         redirect: 'follow'
       })
         .then(response => response.text())
         .then(result => {
-          console.log(user.state.userID);
           if (result == "Medicine cleaned successfully.") {
             this.toStock();
           }
@@ -372,40 +380,13 @@ export default {
         })
         .catch(error => console.log('error', error));
     },
-
-    // 更新库存
-    confirmUpdate() {
-      fetch("http://124.223.143.21/api/Medicine/UpdateStock"
-        + "?medicineName=" + this.tableItems[this.editedRow]["药品名"]
-        + "&newAmount=" + this.editedStock.toString()
-        + "&manufacturer=" + this.tableItems[this.editedRow]["生产单位"]
-        + "&productionDate=" + this.tableItems[this.editedRow]["生产日期"]
-        + "&administratorId=" + user.state.userID, {
-        method: 'PUT',
-        redirect: 'follow'
-      }).then(response => response.text())
-        .then(result => {
-          if (result == "Medicine stock updated successfully.") {
-            this.toStock();
-          }
-          else {
-            alert("请求非法！");
-          }
-        })
-        .catch(error => console.log('error', error));
-    },
-
-    // 取消更新
-    cancelUpdate() {
-      return;
-    },
   },
 
   mounted() {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
-    console.log("adminID:", user.state.userID);
+    console.log("adminID:", sessionStorage.getItem('userID'));
   },
 
   watch: {
@@ -453,8 +434,9 @@ export default {
   height: 7%;
 }
 
-.checkbox {
-  margin-left: 5%;
+.conditions span {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .table {
