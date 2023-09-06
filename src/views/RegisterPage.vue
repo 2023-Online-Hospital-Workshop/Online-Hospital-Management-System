@@ -6,6 +6,7 @@
 
       <!-- Step Indicator -->
       <div class="steps">
+        <el-text style="color:#002fb0" @click="returnLogin">返回登录</el-text>
         <div class="circle" :class="{active: step === 1}" @click="changeStep(1)">1</div>
         <div class="circle" :class="{active: step === 2}" @click="changeStep(2)">2</div>
         <div class="circle" :class="{active: step === 3}" @click="changeStep(3)">3</div>
@@ -68,7 +69,7 @@
       <!-- Step 3: Password -->
       <el-form v-if="step === 3" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
         <el-form-item label="手机号码">
-          <el-input type="password" v-model="registerForm.phoneNumber" auto-complete="off" placeholder="请输入手机号码"></el-input>
+          <el-input type="flex" v-model="registerForm.phoneNumber" auto-complete="off" placeholder="请输入手机号码"></el-input>
         </el-form-item>
         <el-form-item label="验证码">
           <el-row type="flex" justify="space-between">
@@ -136,6 +137,11 @@ export default {
     }
   },
   methods: {
+    returnLogin() {
+      this.router.push({
+        path: '/',
+      });
+    },
     changeStep(step) {
       this.step = step
     },
