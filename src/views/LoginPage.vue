@@ -162,7 +162,6 @@ export default {
       })
       .catch((error) => {
         console.error(error);
-        this.$msgbox.alert("用户名或密码错误，登录失败")
       });
   },
   methods: {
@@ -223,6 +222,7 @@ export default {
         })
         .catch((error) => {
           console.error(error);
+          this.$msgbox.alert("用户名或密码错误，登录失败")
         });
     },
 
