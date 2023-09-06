@@ -60,8 +60,17 @@
         <va-card-title class="first-row">
           <div class="row justify-start"><span class="title-status"
               :style="{ color: record.status === 0 ? '#3498db' : record.status === -1 ? '#e74c3c' : '#2451c0' }">{{
-                record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span></div>
+                record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span>
+          </div>
+
+          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013" size="small"
+            text-color="#9d7013" @click="cancelAppointment(record, realIndex(index))">
+            取消
+          </va-button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+
           <span class="title-date">{{ record.date }}</span>
+
           &nbsp;
           <span class="title-dept">{{ record.department }}</span>
         </va-card-title>
@@ -97,13 +106,10 @@
             <span class="flex flex-col xs3">{{ record.waitingCount }}</span>
           </div>
         </va-card-content>
+
+
         <!-- 按钮，如果是已经取消或者已经就诊完就不能取消挂号 -->
         <va-card-content class="button-row">
-          <va-button :disabled="record.status != 0" color="primary" class="button"
-            @click="cancelAppointment(record, realIndex(index))">
-            取消挂号
-          </va-button>
-
           <va-button :disabled="record.status != 1" color="primary" class="button" @click="viewPrescription(record)">
             查看处方
           </va-button>
@@ -141,6 +147,7 @@
 
 
         </va-card-content>
+
       </va-card>
     </div>
     <div class="pagination">
@@ -199,7 +206,8 @@ export default {
       userID: sessionStorage.getItem('userID'),
     };
   },
-  computed: {
+  computed:
+  {
     displayedAllRecords() {
       // 通过调整起始索引和结束索引，我们可以选择要在当前页面显示的特定人员。
       // 这样，当用户切换页面时，我们可以动态地更新要显示的人员列表
@@ -211,6 +219,7 @@ export default {
       return Math.ceil(this.allRecords.length / this.itemsPerPage);
     },
   },
+
   mounted() {
     for (let i = 1; i <= 3; i++) {
       this.periodDict[i] = `${i + 7}:00-${i + 8}:00`;
@@ -218,6 +227,9 @@ export default {
     for (let i = 4; i <= 7; i++) {
       this.periodDict[i] = `${i + 9}:00-${i + 10}:00`;
     }
+
+
+    // 这个要改成轮询
     axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
       .then((response) => {
         console.log(response.data);
@@ -301,15 +313,16 @@ export default {
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
         params: {
-          diagnoseId: record.diagnoseId
+          diagnosedId: record.diagnoseId
         }
       })
         .then((response) => {
-          const text = response.text;
           // Create a new window
+          console.log(response);
           const newWindow = window.open("", "_blank");
-          // Write the fetched HTML content into the new window
-          newWindow.document.write(text);
+          const htmlString = response.data;
+          // // Write the fetched HTML content into the new window
+          newWindow.document.write(htmlString);
         })
         .catch((error) => {
           console.log(error);
@@ -382,7 +395,7 @@ export default {
           doc.setFontSize(6);
           const birthYear = new Date(record.patientBirth).getFullYear();
           const currentYear = new Date().getFullYear();
-          const basics = `姓名：${record.patient}    性别：${record.patientGender}    年龄：${currentYear - birthYear}    患者编号：${record.patientID}    科室：${prescriptionData.doctor.secondaryDepartment}    时间：${prescriptionData.diagnoseTime.replace('T', ' ')}`;
+          const basics = `姓名：${record.patient}    性别：${record.patientGender}    年龄：${currentYear - birthYear}    患者编号：${record.patientID}    科室：${prescriptionData.doctor.secondaryDepartment}    就诊时间：${prescriptionData.diagnoseTime.replace('T', ' ')}`;
           const basicsStart = 25 - doc.getTextDimensions(subtitle).w / 2;
           penHeight += doc.getTextDimensions(basics).h + PAGE_MARGIN;
           doc.text(basics, basicsStart, penHeight);
@@ -426,14 +439,25 @@ export default {
           });
           medicineData.push([`总价：${prescriptionData.totalPrice}`]);
           console.log(medicineData);
+
+          const totalWidth = doc.internal.pageSize.width - PAGE_MARGIN * 2; // 获取页面宽度
+          const columnWidth1 = totalWidth * 0.15; // 前四列宽度各15%
+          const columnWidth5 = totalWidth * 0.40; // 第五列宽度40%
           doc.autoTable({
             theme: 'plain',
             startY: penHeight + PAGE_MARGIN,
             body: medicineData,
             styles: {
               font: 'MyFont',
-              fontSize: 7,
+              fontSize: 6,
               cellPadding: { top: 0, right: 2, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
+            },
+            columnStyles: {
+              0: { columnWidth: columnWidth1 },
+              1: { columnWidth: columnWidth1 },
+              2: { columnWidth: columnWidth1 },
+              3: { columnWidth: columnWidth1 },
+              4: { columnWidth: columnWidth5 },
             },
           });
           // 打印时间
