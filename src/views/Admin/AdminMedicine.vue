@@ -39,14 +39,20 @@
           <!-- 新建区 -->
           <template v-if="curTab == 0" #headerAppend>
             <tr class="table-curd__slot">
-              <th v-for="col in stockColumns.slice(0, -1)" :key="col">
-                <va-input v-model="createdItem[col]" :placeholder="col" />
+              <th v-for="col in stockColumns.slice(0, -3)" :key="col">
+                <va-input style="width:99%" v-model="createdItem[col]" :placeholder="col" />
               </th>
               <th>
-                <va-input v-model="createdItemWarning" placeholder="预警" readonly />
+                <va-input style="width:99%" v-model='createdItem["库存"]' placeholder="库存" mask="numeral" />
               </th>
               <th>
-                <va-button :disabled="!createdItemValid" block @click="addItem">添加</va-button>
+                <va-input style="width:99%" v-model='createdItem["阈值"]' placeholder="阈值" mask="numeral" />
+              </th>
+              <th>
+                <va-input style="width:99%" v-model="createdItemWarning" placeholder="预警" readonly />
+              </th>
+              <th>
+                <va-button style="width:99%" :disabled="!createdItemValid" block @click="addItem">添加</va-button>
               </th>
             </tr>
           </template>
