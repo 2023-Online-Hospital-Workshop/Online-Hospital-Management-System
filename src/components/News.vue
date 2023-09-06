@@ -1,12 +1,12 @@
 <template>
-    <h6>On click</h6>
+    
     <va-carousel  class="va-carousel "
       v-model="value"
       :items="items"
       indicators
     />
   
-    <h6>On hover</h6>
+   
     <va-carousel class="va-carousel "
       v-model="value"
       :items="items"
@@ -38,7 +38,7 @@
 
 va-carousel {
   width: 100%; /* 设定宽度为容器的100% */
-  height: 300px; /* 设定一个固定的高度，例如300px */
+  height: 300px; 
   background-color: red;
 }
 
