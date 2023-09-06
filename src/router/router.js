@@ -24,6 +24,7 @@ import MedicineCount from '../views/Admin/MedicineCount.vue'
 // 登录注册页面
 import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
+import ForgetPassword from '../views/ForgetPassword.vue'
 
 // 医生页面
 import DoctorOperator from '../views/Doctor/DoctorOperator.vue'
@@ -40,6 +41,11 @@ const routes = [
     path: '/register',
     name: 'RegisterPage',
     component: RegisterPage,
+  },
+  {
+    path: '/forget',
+    name: 'ForgetPassword',
+    component: ForgetPassword,
   },
 
   // 患者路由
