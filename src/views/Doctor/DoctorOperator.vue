@@ -239,7 +239,6 @@ input {
       <div style="text-align: center; margin-top: 70px; margin-bottom: 30px">
         <label id="title"> 患者挂号信息 </label>
       </div>
-      <div>这里：{{ test }}</div>
       <div style="text-align: left">
         <va-scroll-container id="register" class="max-h-52" vertical>
           <va-list>
@@ -273,7 +272,7 @@ input {
 
     <div class="diagnostic">
       <h1 class="myh1">同济大学校医院门诊病历</h1>
-      <label>内科 日期</label>
+      <label>皮肤科 日期:{{ date }}</label>
       <table id="info">
         <tr>
           <td>姓名：{{ name }}</td>
@@ -336,9 +335,9 @@ input {
       </table>
       <va-form class="w-[300px]" tag="form" @submit.prevent="enter">
         主诉：
-        <input type="text" v-model="problem" name="firstname" placeholder="请输入" />
+        <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
         <br /><br />现病史：
-        <input type="text" v-model="illness" name="firstname" placeholder="请输入" />
+        <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
         <br /><br />既往史：
         <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
         <br /><br />体征：<input type="text" v-model="symptom" name="firstname" placeholder="请输入" />
@@ -359,7 +358,7 @@ input {
           </el-table-column>
           <el-table-column label="单次剂量" width="120">
             <template #default="scope">
-              <input class="input2" type="text" v-model="all_med[scope.$index].single" name="firstname" placeholder="" />
+              <input class="input2" type="text" v-model="all_meds[scope.$index].single" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="用法" width="70">
@@ -409,6 +408,7 @@ input {
           确认
         </va-button>
       </va-form>
+      <img src="../../assets/zhang.png" alt="图片描述">
     </div>
 
     <div id="cebian">
@@ -491,7 +491,10 @@ export default {
         "prescription": "多吃蔬菜，少喝碳酸饮料，少食多餐，避免吞气",
         "medicine": ["酪酸梭菌活菌胶囊"],
       },
-      ]
+      ],
+
+      //今日日期
+      date: "",
     };
   },
   components: {
@@ -589,6 +592,10 @@ export default {
         this.leave_app[i].leaveApplication.leaveEndDate = this.time(this.leave_app[i].leaveApplication.leaveEndDate);
         this.leave_app[i].treatmentRecord.diagnoseTime = this.time(this.leave_app[i].treatmentRecord.diagnoseTime);
       }
+
+      //初始化日期
+      var currentDate = new Date();
+      this.date = currentDate.toLocaleDateString();
     },
 
     //叫号
@@ -891,3 +898,4 @@ export default {
 };
 </script>
   
+
