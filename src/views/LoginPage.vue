@@ -57,12 +57,14 @@
 
         <div class="bottom-actions">
           <el-radio
-            v-model="auto_login"
+            v-model="isStayLogin"
             :label="true"
-            @click.prevent="onRadioChange"
-            >3天内自动登录</el-radio>
-          <el-button type="text" @click="toForget"
-            >忘记密码</el-button>
+            @click.prevent="onRadioChange(true)"
+            >3天内自动登录</el-radio
+          >
+          <el-button type="text" @click="applyInsButtonClick"
+            >忘记密码</el-button
+          >
         </div>
       </el-form>
     </div>
@@ -84,7 +86,6 @@ export default {
       router: useRouter(),
       store: useStore(),
       access_token: null,
-      auto_login: false,
       headers: {},
 
       //登录表单数据绑定
@@ -126,64 +127,8 @@ export default {
     };
   },
   //回车登录操作
-  created() {
-    let UserList = ["Patient", "Doctor", "Administrator"];
-    let AfterLogin = ["/Patient", "/doctor-operator", "/Admin"];
-
-    axios
-      .get(
-        "http://124.223.143.21/api/Login/verifyToken",
-        {
-          params: {
-            User: UserList[this.role_num],
-            token: this.getCookie("token"),
-          },
-        }
-      )
-      .then((response) => {
-        this.$message.success("正在自动登录");
-        if (response.data) {
-          console.log("登录成功");
-          setTimeout(() => {
-            this.router.push({
-              path: AfterLogin[this.getCookie("role")],
-            });
-          }, 2000);
-
-          sessionStorage.setItem("userID", this.getCookie("ID"))
-          sessionStorage.setItem("role", this.getCookie("role"))
-          return;
-
-        } else {
-          // 登录失败
-          console.error("登录失败");
-          this.$msgbox.alert("用户名或密码错误，登录失败")
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  },
+  created() {},
   methods: {
-
-    setCookie(name, value, exdays) {
-      var d = new Date();
-      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-      var expires = "expires=" + d.toGMTString();
-      document.cookie = name + "=" + value + "; " + expires;
-    },
-
-    getCookie(name) {
-      let ret, m;
-      if (typeof name === 'string' && name !== '') {
-        if ((m = String(document.cookie).match(
-          new RegExp('(?:^| )' + name + '(?:(?:=([^;]*))|;|$)')))) {
-            ret = m[1] ? decodeURIComponent(m[1]) : ''
-            }
-          }
-         return ret
-    },
-
     login() {
       let LoginURL = ["PatientLogin", "DoctorLogin", "AdminLogin"];
       let AfterLogin = ["/Patient", "/doctor-operator", "/Admin"];
@@ -207,12 +152,6 @@ export default {
 
             sessionStorage.setItem("userID", this.loginForm.username)
             sessionStorage.setItem("role", this.role_num)
-
-            if (this.auto_login) {
-              this.setCookie("token",response.data.slice(14),3)
-              this.setCookie("ID",this.loginForm.username,3)
-              this.setCookie("role",this.role_num,3)
-            }
             
           } else {
             // 登录失败
@@ -222,7 +161,6 @@ export default {
         })
         .catch((error) => {
           console.error(error);
-          this.$msgbox.alert("用户名或密码错误，登录失败")
         });
     },
 
@@ -237,17 +175,6 @@ export default {
       this.role_checkBox = this.roles_text[index];
       console.log(this.role_num);
       console.log(this.role_checkBox);
-    },
-
-    onRadioChange() {
-      console.log(this.auto_login)
-      this.auto_login = !this.auto_login
-    },
-
-    toForget() {
-      this.router.push({
-        path: '/forget',
-      });
     },
   },
 };

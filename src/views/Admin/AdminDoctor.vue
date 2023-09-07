@@ -49,9 +49,7 @@
                   :options="timePers" />
               </th>
               <th>
-                <va-button :disabled="!createdItemValid" style="width:99%; font-weight: 100;" color="backgroundElement"
-                  @click="addItem">
-                  添加
+                <va-button style="width:99%; font-weight: 100;" color="backgroundElement" @click="addItem"> 添加
                 </va-button>
               </th>
             </tr>
@@ -158,33 +156,9 @@ export default {
 
     // 新项是否合法
     createdItemValid() {
-      if (this.newID == "请选择医生ID") {
-        return false;
-      }
-      if (this.newRoom == "请选择诊室") {
-        return false;
-      }
-      if (this.newDate == "请选择日期") {
-        return false;
-      }
-      if (this.newTimeper == "请选择坐诊时间") {
-        return false;
-      }
-      for (let i = 0; i < this.tableItems.length; ++i) {
-        let flag = false;
-        if (this.tableItems[i]["ID"] != this.newID) {
-          flag = true;
-        }
-        if (this.tableItems[i]["诊室"] != this.newRoom) {
-          flag = true;
-        }
-        if (this.tableItems[i]["日期"] != this.newDate) {
-          flag = true;
-        }
-        if (this.tableItems[i]["坐诊时间"] != this.newTimeper) {
-          flag = true;
-        }
-        if (!flag) {
+      for (let col in this.createdItem) {
+        this.createdItem[col];
+        if (this.createdItem[col] == "") {
           return false;
         }
       }
@@ -403,7 +377,7 @@ export default {
     },
 
     newID(newVal) {
-      if (newVal == "请选择医生ID") {
+      if(newVal == "请选择医生ID") {
         return;
       }
       fetch("http://124.223.143.21/api/Doctors/id?id=" + newVal, {
