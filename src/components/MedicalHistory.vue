@@ -62,6 +62,7 @@
               :style="{ color: record.status === 0 ? '#3498db' : record.status === -1 ? '#e74c3c' : '#2451c0' }">{{
                 record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span>
           </div>
+          <!-- 在待就诊状态应有比较当前时间与预约时间，判断预约过号的逻辑，为了演示不增加 -->
 
           <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013"
             text-color="#9d7013" @click="cancelAppointment(record, realIndex(index))">
@@ -110,7 +111,8 @@
             查看处方
           </va-button>
 
-          <va-button :disabled="record.status != 1" color="primary" class="button" @click="payBill(record)">
+          <va-button :disabled="record.status != 1 || record.payState == 0" color="primary" class="button"
+            @click="payBill(record)">
             支付账单
           </va-button>
 
@@ -227,90 +229,90 @@ export default {
     this.startDataRefreshTimer();
   },
   methods: {
-    getData(){
+    getData() {
       axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
-      .then((response) => {
-        // console.log(response.data);
-        const newData = response.data; // 获取响应数据
-        // 将新数据转化为 record 对象并添加到 allRecords 数组中
-        this.allRecords = newData.map(item => ({
-          patient: item.patient.name,
-          // patientID: this.userID,
-          patientID: this.userID,
-          patientGender: item.patient.gender ? "男" : "女",
-          patientBirth: item.patient.birthDate,
-          doctor: item.doctor.name,
-          doctorID: item.doctor.doctorId,
-          date: item.date.split('T')[0],
-          appointmentTime: item.period,
-          waitingCount: item.queueCount,
-          status: item.state,
-          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
-        }));
-        this.allRecords.sort((record1, record2) => {
-          const date1 = new Date(record1.date);
-          const date2 = new Date(record2.date);
-          return date2 - date1; // 比较结果决定排序顺序
-        });
-        // console.log(this.allRecords);
-        this.feedbacks = this.allRecords.map(item => ({
-          diagnoseId: item.diagnoseId,
-          hoverRating: 0,
-          selectedRating: 0,
-          comment: '',
-          isSubmitted: false
-        }));
-        this.leaveNotes = this.allRecords.map(item => ({
-          diagnoseId: item.diagnoseId,
-          leaveNoteInput: '',
-          isSubmitted: false
-        }));
-        for(let i = 0; i <this.allRecords.length; i++)
-        {
-          this.modalShown[i]=false;
-        }
+        .then((response) => {
+          // console.log(response.data);
+          const newData = response.data; // 获取响应数据
+          // 将新数据转化为 record 对象并添加到 allRecords 数组中
+          this.allRecords = newData.map(item => ({
+            patient: item.patient.name,
+            // patientID: this.userID,
+            patientID: this.userID,
+            patientGender: item.patient.gender ? "男" : "女",
+            patientBirth: item.patient.birthDate,
+            doctor: item.doctor.name,
+            doctorID: item.doctor.doctorId,
+            date: item.date.split('T')[0],
+            appointmentTime: item.period,
+            waitingCount: item.queueCount,
+            status: item.state,
+            diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
+            payState: item.payState,
+          }));
+          this.allRecords.sort((record1, record2) => {
+            const date1 = new Date(record1.date);
+            const date2 = new Date(record2.date);
+            return date2 - date1; // 比较结果决定排序顺序
+          });
+          console.log(this.allRecords);
+          this.feedbacks = this.allRecords.map(item => ({
+            diagnoseId: item.diagnoseId,
+            hoverRating: 0,
+            selectedRating: 0,
+            comment: '',
+            isSubmitted: false
+          }));
+          this.leaveNotes = this.allRecords.map(item => ({
+            diagnoseId: item.diagnoseId,
+            leaveNoteInput: '',
+            isSubmitted: false
+          }));
+          for (let i = 0; i < this.allRecords.length; i++) {
+            this.modalShown[i] = false;
+          }
 
-        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
-          params: {
-            PatientId: this.userID
-          }
-        })
-          .then((response) => {
-            for (let idData of response.data) {
-              let tmp = idData.substring(0, idData.length - 3);
-              let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
-              if (selectedObject) {
-                selectedObject.isSubmitted = true;
-              }
+          axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+            params: {
+              PatientId: this.userID
             }
           })
-          .catch((error) => {
-            console.log(error);
-          });
-        axios.get('http://124.223.143.21:4999/api/Comment/whether', {
-          params: {
-            PatientId: this.userID
-          }
-        })
-          .then((response) => {
-            // console.log("checkComment");
-            // console.log(response);
-            for (let idData of response.data) {
-              let tmp = idData;
-              let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
-              if (selectedObject) {
-                // console.log("found");
-                selectedObject.isSubmitted = true;
+            .then((response) => {
+              for (let idData of response.data) {
+                let tmp = idData.substring(0, idData.length - 3);
+                let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
+                if (selectedObject) {
+                  selectedObject.isSubmitted = true;
+                }
               }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          axios.get('http://124.223.143.21:4999/api/Comment/whether', {
+            params: {
+              PatientId: this.userID
             }
           })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+            .then((response) => {
+              // console.log("checkComment");
+              // console.log(response);
+              for (let idData of response.data) {
+                let tmp = idData;
+                let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
+                if (selectedObject) {
+                  // console.log("found");
+                  selectedObject.isSubmitted = true;
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     },
 
     startDataRefreshTimer() {
