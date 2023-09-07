@@ -35,7 +35,7 @@
   <div style="margin-top:80px">
     <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(record, index) in displayedAllRecords "
       :key="index">
-      <va-modal v-model="modalShown" class="feedbackBox" hide-default-actions>
+      <va-modal v-model="modalShown[realIndex(index)]" class="feedbackBox" hide-default-actions>
         <center>
           <span v-for="star in 5" :key="star" class="star"
             :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
@@ -63,16 +63,12 @@
                 record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span>
           </div>
 
-          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013" size="small"
+          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013"
             text-color="#9d7013" @click="cancelAppointment(record, realIndex(index))">
             取消
           </va-button>
           &nbsp;&nbsp;&nbsp;&nbsp;
-
           <span class="title-date">{{ record.date }}</span>
-
-          &nbsp;
-          <span class="title-dept">{{ record.department }}</span>
         </va-card-title>
 
         <!-- 第二行 -->
@@ -119,7 +115,7 @@
           </va-button>
 
           <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
-            class="feedback-button" @click="modalShown = !modalShown">
+            class="feedback-button" @click="modalShown[realIndex(index)] = !modalShown[realIndex(index)]">
             反馈评价
           </va-button>
 
@@ -175,7 +171,7 @@ export default {
       itemsPerPage: 6,
       periodDict: {},
       // 显示反馈评价窗口
-      modalShown: false,
+      modalShown: [],
       // 显示聊天窗口
       chatShown: false,
       // 聊天记录
@@ -267,6 +263,11 @@ export default {
           leaveNoteInput: '',
           isSubmitted: false
         }));
+        for(let i = 0; i <this.allRecords.length; i++)
+        {
+          this.modalShown[i]=false;
+        }
+
         axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
           params: {
             PatientId: this.userID
@@ -359,8 +360,6 @@ export default {
       })
         .then((response) => {
           let prescriptionData = response.data;
-          console.log("prescriptionData");
-          console.log(prescriptionData);
           const PAGE_MARGIN = 5;
           const doc = new jsPDF({
             unit: "mm",
@@ -414,7 +413,7 @@ export default {
             styles: {
               font: 'MyFont',
               fontSize: 7,
-              cellPadding: { top: 0, right: 1, bottom: 1, left: 0 }
+              cellPadding: { top: 0, right: 2, bottom: 1, left: 0 }
             },
           });
           penHeight += 35;
@@ -441,7 +440,7 @@ export default {
           console.log(medicineData);
 
           const totalWidth = doc.internal.pageSize.width - PAGE_MARGIN * 2; // 获取页面宽度
-          const columnWidth1 = totalWidth * 0.15; // 前四列宽度各15%
+          const columnWidth1 = totalWidth * 0.14; // 前四列宽度各14%
           const columnWidth5 = totalWidth * 0.40; // 第五列宽度40%
           doc.autoTable({
             theme: 'plain',
@@ -450,7 +449,7 @@ export default {
             styles: {
               font: 'MyFont',
               fontSize: 6,
-              cellPadding: { top: 0, right: 2, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
+              cellPadding: { top: 0, right: 4, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
             },
             columnStyles: {
               0: { columnWidth: columnWidth1 },
@@ -469,6 +468,17 @@ export default {
           const finalHeight = pageHeight - doc.getTextDimensions(formattedTime).h;
           doc.text(formattedTime, timeX, finalHeight);
           doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
+          // 加入印章
+          const imgData = require("../assets/stamp.jpg");
+          doc.addImage({
+            imageData: imgData,
+            x: pageWidth - 35,
+            y: pageHeight - 32,
+            width: 25,
+            height: 25,
+            format: "jpg"
+          });
+
           // doc.save("example.pdf");
           const blob = doc.output('blob');
           const url = URL.createObjectURL(blob);
@@ -511,13 +521,14 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
+        this.modalShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
       const leaveNote = this.leaveNotes[recordIndex];
       if (leaveNote) {
         const inputData = {
-          diagnoseId: this.allRecords[recordIndex].diagnoseId,
+          diagnosedId: this.allRecords[recordIndex].diagnoseId,
           leaveDays: leaveNote.leaveNoteInput,
         };
         console.log("leaveNote inputData");
@@ -525,12 +536,12 @@ export default {
         axios.post('http://124.223.143.21/api/Leave', null, { params: inputData })
           .then(response => {
             console.log('POST request successful:', response.data);
+            leaveNote.isSubmitted = true;
           })
           .catch(error => {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录提交了 ${leaveNote.leaveNoteInput}的请假天数`);
-        leaveNote.isSubmitted = true;
       }
     },
     showChat() {
