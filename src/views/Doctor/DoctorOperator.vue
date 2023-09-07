@@ -201,6 +201,45 @@ input {
 }
 
 /*提交处方提示框结束*/
+/*zzh */
+.chatBox{
+  position: relative;
+  /* margin:12px; */
+  padding:5px 8px;
+  word-break: break-all;
+  background: #ffffff;
+  border: 1px solid #989898;
+  border-radius: 5px;
+  max-width:180px;
+}
+.chatBox-left {
+  float: left;
+}
+.chatBox-right {
+  float: right;
+}
+.chatBox-left::before{
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -20px;
+  top:5px;
+  border: 10px solid;
+  border-color: transparent #002fb0 transparent transparent ;
+  float:left;
+}
+.chatBox-right::before{
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  right: -20px;
+  top:5px;
+  border: 10px solid;
+  border-color: transparent transparent transparent #002fb0;
+  float: right;
+}
 </style>
   
 
