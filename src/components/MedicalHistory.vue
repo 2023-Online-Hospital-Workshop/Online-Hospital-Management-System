@@ -4,18 +4,11 @@
     <div style="width: 500px; height: 600px;">
       <div style="overflow: auto; height: 80%;">
         <div class="chat-box">
-          <!-- <span class="chatBox chatBox-left">
-            你好
-          </span>
-          <br>
-          <span class="chatBox chatBox-right">
-            你好
-          </span> -->
           <table class="chat-box" style="margin-left: 5%; height: 80%; width: 90%;">
             <tr v-for="(message, index) in chatMessages" :key="index">
-              <div :class="{'chatBox': true, 'chatBox-left': message.userId === 2, 'chatBox-right': message.userId === 1}">
+              <div :class="{'chatBox': true, 'chatBox-left': message.senderType !== 0, 'chatBox-right': message.senderType === 0}">
                 <td>
-                  {{ message.text }}
+                  {{ message.message }}
                 </td>
               </div> 
               <br>       
@@ -23,7 +16,7 @@
           </table>
         </div>
       </div>
-      <va-input v-model="message" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
+      <va-input v-model="newMessage" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
 
       </va-input>
       <va-button style="width: 100%;" @click="sendMessage()">
@@ -121,41 +114,9 @@
             反馈评价
           </va-button>
 
-          <va-button color="primary" class="button" @click="showChat()">
+          <va-button color="primary" class="button" @click="showChat(allRecords[realIndex(index)].diagnoseId, allRecords[realIndex(index)].doctorID)">
             在线复诊
           </va-button>
-
-          <!-- <va-popover placement="left" trigger="click">
-            <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
-              class="feedback-button">
-              反馈评价
-            </va-button>
-            <template #title>
-              <p>请填写反馈评价</p>
-            </template>
-            <template #icon>
-              <va-button icon="create" size="small" />
-            </template>
-            <template #body>
-              <div class="stars">
-                <span v-for="star in 5" :key="star" class="star"
-                  :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
-                  @mouseover="setHoverRating(realIndex(index), star)" @mouseout="setHoverRating(realIndex(index), 0)"
-                  @click.stop="setSelectedRating(realIndex(index), star)">
-                  ★
-                </span>
-              </div>
-              <div>
-                <textarea v-model="feedbacks[realIndex(index)].comment" placeholder="请在此输入您的评论..." @click.stop></textarea>
-              </div>
-              <div>
-                <va-button v-if="!feedbacks[realIndex(index)].isSubmitted" @click="submitFeedback(realIndex(index))">
-                  提交
-                </va-button>
-              </div>
-            </template>
-          </va-popover> -->
-
 
           <va-popover placement="left" trigger="click">
             <va-button :disabled="record.status != 1 || leaveNotes[realIndex(index)].isSubmitted == true" color="primary"
@@ -212,27 +173,18 @@ export default {
             { userId: 1, text: '你好' },
             { userId: 2, text: '你好' },
             { userId: 1, text: '是中国人就说阿涅亚塞哟' },
-            { userId: 1, text: '是不是犟嘴了？' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
-            { userId: 2, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
-            { userId: 1, text: '一得阁拉米' },
           ],
           // 聊天框内的信息
-          message: "", 
+          newMessage: "", 
   
-          //hcr添加
+          // hcr添加：患者ID
           userID: sessionStorage.getItem('userID'),
+
+          // 当前诊断记录ID
+          curRecordId: "",
+
+          // 当前诊断记录医生ID
+          curDoctorId: "",
         };
     },
     computed: {
@@ -527,21 +479,71 @@ export default {
                 leaveNote.isSubmitted = true;
             }
         },
-        showChat() {
-          this.chatShown = true;
-          
-        },
-        sendMessage() {
-          axios.post("", this.message)
-            .then(function(response) {
+        getMessages(recordId = "-1") {         
+          axios({
+            method: 'GET',
+            url: 'http://124.223.143.21/api/Chatrecord/getChatRecord', 
+            params: {
+              RecordId: recordId === "-1" ? this.curRecordId : recordId,
+            }
+          })
+            .then((response) => {
               this.chatMessages = [];
               for (let i = 0; i < response.data.length; i++) {
-                this.chatMessages.append(response.data[i]);
+                this.chatMessages.push(response.data[i]);
               }
+            })
+            .catch((error) => {
+              this.chatMessages = [];
+              console.error(error);
+            })
+        },
+        showChat(id, doctorId) {
+          this.chatShown = true;
+          this.curRecordId = id;
+          this.curDoctorId = doctorId;
+          this.getMessages(id);
+        },
+        sendMessage() {
+          this.chatMessages.push({message: this.newMessage, senderType: 0});
+
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          var raw = JSON.stringify({
+            "recordId": this.curRecordId,
+            "doctorId": this.curDoctorId,
+            "patientId": this.userID,
+            "message": this.newMessage,
+            "senderType": 0,
+            "timeStamp": new Date().toISOString(),
+            "readStatus": 0
+          });
+          console.log(raw);
+
+          var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          };
+
+          fetch("http://124.223.143.21/api/Chatrecord/addChatRecord", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+              axios.post("", this.message)
+            .then(response => {
+              console.warn(response);
+              this.getMessages();
+              this.newMessage = "";
+              
             }) 
             .catch(error => {
               console.log(error);
+              this.newMessage = "";
             });
+          
         }
     },
     // components: { ChatBox }
@@ -622,44 +624,6 @@ export default {
 }
 .feedbackBox {
   box-shadow: none;
-}
-.chatBox{
-  position: relative;
-  /* margin:12px; */
-  padding:5px 8px;
-  word-break: break-all;
-  background: #ffffff;
-  border: 1px solid #989898;
-  border-radius: 5px;
-  max-width:180px;
-}
-.chatBox-left {
-  float: left;
-}
-.chatBox-right {
-  float: right;
-}
-.chatBox-left::before{
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: -20px;
-  top:5px;
-  border: 10px solid;
-  border-color: transparent #002fb0 transparent transparent ;
-  float:left;
-}
-.chatBox-right::before{
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  right: -20px;
-  top:5px;
-  border: 10px solid;
-  border-color: transparent transparent transparent #002fb0;
-  float: right;
 }
 .chatBox{
   position: relative;
