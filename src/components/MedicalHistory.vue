@@ -231,6 +231,7 @@ export default {
             waitingCount: item.queueCount,
             status: item.state,
             diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
+            payState: item.payState,
           }));
           this.allRecords.sort((record1, record2) => {
             const date1 = new Date(record1.date);
@@ -291,6 +292,11 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+    startDataRefreshTimer() {
+      setInterval(() => {
+        this.getData(); // 获取最新数据
+      }, 30000); // 定时器每隔30s轮询
     },
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
@@ -452,14 +458,14 @@ export default {
           doc.text(formattedTime, timeX, finalHeight);
           doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
           // 加入印章
-          const imgData = require("../assets/stamp.jpg");
+          const imgData = require("../assets/zhang.png");
           doc.addImage({
             imageData: imgData,
             x: pageWidth - 35,
             y: pageHeight - 32,
             width: 25,
             height: 25,
-            format: "jpg"
+            format: "png"
           });
 
           const blob = doc.output('blob');
