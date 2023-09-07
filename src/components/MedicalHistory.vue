@@ -4,19 +4,11 @@
     <div style="width: 500px; height: 600px;">
       <div style="overflow: auto; height: 80%;">
         <div class="chat-box">
-          <!-- <span class="chatBox chatBox-left">
-            你好
-          </span>
-          <br>
-          <span class="chatBox chatBox-right">
-            你好
-          </span> -->
           <table class="chat-box" style="margin-left: 5%; height: 80%; width: 90%;">
             <tr v-for="(message, index) in chatMessages" :key="index">
-              <div
-                :class="{ 'chatBox': true, 'chatBox-left': message.userId === 2, 'chatBox-right': message.userId === 1 }">
+              <div :class="{'chatBox': true, 'chatBox-left': message.senderType !== 0, 'chatBox-right': message.senderType === 0}">
                 <td>
-                  {{ message.text }}
+                  {{ message.message }}
                 </td>
               </div>
               <br>
@@ -24,7 +16,7 @@
           </table>
         </div>
       </div>
-      <va-input v-model="message" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
+      <va-input v-model="newMessage" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
 
       </va-input>
       <va-button style="width: 100%;" @click="sendMessage()">
@@ -111,7 +103,7 @@
             查看处方
           </va-button>
 
-          <va-button :disabled="record.status != 1 || record.payState == 0" color="primary" class="button"
+          <va-button :disabled="record.status != 1 || record.payState == 1" color="primary" class="button"
             @click="payBill(record)">
             支付账单
           </va-button>
@@ -121,7 +113,7 @@
             反馈评价
           </va-button>
 
-          <va-button color="primary" class="button" @click="showChat()">
+          <va-button color="primary" class="button" @click="showChat(allRecords[realIndex(index)].diagnoseId, allRecords[realIndex(index)].doctorID)">
             在线复诊
           </va-button>
 
@@ -181,27 +173,18 @@ export default {
         { userId: 1, text: '你好' },
         { userId: 2, text: '你好' },
         { userId: 1, text: '是中国人就说阿涅亚塞哟' },
-        { userId: 1, text: '是不是犟嘴了？' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
       ],
       // 聊天框内的信息
-      message: "",
+      newMessage: "",
 
-      //hcr添加
+      // hcr添加：患者ID
       userID: sessionStorage.getItem('userID'),
+
+      // 当前诊断记录ID
+      curRecordId: "",
+
+      // 当前诊断记录医生ID
+      curDoctorId: "",
     };
   },
   computed:
@@ -229,10 +212,10 @@ export default {
     this.startDataRefreshTimer();
   },
   methods: {
-    getData() {
+      getData() {
       axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
         .then((response) => {
-          // console.log(response.data);
+          console.log(response.data);
           const newData = response.data; // 获取响应数据
           // 将新数据转化为 record 对象并添加到 allRecords 数组中
           this.allRecords = newData.map(item => ({
@@ -271,7 +254,6 @@ export default {
           for (let i = 0; i < this.allRecords.length; i++) {
             this.modalShown[i] = false;
           }
-
           axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
             params: {
               PatientId: this.userID
@@ -295,13 +277,10 @@ export default {
             }
           })
             .then((response) => {
-              // console.log("checkComment");
-              // console.log(response);
               for (let idData of response.data) {
                 let tmp = idData;
                 let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
                 if (selectedObject) {
-                  // console.log("found");
                   selectedObject.isSubmitted = true;
                 }
               }
@@ -314,13 +293,11 @@ export default {
           console.log(error);
         });
     },
-
     startDataRefreshTimer() {
       setInterval(() => {
         this.getData(); // 获取最新数据
       }, 30000); // 定时器每隔30s轮询
     },
-
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
         params: {
@@ -370,6 +347,8 @@ export default {
       })
         .then((response) => {
           let prescriptionData = response.data;
+          console.log("prescriptionData");
+          console.log(prescriptionData);
           const PAGE_MARGIN = 5;
           const doc = new jsPDF({
             unit: "mm",
@@ -479,17 +458,16 @@ export default {
           doc.text(formattedTime, timeX, finalHeight);
           doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
           // 加入印章
-          const imgData = require("../assets/stamp.jpg");
+          const imgData = require("../assets/zhang.png");
           doc.addImage({
             imageData: imgData,
             x: pageWidth - 35,
             y: pageHeight - 32,
             width: 25,
             height: 25,
-            format: "jpg"
+            format: "png"
           });
 
-          // doc.save("example.pdf");
           const blob = doc.output('blob');
           const url = URL.createObjectURL(blob);
           window.open(url, '_blank'); // 在新窗口中打开 PDF 文件
@@ -531,7 +509,7 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
-        this.modalShown[recordIndex] = false;
+        this.modelShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
@@ -554,24 +532,74 @@ export default {
         console.log(`Index为 ${recordIndex} 的记录提交了 ${leaveNote.leaveNoteInput}的请假天数`);
       }
     },
-    showChat() {
-      this.chatShown = true;
+    getMessages(recordId = "-1") {         
+          axios({
+            method: 'GET',
+            url: 'http://124.223.143.21/api/Chatrecord/getChatRecord', 
+            params: {
+              RecordId: recordId === "-1" ? this.curRecordId : recordId,
+            }
+          })
+            .then((response) => {
+              this.chatMessages = [];
+              for (let i = 0; i < response.data.length; i++) {
+                this.chatMessages.push(response.data[i]);
+              }
+            })
+            .catch((error) => {
+              this.chatMessages = [];
+              console.error(error);
+            })
+        },
+        showChat(id, doctorId) {
+          this.chatShown = true;
+          this.curRecordId = id;
+          this.curDoctorId = doctorId;
+          this.getMessages(id);
+        },
+        sendMessage() {
+          this.chatMessages.push({message: this.newMessage, senderType: 0});
 
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          var raw = JSON.stringify({
+            "recordId": this.curRecordId,
+            "doctorId": this.curDoctorId,
+            "patientId": this.userID,
+            "message": this.newMessage,
+            "senderType": 0,
+            "timeStamp": new Date().toISOString(),
+            "readStatus": 0
+          });
+          console.log(raw);
+
+          var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          };
+
+          fetch("http://124.223.143.21/api/Chatrecord/addChatRecord", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+              axios.post("", this.message)
+            .then(response => {
+              console.warn(response);
+              this.getMessages();
+              this.newMessage = "";
+              
+            }) 
+            .catch(error => {
+              console.log(error);
+              this.newMessage = "";
+            });
+          
+        }
     },
-    sendMessage() {
-      axios.post("", this.message)
-        .then(function (response) {
-          this.chatMessages = [];
-          for (let i = 0; i < response.data.length; i++) {
-            this.chatMessages.append(response.data[i]);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-  },
-  // components: { ChatBox }
+    // components: { ChatBox }
 };
 </script>
 
@@ -682,51 +710,7 @@ export default {
   border-color: transparent #002fb0 transparent transparent;
   float: left;
 }
-
-.chatBox-right::before {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  right: -20px;
-  top: 5px;
-  border: 10px solid;
-  border-color: transparent transparent transparent #002fb0;
-  float: right;
-}
-
-.chatBox {
-  position: relative;
-  /* margin:12px; */
-  padding: 5px 8px;
-  word-break: break-all;
-  background: #ffffff;
-  border: 1px solid #989898;
-  border-radius: 5px;
-  max-width: 180px;
-}
-
-.chatBox-left {
-  float: left;
-}
-
-.chatBox-right {
-  float: right;
-}
-
-.chatBox-left::before {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: -20px;
-  top: 5px;
-  border: 10px solid;
-  border-color: transparent #002fb0 transparent transparent;
-  float: left;
-}
-
-.chatBox-right::before {
+.chatBox-right::before{
   content: '';
   position: absolute;
   width: 0;
