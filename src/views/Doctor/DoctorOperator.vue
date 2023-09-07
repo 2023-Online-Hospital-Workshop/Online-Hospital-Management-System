@@ -155,61 +155,57 @@ input {
 .myform {
   margin: 5px;
 }
-.chatBox{
+
+.chatBox {
   position: relative;
   /* margin:12px; */
-  padding:5px 8px;
+  padding: 5px 8px;
   word-break: break-all;
   background: #ffffff;
   border: 1px solid #989898;
   border-radius: 5px;
-  max-width:180px;
+  max-width: 180px;
 }
+
 .chatBox-left {
   float: left;
 }
+
 .chatBox-right {
   float: right;
 }
-.chatBox-left::before{
+
+.chatBox-left::before {
   content: '';
   position: absolute;
   width: 0;
   height: 0;
   left: -20px;
-  top:5px;
+  top: 5px;
   border: 10px solid;
-  border-color: transparent #002fb0 transparent transparent ;
-  float:left;
+  border-color: transparent #002fb0 transparent transparent;
+  float: left;
 }
-.chatBox-right::before{
+
+.chatBox-right::before {
   content: '';
   position: absolute;
   width: 0;
   height: 0;
   right: -20px;
-  top:5px;
+  top: 5px;
   border: 10px solid;
   border-color: transparent transparent transparent #002fb0;
   float: right;
 }
-/*侧边栏按钮*/
-/* #cebian {
-  width: 120px;
-  height: 0;
-  left: -20px;
-  top:5px;
-  border: 10px solid;
-  border-color: transparent #002fb0 transparent transparent ;
-  float:left;
-}
-.chatBox-right::before{
+
+.chatBox-right::before {
   content: '';
   position: absolute;
   width: 0;
   height: 0;
   right: -20px;
-  top:5px;
+  top: 5px;
   border: 10px solid;
   border-color: transparent transparent transparent #002fb0;
   float: right;
@@ -335,19 +331,20 @@ input {
     </el-drawer>
   </header>
 
-  
+
   <va-modal v-model="chatShown" hide-default-actions="true">
     <div style="width: 500px; height: 600px;">
       <div style="overflow: auto; height: 80%;">
         <div class="chat-box">
           <table class="chat-box" style="margin-left: 5%; height: 70%; width: 90%;">
             <tr v-for="(message, index) in chatMessages" :key="index">
-              <div :class="{'chatBox': true, 'chatBox-left': message.senderType === 0, 'chatBox-right': message.senderType !== 0}">
+              <div
+                :class="{ 'chatBox': true, 'chatBox-left': message.senderType === 0, 'chatBox-right': message.senderType !== 0 }">
                 <td>
                   {{ message.message }}
                 </td>
-              </div> 
-              <br>       
+              </div>
+              <br>
             </tr>
           </table>
         </div>
@@ -389,11 +386,6 @@ input {
             </va-list-item>
           </va-list>
         </va-scroll-container>
-        <div style="text-align: center">
-          <va-button id="re-button" preset="primary" class="mr-6 mb-2" @click="nextPatient()">
-            叫号
-          </va-button>
-        </div>
       </div>
     </div>
 
@@ -533,13 +525,11 @@ input {
         确认
       </va-button>
 
-      <img src="../../assets/zhang.png" alt="图片描述">
+      <img src="../../assets/signature.png" alt="图片描述" style="max-width: 200px; height: auto; float: right;">
     </div>
 
     <div id="cebian">
     </div>
-
-
   </div>
 </template>
 
@@ -669,6 +659,7 @@ export default {
 
   mounted() {
     this.initial(); //初始化
+    this.nextPatient();
   },
   methods: {
     async openDrawer2() {
@@ -713,14 +704,16 @@ export default {
         }
         // console.log(this.chatMessages.length, "len");
         if (this.chatMessages.length !== 0) {
-          if (this.chatMessages[this.chatMessages.length - 1].senderType == 0 
+          if (this.chatMessages[this.chatMessages.length - 1].senderType == 0
             && this.chatMessages[this.chatMessages.length - 1].readStatus == 0) {// 最后一条信息未读且为患者发送
             this.unreadPrompts[i] = true;
             console.log(this.chatMessages);
           }
-        }          
-        this.treatmentChats.push({date: this.treatmentRecords[i].appointmentDate, patientID: this.treatmentRecords[i].patientID, 
-          patientName: this.treatmentRecords[i].patientName, period: this.treatmentRecords[i].period, diagnoseId: this.treatmentRecords[i].diagnoseId});
+        }
+        this.treatmentChats.push({
+          date: this.treatmentRecords[i].appointmentDate, patientID: this.treatmentRecords[i].patientID,
+          patientName: this.treatmentRecords[i].patientName, period: this.treatmentRecords[i].period, diagnoseId: this.treatmentRecords[i].diagnoseId
+        });
       }
     },
 
@@ -832,15 +825,20 @@ export default {
         }
         // console.log(this.chatMessages.length, "len");
         if (this.chatMessages.length !== 0) {
-          if (this.chatMessages[this.chatMessages.length - 1].senderType == 0 
+          if (this.chatMessages[this.chatMessages.length - 1].senderType == 0
             && this.chatMessages[this.chatMessages.length - 1].readStatus == 0) {// 最后一条信息未读且为患者发送
             this.unreadPrompts[i] = true;
             console.log(this.chatMessages);
           }
-        }          
-        this.treatmentChats.push({date: this.treatmentRecords[i].appointmentDate, patientID: this.treatmentRecords[i].patientID, 
-          patientName: this.treatmentRecords[i].patientName, period: this.treatmentRecords[i].period, diagnoseId: this.treatmentRecords[i].diagnoseId});
+        }
+        this.treatmentChats.push({
+          date: this.treatmentRecords[i].appointmentDate, patientID: this.treatmentRecords[i].patientID,
+          patientName: this.treatmentRecords[i].patientName, period: this.treatmentRecords[i].period, diagnoseId: this.treatmentRecords[i].diagnoseId
+        });
       }
+
+      this.nextPatient();
+
     },
 
     async showChat(id, patientId) {
@@ -857,7 +855,7 @@ export default {
       // console.log(this.chatMessages);
     },
 
-    async getMessages(recordId) {       
+    async getMessages(recordId) {
       this.chatMessages = [];
 
       const url = "http://124.223.143.21/api/Chatrecord/getChatRecord?RecordId=" + recordId;
@@ -899,7 +897,7 @@ export default {
         alert("不能发送空白消息！");
         return;
       }
-      this.chatMessages.push({message: this.newMessage, senderType: 1});
+      this.chatMessages.push({ message: this.newMessage, senderType: 1 });
 
       var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
@@ -926,12 +924,12 @@ export default {
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
-          axios.post("", this.newMessage)
+      axios.post("", this.newMessage)
         .then(response => {
           console.warn(response);
           this.getMessages(this.curRecordId);
           this.newMessage = "";
-        }) 
+        })
         .catch(error => {
           console.log(error);
           this.newMessage = "";
@@ -1116,6 +1114,9 @@ export default {
         .then((result) => console.log(result))
         .catch((error) => console.log("error", error));
       console.log(data);
+
+      //叫号下一位病人
+      this.nextPatient();
     },
 
     //得到就诊历史
