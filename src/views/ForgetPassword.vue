@@ -91,10 +91,19 @@ export default {
     },
 
     changeStep(step) {
-      this.step = step
+      if (this.step >= step) {
+        this.step = step
+      }
     },
     nextStep() {
-      if (this.step == 2) {
+      if (this.step == 1) {
+        if (this.registerForm.ID == '') {
+          this.$msgbox.alert("ID不能为空")
+        } else {
+          this.step++;
+        }
+      }
+      else if (this.step == 2) {
         console.log(this.registerForm.phoneNumber.toString())
         console.log(this.registerForm.verificationCode.toString())
         axios
@@ -119,10 +128,6 @@ export default {
           console.error(error);
         });
       }
-
-      if (this.step < 2) {
-        this.step++;
-      }
     },
     submitForm() {
       // Implement form submission here
@@ -131,7 +136,7 @@ export default {
         console.log(this.registerForm.ID.toString())
         console.log(this.registerForm.password.toString())
          axios
-        .post("http://124.223.143.21:4999/api/Login" + this.registerForm.identity, {
+        .put("http://124.223.143.21:4999/api/Login" + this.registerForm.identity, {
               ID: this.registerForm.ID.toString(),
               NewPassword: this.registerForm.password.toString(),
             })
