@@ -155,53 +155,6 @@ input {
 .myform {
   margin: 5px;
 }
-
-/*好看的提交处方提示框*/
-.custom-dialog {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.dialog-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
-}
-
-.dialog-buttons {
-  margin-top: 20px;
-}
-
-.confirm-button {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  margin-right: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.cancel-button {
-  background-color: #ccc;
-  color: #000;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/*提交处方提示框结束*/
-/*zzh */
 .chatBox{
   position: relative;
   /* margin:12px; */
@@ -222,6 +175,27 @@ input {
   content: '';
   position: absolute;
   width: 0;
+  height: 0;
+  left: -20px;
+  top:5px;
+  border: 10px solid;
+  border-color: transparent #002fb0 transparent transparent ;
+  float:left;
+}
+.chatBox-right::before{
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  right: -20px;
+  top:5px;
+  border: 10px solid;
+  border-color: transparent transparent transparent #002fb0;
+  float: right;
+}
+/*侧边栏按钮*/
+/* #cebian {
+  width: 120px;
   height: 0;
   left: -20px;
   top:5px;
@@ -298,11 +272,50 @@ input {
       </va-card>
     </el-drawer>
 
-    <el-button type="primary" class="custom-button trapezoid-button" @click="drawer2 = true">
-      <span class="vertical-text">门诊单模板</span>
+    <el-button type="primary" class="custom-button trapezoid-button" @click="openDrawer2()">
+      <span class="vertical-text">在线复诊</span>
     </el-button>
 
     <el-drawer v-model="drawer2" title="I am the title" :with-header="false">
+      <va-card v-for="(i, index) in treatmentChats" :key="index" style="margin-bottom: 30px;">
+        <va-card-title>诊疗记录</va-card-title>
+        <va-card-content>
+
+          <!-- 患者信息和申请时间 -->
+          <div class="patient-info">
+            <div>
+              <!-- 患者姓名和患者ID放在右下角 -->
+              <div class="patient-info-item">
+                患者姓名: {{ i.patientName }}
+              </div>
+              <div class="patient-info-item">
+                患者ID: {{ i.patientID }}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 诊断信息 -->
+          <br />诊断时间：{{ i.date.slice(0, 10) }}
+          <!-- <br />就诊记录编号：{{ i.diagnoseId }} -->
+
+          <va-card-actions align="stretch"
+            style="justify-content: flex-end; /* 将按钮右对齐 */margin-right: 10px; /* 添加右侧间距 */">
+            <va-button icon-right="info" icon-color="#ffffff90" class="mr-3 mb-2"
+              @click="showChat(i.diagnoseId, i.patientID)" v-if="unreadPrompts[index]">
+              解答
+            </va-button>
+          </va-card-actions>
+
+        </va-card-content>
+      </va-card>
+    </el-drawer>
+
+    <el-button type="primary" class="custom-button trapezoid-button" @click="drawer3 = true">
+      <span class="vertical-text">门诊单模板</span>
+    </el-button>
+
+    <el-drawer v-model="drawer3" title="I am the title" :with-header="false">
       <el-button type="primary" class="custom-button trapezoid-button" v-for="(buttonText, index) in template"
         :key="index" @click="handle(index)">
         {{ buttonText }}
@@ -322,6 +335,31 @@ input {
     </el-drawer>
   </header>
 
+  
+  <va-modal v-model="chatShown" hide-default-actions="true">
+    <div style="width: 500px; height: 600px;">
+      <div style="overflow: auto; height: 80%;">
+        <div class="chat-box">
+          <table class="chat-box" style="margin-left: 5%; height: 70%; width: 90%;">
+            <tr v-for="(message, index) in chatMessages" :key="index">
+              <div :class="{'chatBox': true, 'chatBox-left': message.senderType === 0, 'chatBox-right': message.senderType !== 0}">
+                <td>
+                  {{ message.message }}
+                </td>
+              </div> 
+              <br>       
+            </tr>
+          </table>
+        </div>
+      </div>
+      <va-input v-model="newMessage" class="mb-6" type="textarea" :min-rows="3" :max-rows="3" style="width:100%;">
+
+      </va-input>
+      <va-button style="width: 100%;" @click="sendMessage()">
+        发送
+      </va-button>
+    </div>
+  </va-modal>
 
   <div class=" main">
     <div id="registe">
@@ -345,7 +383,7 @@ input {
                 </va-list-item-label>
 
                 <va-list-item-section>
-                  {{ pt.treatmentRecords }}
+                  {{ pt.treatmentState }}
                 </va-list-item-section>
               </va-list-item-section>
             </va-list-item>
@@ -507,6 +545,7 @@ input {
 
 
 <script>
+import axios from "axios";
 import { reactive } from "vue";
 //import userInfo from "../../store/user.js";
 import DoctorInfo from "../../components/Info/DoctorInfo.vue";
@@ -515,6 +554,21 @@ export default {
   name: "App",
   data() {
     return {
+
+      // zzh添加：
+      // 该医生进行过的所有诊断记录
+      treatmentRecords: [],
+      // 复诊聊天记录列表
+      treatmentChats: [],
+      // 暂存当前复诊聊天记录
+      chatMessages: [],
+      newMessage: "",
+      chatShown: false,
+
+      curPatientId: "",
+      // 提示有新消息的红点状态
+      unreadPrompts: [],
+
       patients: [],
       value: "请输入",
       //病人信息
@@ -558,6 +612,7 @@ export default {
       leave_day: 0,
       drawer: false,
       drawer2: false,
+      drawer3: false,
 
       //处方模板
       template: ["感冒", "浅表性胃炎"],
@@ -616,6 +671,59 @@ export default {
     this.initial(); //初始化
   },
   methods: {
+    async openDrawer2() {
+      this.drawer2 = true;
+      //获得诊断历史
+      const url4 = "http://124.223.143.21/Registration/GetPatientInfoByDoctorID/" + this.doctorId;
+      var requestOptions4 = {
+        method: "GET",
+        redirect: "follow",
+      };
+
+      try {
+        const response = await fetch(url4, requestOptions4);
+        const result = await response.json();
+        this.treatmentRecords = result;
+        // console.log(this.treatmentRecords, "record", this.treatmentRecords.length);
+      } catch (error) {
+        console.log("error", error);
+      }
+
+      for (let i = 0; i < this.treatmentRecords.length; i++) {
+        this.unreadPrompts[i] = false;
+
+        this.treatmentRecords[i].diagnoseId = `${this.treatmentRecords[i].appointmentDate.replace('-', '').split('T')[0].replace('-', '')}${this.treatmentRecords[i].patientID}${this.doctorId}${this.treatmentRecords[i].period}`;
+        // this.getMessages(this.treatmentRecords[i].diagnoseId);
+
+        const url = "http://124.223.143.21/api/Chatrecord/getChatRecord?RecordId=" + this.treatmentRecords[i].diagnoseId;
+        var requestOptions = {
+          method: "GET",
+          redirect: "follow",
+        };
+
+        this.chatMessages = [];
+        try {
+          const response = await fetch(url, requestOptions);
+          const result = await response.json();
+          for (let i = 0; i < result.length; i++) {
+            this.chatMessages.push(result[i]);
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+        // console.log(this.chatMessages.length, "len");
+        if (this.chatMessages.length !== 0) {
+          if (this.chatMessages[this.chatMessages.length - 1].senderType == 0 
+            && this.chatMessages[this.chatMessages.length - 1].readStatus == 0) {// 最后一条信息未读且为患者发送
+            this.unreadPrompts[i] = true;
+            console.log(this.chatMessages);
+          }
+        }          
+        this.treatmentChats.push({date: this.treatmentRecords[i].appointmentDate, patientID: this.treatmentRecords[i].patientID, 
+          patientName: this.treatmentRecords[i].patientName, period: this.treatmentRecords[i].period, diagnoseId: this.treatmentRecords[i].diagnoseId});
+      }
+    },
+
     time(inputString) {
       if (typeof inputString !== 'string' || inputString.length === 0) {
         return ''; // 如果输入为空或不是字符串，则返回空字符串
@@ -641,7 +749,7 @@ export default {
         for (let i = 0; i < data.length; i++) {
           this.patients.push(data[i].patient);
           this.patients[i].number = i;
-          this.patients[i].treatmentRecords = "已挂号";
+          this.patients[i].treatmentState = "已挂号";
           this.patients[i].period = data[i].period;
         }
       } catch (error) {
@@ -684,10 +792,150 @@ export default {
         this.leave_app[i].leaveApplication.leaveEndDate = this.time(this.leave_app[i].leaveApplication.leaveEndDate);
         this.leave_app[i].treatmentRecord.diagnoseTime = this.time(this.leave_app[i].treatmentRecord.diagnoseTime);
       }
+      //获得诊断历史
+      const url4 = "http://124.223.143.21/Registration/GetPatientInfoByDoctorID/" + this.doctorId;
+      var requestOptions4 = {
+        method: "GET",
+        redirect: "follow",
+      };
 
-      //初始化日期
-      var currentDate = new Date();
-      this.date = currentDate.toLocaleDateString();
+      try {
+        const response = await fetch(url4, requestOptions4);
+        const result = await response.json();
+        this.treatmentRecords = result;
+        // console.log(this.treatmentRecords, "record", this.treatmentRecords.length);
+      } catch (error) {
+        console.log("error", error);
+      }
+
+      for (let i = 0; i < this.treatmentRecords.length; i++) {
+        this.unreadPrompts[i] = false;
+
+        this.treatmentRecords[i].diagnoseId = `${this.treatmentRecords[i].appointmentDate.replace('-', '').split('T')[0].replace('-', '')}${this.treatmentRecords[i].patientID}${this.doctorId}${this.treatmentRecords[i].period}`;
+        // this.getMessages(this.treatmentRecords[i].diagnoseId);
+
+        const url = "http://124.223.143.21/api/Chatrecord/getChatRecord?RecordId=" + this.treatmentRecords[i].diagnoseId;
+        var requestOptions = {
+          method: "GET",
+          redirect: "follow",
+        };
+
+        this.chatMessages = [];
+        try {
+          const response = await fetch(url, requestOptions);
+          const result = await response.json();
+          for (let i = 0; i < result.length; i++) {
+            this.chatMessages.push(result[i]);
+          }
+        } catch (error) {
+          console.log("error", error);
+        }
+        // console.log(this.chatMessages.length, "len");
+        if (this.chatMessages.length !== 0) {
+          if (this.chatMessages[this.chatMessages.length - 1].senderType == 0 
+            && this.chatMessages[this.chatMessages.length - 1].readStatus == 0) {// 最后一条信息未读且为患者发送
+            this.unreadPrompts[i] = true;
+            console.log(this.chatMessages);
+          }
+        }          
+        this.treatmentChats.push({date: this.treatmentRecords[i].appointmentDate, patientID: this.treatmentRecords[i].patientID, 
+          patientName: this.treatmentRecords[i].patientName, period: this.treatmentRecords[i].period, diagnoseId: this.treatmentRecords[i].diagnoseId});
+      }
+    },
+
+    async showChat(id, patientId) {
+      this.chatShown = true;
+      this.curRecordId = id;
+      this.curPatientId = patientId;
+      this.getMessages(id);
+      // for (let i = 0; i < this.treatmentChats.length; i++) {
+      //   if (this.treatmentChats[i].diagnoseId === id) {
+      //     this.unreadPrompts[i] = false;
+      //   }
+      // }
+      // console.log("Yes");
+      // console.log(this.chatMessages);
+    },
+
+    async getMessages(recordId) {       
+      this.chatMessages = [];
+
+      const url = "http://124.223.143.21/api/Chatrecord/getChatRecord?RecordId=" + recordId;
+      var requestOptions = {
+        method: "GET",
+        redirect: "follow",
+      };
+
+      try {
+        const response = await fetch(url, requestOptions);
+        const result = await response.json();
+        for (let i = 0; i < result.length; i++) {
+          this.chatMessages.push(result[i]);
+        }
+      } catch (error) {
+        console.log("error", error);
+      }
+
+      // axios.get("http://124.223.143.21/api/Chatrecord/getChatRecord?", {
+      //   params: {
+      //     RecordId: recordId,
+      //   },
+      // })
+      //   .then((response) => {
+      //     // console.log(response);
+      //     for (let i = 0; i < response.data.length; i++) {
+      //       this.chatMessages.push(response.data[i]);
+      //     }
+      //     // console.log(this.chatMessages, "abc", this.chatMessages.length);
+      //   })
+      //   .catch((error) => {
+      //     console.log(error);
+      //   });
+    },
+
+    async sendMessage() {
+      // console.log(this.chatMessages);
+      if (this.newMessage == "") {
+        alert("不能发送空白消息！");
+        return;
+      }
+      this.chatMessages.push({message: this.newMessage, senderType: 1});
+
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var raw = JSON.stringify({
+        "recordId": this.curRecordId,
+        "doctorId": this.doctorId,
+        "patientId": this.curPatientId,
+        "message": this.newMessage,
+        "senderType": 1,
+        "timeStamp": new Date().toISOString(),
+        "readStatus": 0
+      });
+      console.log(raw);
+
+      var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+
+      fetch("http://124.223.143.21/api/Chatrecord/addChatRecord", requestOptions)
+        .then(response => response.text())
+        .then(result => console.log(result))
+        .catch(error => console.log('error', error));
+          axios.post("", this.newMessage)
+        .then(response => {
+          console.warn(response);
+          this.getMessages(this.curRecordId);
+          this.newMessage = "";
+        }) 
+        .catch(error => {
+          console.log(error);
+          this.newMessage = "";
+        });
     },
 
     //叫号
@@ -808,7 +1056,7 @@ export default {
     //确认处方
     enter() {    //一旦已经就诊就无法再次发送处方
       //把正在就诊的病人状态改为已就诊
-      //this.patients[this.num - 1].treatmentRecords = "已就诊";
+      //this.patients[this.num - 1].treatmentState = "已就诊";
 
       // //向后端发送已经就诊的病人和对应的医生id
       // var requestOptions = {
