@@ -10,8 +10,8 @@
                 <td>
                   {{ message.message }}
                 </td>
-              </div> 
-              <br>       
+              </div>
+              <br>
             </tr>
           </table>
         </div>
@@ -37,20 +37,11 @@
           </span>
         </center>
         <p style="height: 10px;"></p>
-        <va-input
-          v-model="feedbacks[realIndex(index)].comment"
-          class="mb-6"
-          type="textarea"
-          placeholder="请在此输入您的评论..."
-          :min-rows="3"
-          :max-rows="3"
-          @click.stop
-        />
+        <va-input v-model="feedbacks[realIndex(index)].comment" class="mb-6" type="textarea" placeholder="请在此输入您的评论..."
+          :min-rows="3" :max-rows="3" @click.stop />
         <!-- <textarea v-model="feedbacks[realIndex(index)].comment" placeholder="请在此输入您的评论..." @click.stop></textarea> -->
         <p>
-          <va-button style="width: 100%;"
-            @click="submitFeedback(realIndex(index))"
-          >
+          <va-button style="width: 100%;" @click="submitFeedback(realIndex(index))">
             提交
           </va-button>
         </p>
@@ -61,8 +52,17 @@
         <va-card-title class="first-row">
           <div class="row justify-start"><span class="title-status"
               :style="{ color: record.status === 0 ? '#3498db' : record.status === -1 ? '#e74c3c' : '#2451c0' }">{{
-                record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span></div>
+                record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span>
+          </div>
+
+          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013" size="small"
+            text-color="#9d7013" @click="cancelAppointment(record, realIndex(index))">
+            取消
+          </va-button>
+          &nbsp;&nbsp;&nbsp;&nbsp;
+
           <span class="title-date">{{ record.date }}</span>
+
           &nbsp;
           <span class="title-dept">{{ record.department }}</span>
         </va-card-title>
@@ -98,19 +98,20 @@
             <span class="flex flex-col xs3">{{ record.waitingCount }}</span>
           </div>
         </va-card-content>
+
+
         <!-- 按钮，如果是已经取消或者已经就诊完就不能取消挂号 -->
         <va-card-content class="button-row">
-          <va-button :disabled="record.status != 0" color="primary" class="button"
-            @click="cancelAppointment(record, realIndex(index))">
-            取消挂号
-          </va-button>
-
           <va-button :disabled="record.status != 1" color="primary" class="button" @click="viewPrescription(record)">
             查看处方
           </va-button>
 
+          <va-button :disabled="record.status != 1" color="primary" class="button" @click="payBill(record)">
+            支付账单
+          </va-button>
+
           <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
-              class="feedback-button" @click="modalShown = !modalShown"> 
+            class="feedback-button" @click="modalShown = !modalShown">
             反馈评价
           </va-button>
 
@@ -138,6 +139,7 @@
 
 
         </va-card-content>
+
       </va-card>
     </div>
     <div class="pagination">
@@ -622,35 +624,40 @@ export default {
   color: gold;
   /* 亮起的星星颜色 */
 }
+
 .feedbackBox {
   box-shadow: none;
 }
-.chatBox{
+
+.chatBox {
   position: relative;
   /* margin:12px; */
-  padding:5px 8px;
+  padding: 5px 8px;
   word-break: break-all;
   background: #ffffff;
   border: 1px solid #989898;
   border-radius: 5px;
-  max-width:180px;
+  max-width: 180px;
 }
+
 .chatBox-left {
   float: left;
 }
+
 .chatBox-right {
   float: right;
 }
-.chatBox-left::before{
+
+.chatBox-left::before {
   content: '';
   position: absolute;
   width: 0;
   height: 0;
   left: -20px;
-  top:5px;
+  top: 5px;
   border: 10px solid;
-  border-color: transparent #002fb0 transparent transparent ;
-  float:left;
+  border-color: transparent #002fb0 transparent transparent;
+  float: left;
 }
 .chatBox-right::before{
   content: '';
@@ -658,7 +665,7 @@ export default {
   width: 0;
   height: 0;
   right: -20px;
-  top:5px;
+  top: 5px;
   border: 10px solid;
   border-color: transparent transparent transparent #002fb0;
   float: right;

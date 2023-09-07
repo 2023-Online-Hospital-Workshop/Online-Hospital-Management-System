@@ -1,5 +1,6 @@
  
 <template>
+  <RobotAI2 />
   <div class="container">
     <div class="main">
       <div class="box">
@@ -9,9 +10,7 @@
         <div id="content" class="content">
           <div v-for="(item,index) in info" :key="index">
             <div class="info_r info_default" v-if="item.type == 'leftinfo'">
-              <span src="../../assets/robot.png" class="circle circle_r">
-                <img src="../../assets/robot.png" class="pic_r" />
-              </span>
+              <img src="../../assets/talk.png" class="pic_r" />
               <div class="con_r con_text">
                 <div>{{item.content}}</div>
                 <div v-for="(item2,index) in item.question" :key="index">
@@ -30,7 +29,7 @@
               <div class="con_r con_text">
                 <span class="con_l">{{item.content}}</span>
                 <span class="circle circle_l">
-                  <img src="../../assets/user.png" class="pic_l" />
+                  <img src="../../assets/patient.png" class="pic_l" />
                 </span>
               </div>
               <div class="time_l">{{item.time}}</div>
@@ -55,9 +54,12 @@
   </div>
 </template>
 <script>
+import RobotAI2 from "@/components/Robot2.vue"
   export default {
     name: "AskAI",
-    components: {},
+    components: {
+      RobotAI2,
+    },
     computed: {},
     data() {
       return {
@@ -209,7 +211,9 @@
         this.info.push(happyEnding);
         this.$nextTick(() => {
           var contentHeight = document.getElementById("content");
-          contentHeight.scrollTop = contentHeight.scrollHeight;
+            if (contentHeight) {
+              contentHeight.scrollTop = contentHeight.scrollHeight;
+            }
         });
  
       },
@@ -256,13 +260,11 @@
     margin-top: 60px;
     width: 100%;
     height: 70vh;
-    background: #fafafa;
     overflow: hidden;
     .box {
       width: 100%;
       /* width: 680px; */
       height: 65vh;
-      background-color: #fafafa;
       position: relative;
       padding: 1.25rem;
       position: relative;
@@ -271,14 +273,7 @@
         overflow-y: scroll;
         font-size: 14px;
         width: 100%;
-        margin-top: 10px;
-        .circle {
-          display: inline-block;
-          width: 50px;
-          height: 50px;
-          border-radius: 50%;
-          background-color: #eff1f3;
-        }
+        margin-top: 30px;
         .con_text {
           color: #333;
           margin-bottom: 5px;
@@ -296,9 +291,9 @@
             left: 0%;
           }
           .pic_r {
-            width: 30px;
-            height: 30px;
-            margin: 10px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
           }
           .con_r {
             display: inline-block;
@@ -309,7 +304,8 @@
             background-color: #e2e2e2;
             border-radius: 6px;
             padding: 10px;
-            margin-left: 60px;
+            margin-left: 10px;
+            margin-top: -20px;
           }
           .time_r {
             margin-left: 60px;
@@ -328,20 +324,21 @@
           //   // vertical-align: -10px;
           // }
           .pic_l {
-            width: 23px;
-            height: 30px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
             margin: 13px;
             margin-top: 9px;
           }
           .time_l {
-            margin-right: 60px;
+            margin-right: 80px;
             color: #999999;
             font-size: 12px;
             margin-top: 5px;
           }
           .con_l {
             display: inline-block;
-            width: 220px;
+            width: 40%;
             min-height: 51px;
             background-color: #3163C5;
             border-radius: 6px;
@@ -349,6 +346,7 @@
             text-align: left;
             color: #fff;
             margin-right: 5px;
+            line-height: 20px;
           }
         }
         #question {
@@ -358,18 +356,19 @@
     }
   }
   .setproblem {
-    bottom: 0;
-    width: 100%;
+    bottom: 0%;
+    width: 60%;
     height: 20%;
-    background-color: #ffffff;
     position: absolute;
     margin-top: 3.75rem;
+    margin-left: 3%;
 
   }
   .setproblem textarea {
     color: black;
-    padding: 10px;
+    top: 15%;
     box-sizing: border-box;
+    position: absolute;
   }
   .setproblem button {
     width: 5.875rem;
@@ -381,8 +380,8 @@
     font-size: 10px;
     color: #ffffff;
     position: absolute;
-    right: 10%;
-    top: 60%;
+    right: -20%;
+    top: 25%;
     cursor: pointer;
     border: none;
   }

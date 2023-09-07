@@ -12,13 +12,6 @@ export default {
           url: '/home'
         },
         {
-          path: '/call-service',
-          name: 'CallService',
-          label: '校医院就诊流程',
-          icon: 'account_tree',
-          url: '/callService'
-        },
-        {
           path: '/doctor-query',
           name: 'DoctorQuery',
           label: '预约挂号',
@@ -33,18 +26,18 @@ export default {
           url: '/care/CareServiceMine',
         },
         {
-          path: '/CareServiceMine',
-          name: 'CareServiceMine',
-          label: '药品信息',
-          icon: 'medical_services',
-          url: '/care/CareServiceMine',
-        },
-        {
           path: '/medical-history',
           name: 'MedicalHistory',
           label: '就诊历史',
           icon: 'calendar_month',
           url: '/MedicalHistory',
+        },
+        {
+          path: '/ask-ai',
+          name: 'AskAI',
+          label: 'AI问诊',
+          icon: 'medical_services',
+          url: '/ask-ai',
         },
       ],
 
