@@ -211,7 +211,9 @@ import RobotAI2 from "@/components/Robot2.vue"
         this.info.push(happyEnding);
         this.$nextTick(() => {
           var contentHeight = document.getElementById("content");
-          contentHeight.scrollTop = contentHeight.scrollHeight;
+            if (contentHeight) {
+              contentHeight.scrollTop = contentHeight.scrollHeight;
+            }
         });
  
       },
