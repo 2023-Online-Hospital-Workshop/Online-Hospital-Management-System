@@ -36,14 +36,14 @@
     <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(record, index) in displayedAllRecords "
       :key="index">
       <va-modal v-model="modalShown[realIndex(index)]" class="feedbackBox" hide-default-actions>
-        <center>
+        <div style="text-align: center;">
           <span v-for="star in 5" :key="star" class="star"
             :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
             @mouseover="setHoverRating(realIndex(index), star)" @mouseout="setHoverRating(realIndex(index), 0)"
             @click.stop="setSelectedRating(realIndex(index), star)">
             ★
           </span>
-        </center>
+        </div>
         <p style="height: 10px;"></p>
         <va-input v-model="feedbacks[realIndex(index)].comment" class="mb-6" type="textarea" placeholder="请在此输入您的评论..."
           :min-rows="3" :max-rows="3" @click.stop />
@@ -223,12 +223,14 @@ export default {
     for (let i = 4; i <= 7; i++) {
       this.periodDict[i] = `${i + 9}:00-${i + 10}:00`;
     }
-
-
-    // 这个要改成轮询
-    axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
+    this.getData();
+    this.startDataRefreshTimer();
+  },
+  methods: {
+    getData(){
+      axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         const newData = response.data; // 获取响应数据
         // 将新数据转化为 record 对象并添加到 allRecords 数组中
         this.allRecords = newData.map(item => ({
@@ -250,7 +252,7 @@ export default {
           const date2 = new Date(record2.date);
           return date2 - date1; // 比较结果决定排序顺序
         });
-        console.log(this.allRecords);
+        // console.log(this.allRecords);
         this.feedbacks = this.allRecords.map(item => ({
           diagnoseId: item.diagnoseId,
           hoverRating: 0,
@@ -291,13 +293,13 @@ export default {
           }
         })
           .then((response) => {
-            console.log("checkComment");
-            console.log(response);
+            // console.log("checkComment");
+            // console.log(response);
             for (let idData of response.data) {
               let tmp = idData;
               let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
               if (selectedObject) {
-                console.log("found");
+                // console.log("found");
                 selectedObject.isSubmitted = true;
               }
             }
@@ -309,8 +311,14 @@ export default {
       .catch((error) => {
         console.log(error);
       });
-  },
-  methods: {
+    },
+
+    startDataRefreshTimer() {
+      setInterval(() => {
+        this.getData(); // 获取最新数据
+      }, 30000); // 定时器每隔30s轮询
+    },
+
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
         params: {
