@@ -4,19 +4,11 @@
     <div style="width: 500px; height: 600px;">
       <div style="overflow: auto; height: 80%;">
         <div class="chat-box">
-          <!-- <span class="chatBox chatBox-left">
-            你好
-          </span>
-          <br>
-          <span class="chatBox chatBox-right">
-            你好
-          </span> -->
           <table class="chat-box" style="margin-left: 5%; height: 80%; width: 90%;">
             <tr v-for="(message, index) in chatMessages" :key="index">
-              <div
-                :class="{ 'chatBox': true, 'chatBox-left': message.userId === 2, 'chatBox-right': message.userId === 1 }">
+              <div :class="{'chatBox': true, 'chatBox-left': message.senderType !== 0, 'chatBox-right': message.senderType === 0}">
                 <td>
-                  {{ message.text }}
+                  {{ message.message }}
                 </td>
               </div>
               <br>
@@ -24,7 +16,7 @@
           </table>
         </div>
       </div>
-      <va-input v-model="message" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
+      <va-input v-model="newMessage" class="mb-6" type="textarea" :min-rows="3" style="width:100%;">
 
       </va-input>
       <va-button style="width: 100%;" @click="sendMessage()">
@@ -35,15 +27,15 @@
   <div style="margin-top:80px">
     <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(record, index) in displayedAllRecords "
       :key="index">
-      <va-modal v-model="modalShown" class="feedbackBox" hide-default-actions>
-        <center>
+      <va-modal v-model="modalShown[realIndex(index)]" class="feedbackBox" hide-default-actions>
+        <div style="text-align: center;">
           <span v-for="star in 5" :key="star" class="star"
             :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
             @mouseover="setHoverRating(realIndex(index), star)" @mouseout="setHoverRating(realIndex(index), 0)"
             @click.stop="setSelectedRating(realIndex(index), star)">
             ★
           </span>
-        </center>
+        </div>
         <p style="height: 10px;"></p>
         <va-input v-model="feedbacks[realIndex(index)].comment" class="mb-6" type="textarea" placeholder="请在此输入您的评论..."
           :min-rows="3" :max-rows="3" @click.stop />
@@ -62,17 +54,14 @@
               :style="{ color: record.status === 0 ? '#3498db' : record.status === -1 ? '#e74c3c' : '#2451c0' }">{{
                 record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span>
           </div>
+          <!-- 在待就诊状态应有比较当前时间与预约时间，判断预约过号的逻辑，为了演示不增加 -->
 
-          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013" size="small"
+          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013"
             text-color="#9d7013" @click="cancelAppointment(record, realIndex(index))">
             取消
           </va-button>
           &nbsp;&nbsp;&nbsp;&nbsp;
-
           <span class="title-date">{{ record.date }}</span>
-
-          &nbsp;
-          <span class="title-dept">{{ record.department }}</span>
         </va-card-title>
 
         <!-- 第二行 -->
@@ -114,16 +103,17 @@
             查看处方
           </va-button>
 
-          <va-button :disabled="record.status != 1" color="primary" class="button" @click="payBill(record)">
+          <va-button :disabled="record.status != 1 || record.payState == 1" color="primary" class="button"
+            @click="payBill(record)">
             支付账单
           </va-button>
 
           <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
-            class="feedback-button" @click="modalShown = !modalShown">
+            class="feedback-button" @click="modalShown[realIndex(index)] = !modalShown[realIndex(index)]">
             反馈评价
           </va-button>
 
-          <va-button color="primary" class="button" @click="showChat()">
+          <va-button color="primary" class="button" @click="showChat(allRecords[realIndex(index)].diagnoseId, allRecords[realIndex(index)].doctorID)">
             在线复诊
           </va-button>
 
@@ -175,7 +165,7 @@ export default {
       itemsPerPage: 6,
       periodDict: {},
       // 显示反馈评价窗口
-      modalShown: false,
+      modalShown: [],
       // 显示聊天窗口
       chatShown: false,
       // 聊天记录
@@ -183,27 +173,18 @@ export default {
         { userId: 1, text: '你好' },
         { userId: 2, text: '你好' },
         { userId: 1, text: '是中国人就说阿涅亚塞哟' },
-        { userId: 1, text: '是不是犟嘴了？' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 2, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
-        { userId: 1, text: '一得阁拉米' },
       ],
       // 聊天框内的信息
-      message: "",
+      newMessage: "",
 
-      //hcr添加
+      // hcr添加：患者ID
       userID: sessionStorage.getItem('userID'),
+
+      // 当前诊断记录ID
+      curRecordId: "",
+
+      // 当前诊断记录医生ID
+      curDoctorId: "",
     };
   },
   computed:
@@ -227,89 +208,96 @@ export default {
     for (let i = 4; i <= 7; i++) {
       this.periodDict[i] = `${i + 9}:00-${i + 10}:00`;
     }
-
-
-    // 这个要改成轮询
-    axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
-      .then((response) => {
-        console.log(response.data);
-        const newData = response.data; // 获取响应数据
-        // 将新数据转化为 record 对象并添加到 allRecords 数组中
-        this.allRecords = newData.map(item => ({
-          patient: item.patient.name,
-          // patientID: this.userID,
-          patientID: this.userID,
-          patientGender: item.patient.gender ? "男" : "女",
-          patientBirth: item.patient.birthDate,
-          doctor: item.doctor.name,
-          doctorID: item.doctor.doctorId,
-          date: item.date.split('T')[0],
-          appointmentTime: item.period,
-          waitingCount: item.queueCount,
-          status: item.state,
-          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
-        }));
-        this.allRecords.sort((record1, record2) => {
-          const date1 = new Date(record1.date);
-          const date2 = new Date(record2.date);
-          return date2 - date1; // 比较结果决定排序顺序
-        });
-        console.log(this.allRecords);
-        this.feedbacks = this.allRecords.map(item => ({
-          diagnoseId: item.diagnoseId,
-          hoverRating: 0,
-          selectedRating: 0,
-          comment: '',
-          isSubmitted: false
-        }));
-        this.leaveNotes = this.allRecords.map(item => ({
-          diagnoseId: item.diagnoseId,
-          leaveNoteInput: '',
-          isSubmitted: false
-        }));
-        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
-          params: {
-            PatientId: this.userID
-          }
-        })
-          .then((response) => {
-            for (let idData of response.data) {
-              let tmp = idData.substring(0, idData.length - 3);
-              let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
-              if (selectedObject) {
-                selectedObject.isSubmitted = true;
-              }
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        axios.get('http://124.223.143.21:4999/api/Comment/whether', {
-          params: {
-            PatientId: this.userID
-          }
-        })
-          .then((response) => {
-            console.log("checkComment");
-            console.log(response);
-            for (let idData of response.data) {
-              let tmp = idData;
-              let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
-              if (selectedObject) {
-                console.log("found");
-                selectedObject.isSubmitted = true;
-              }
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.getData();
+    this.startDataRefreshTimer();
   },
   methods: {
+      getData() {
+      axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
+        .then((response) => {
+          console.log(response.data);
+          const newData = response.data; // 获取响应数据
+          // 将新数据转化为 record 对象并添加到 allRecords 数组中
+          this.allRecords = newData.map(item => ({
+            patient: item.patient.name,
+            // patientID: this.userID,
+            patientID: this.userID,
+            patientGender: item.patient.gender ? "男" : "女",
+            patientBirth: item.patient.birthDate,
+            doctor: item.doctor.name,
+            doctorID: item.doctor.doctorId,
+            date: item.date.split('T')[0],
+            appointmentTime: item.period,
+            waitingCount: item.queueCount,
+            status: item.state,
+            diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
+            payState: item.payState,
+          }));
+          this.allRecords.sort((record1, record2) => {
+            const date1 = new Date(record1.date);
+            const date2 = new Date(record2.date);
+            return date2 - date1; // 比较结果决定排序顺序
+          });
+          console.log(this.allRecords);
+          this.feedbacks = this.allRecords.map(item => ({
+            diagnoseId: item.diagnoseId,
+            hoverRating: 0,
+            selectedRating: 0,
+            comment: '',
+            isSubmitted: false
+          }));
+          this.leaveNotes = this.allRecords.map(item => ({
+            diagnoseId: item.diagnoseId,
+            leaveNoteInput: '',
+            isSubmitted: false
+          }));
+          for (let i = 0; i < this.allRecords.length; i++) {
+            this.modalShown[i] = false;
+          }
+          axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+            params: {
+              PatientId: this.userID
+            }
+          })
+            .then((response) => {
+              for (let idData of response.data) {
+                let tmp = idData.substring(0, idData.length - 3);
+                let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
+                if (selectedObject) {
+                  selectedObject.isSubmitted = true;
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          axios.get('http://124.223.143.21:4999/api/Comment/whether', {
+            params: {
+              PatientId: this.userID
+            }
+          })
+            .then((response) => {
+              for (let idData of response.data) {
+                let tmp = idData;
+                let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
+                if (selectedObject) {
+                  selectedObject.isSubmitted = true;
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    startDataRefreshTimer() {
+      setInterval(() => {
+        this.getData(); // 获取最新数据
+      }, 30000); // 定时器每隔30s轮询
+    },
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
         params: {
@@ -414,7 +402,7 @@ export default {
             styles: {
               font: 'MyFont',
               fontSize: 7,
-              cellPadding: { top: 0, right: 1, bottom: 1, left: 0 }
+              cellPadding: { top: 0, right: 2, bottom: 1, left: 0 }
             },
           });
           penHeight += 35;
@@ -441,7 +429,7 @@ export default {
           console.log(medicineData);
 
           const totalWidth = doc.internal.pageSize.width - PAGE_MARGIN * 2; // 获取页面宽度
-          const columnWidth1 = totalWidth * 0.15; // 前四列宽度各15%
+          const columnWidth1 = totalWidth * 0.14; // 前四列宽度各14%
           const columnWidth5 = totalWidth * 0.40; // 第五列宽度40%
           doc.autoTable({
             theme: 'plain',
@@ -450,7 +438,7 @@ export default {
             styles: {
               font: 'MyFont',
               fontSize: 6,
-              cellPadding: { top: 0, right: 2, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
+              cellPadding: { top: 0, right: 4, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
             },
             columnStyles: {
               0: { columnWidth: columnWidth1 },
@@ -469,7 +457,17 @@ export default {
           const finalHeight = pageHeight - doc.getTextDimensions(formattedTime).h;
           doc.text(formattedTime, timeX, finalHeight);
           doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
-          // doc.save("example.pdf");
+          // 加入印章
+          const imgData = require("../assets/zhang.png");
+          doc.addImage({
+            imageData: imgData,
+            x: pageWidth - 35,
+            y: pageHeight - 32,
+            width: 25,
+            height: 25,
+            format: "png"
+          });
+
           const blob = doc.output('blob');
           const url = URL.createObjectURL(blob);
           window.open(url, '_blank'); // 在新窗口中打开 PDF 文件
@@ -511,13 +509,14 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
+        this.modelShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
       const leaveNote = this.leaveNotes[recordIndex];
       if (leaveNote) {
         const inputData = {
-          diagnoseId: this.allRecords[recordIndex].diagnoseId,
+          diagnosedId: this.allRecords[recordIndex].diagnoseId,
           leaveDays: leaveNote.leaveNoteInput,
         };
         console.log("leaveNote inputData");
@@ -525,32 +524,82 @@ export default {
         axios.post('http://124.223.143.21/api/Leave', null, { params: inputData })
           .then(response => {
             console.log('POST request successful:', response.data);
+            leaveNote.isSubmitted = true;
           })
           .catch(error => {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录提交了 ${leaveNote.leaveNoteInput}的请假天数`);
-        leaveNote.isSubmitted = true;
       }
     },
-    showChat() {
-      this.chatShown = true;
+    getMessages(recordId = "-1") {         
+          axios({
+            method: 'GET',
+            url: 'http://124.223.143.21/api/Chatrecord/getChatRecord', 
+            params: {
+              RecordId: recordId === "-1" ? this.curRecordId : recordId,
+            }
+          })
+            .then((response) => {
+              this.chatMessages = [];
+              for (let i = 0; i < response.data.length; i++) {
+                this.chatMessages.push(response.data[i]);
+              }
+            })
+            .catch((error) => {
+              this.chatMessages = [];
+              console.error(error);
+            })
+        },
+        showChat(id, doctorId) {
+          this.chatShown = true;
+          this.curRecordId = id;
+          this.curDoctorId = doctorId;
+          this.getMessages(id);
+        },
+        sendMessage() {
+          this.chatMessages.push({message: this.newMessage, senderType: 0});
 
+          var myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          var raw = JSON.stringify({
+            "recordId": this.curRecordId,
+            "doctorId": this.curDoctorId,
+            "patientId": this.userID,
+            "message": this.newMessage,
+            "senderType": 0,
+            "timeStamp": new Date().toISOString(),
+            "readStatus": 0
+          });
+          console.log(raw);
+
+          var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+          };
+
+          fetch("http://124.223.143.21/api/Chatrecord/addChatRecord", requestOptions)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+              axios.post("", this.message)
+            .then(response => {
+              console.warn(response);
+              this.getMessages();
+              this.newMessage = "";
+              
+            }) 
+            .catch(error => {
+              console.log(error);
+              this.newMessage = "";
+            });
+          
+        }
     },
-    sendMessage() {
-      axios.post("", this.message)
-        .then(function (response) {
-          this.chatMessages = [];
-          for (let i = 0; i < response.data.length; i++) {
-            this.chatMessages.append(response.data[i]);
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-  },
-  // components: { ChatBox }
+    // components: { ChatBox }
 };
 </script>
 
@@ -661,51 +710,7 @@ export default {
   border-color: transparent #002fb0 transparent transparent;
   float: left;
 }
-
-.chatBox-right::before {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  right: -20px;
-  top: 5px;
-  border: 10px solid;
-  border-color: transparent transparent transparent #002fb0;
-  float: right;
-}
-
-.chatBox {
-  position: relative;
-  /* margin:12px; */
-  padding: 5px 8px;
-  word-break: break-all;
-  background: #ffffff;
-  border: 1px solid #989898;
-  border-radius: 5px;
-  max-width: 180px;
-}
-
-.chatBox-left {
-  float: left;
-}
-
-.chatBox-right {
-  float: right;
-}
-
-.chatBox-left::before {
-  content: '';
-  position: absolute;
-  width: 0;
-  height: 0;
-  left: -20px;
-  top: 5px;
-  border: 10px solid;
-  border-color: transparent #002fb0 transparent transparent;
-  float: left;
-}
-
-.chatBox-right::before {
+.chatBox-right::before{
   content: '';
   position: absolute;
   width: 0;
