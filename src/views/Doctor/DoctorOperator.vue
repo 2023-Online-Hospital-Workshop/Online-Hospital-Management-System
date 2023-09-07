@@ -76,6 +76,7 @@
 .main {
   display: flex;
   flex-wrap: wrap;
+  height: 1500px;
   /*在容器内的子元素超出容器宽度时换行*/
   margin-left: 300px;
   margin-top: 50px;
@@ -196,10 +197,23 @@ input {
 /* #cebian {
   width: 120px;
   height: 0;
-  margin: 100px 10px;
-  border-left: 80px solid transparent;
-  border-top: 150px solid #00C1AE;
-} */
+  left: -20px;
+  top:5px;
+  border: 10px solid;
+  border-color: transparent #002fb0 transparent transparent ;
+  float:left;
+}
+.chatBox-right::before{
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  right: -20px;
+  top:5px;
+  border: 10px solid;
+  border-color: transparent transparent transparent #002fb0;
+  float: right;
+}
 </style>
   
 
@@ -212,6 +226,7 @@ input {
     <el-button type="primary" class="custom-button trapezoid-button" @click="drawer = true">
       <span class="vertical-text">请假申请</span>
     </el-button>
+
 
     <el-drawer v-model="drawer" title="I am the title" :with-header="false">
       <va-card v-for="(i, index) in leave_app" :key="index" style="margin-bottom: 30px;">
@@ -253,7 +268,6 @@ input {
               同意
             </va-button>
           </va-card-actions>
-
         </va-card-content>
       </va-card>
     </el-drawer>
@@ -305,6 +319,18 @@ input {
       <el-button type="primary" class="custom-button trapezoid-button" v-for="(buttonText, index) in template"
         :key="index" @click="handle(index)">
         {{ buttonText }}
+      </el-button>
+      <el-button type="primary" class="custom-button trapezoid-button">
+        发烧
+      </el-button>
+      <el-button type="primary" class="custom-button trapezoid-button">
+        增加模板
+      </el-button>
+      <el-button type="primary" class="custom-button trapezoid-button">
+        删除模板
+      </el-button>
+      <el-button type="primary" class="custom-button trapezoid-button">
+        修改模板
       </el-button>
     </el-drawer>
   </header>
@@ -386,12 +412,9 @@ input {
           <td>辅导员：{{ counsellor }}</td>
         </tr>
         <tr>
-          <td>初诊/复诊：</td>
-          <va-button @click="getHistory()" type="submit" preset="primary" class="mt-3">
-            获得就诊历史
-          </va-button>
+          <td>初诊/复诊：{{ isfirst }}</td>
           <td>
-            <va-button @click="showModal = !showModal">
+            <va-button id="isfirst_button" @click="showModal = !showModal">
               查看就诊历史
             </va-button>
           </td>
@@ -424,6 +447,19 @@ input {
                   {{ his_rep.records[p].record.clinicdia }}
                   <br /><br />诊疗建议: {{ his_rep.records[p].record.advice }}
                   <br /><br />处方：
+                  <el-table :data="his_rep.records[p].medicineDescriptions" stripe style="width: 100%" max-height="500">
+                    <el-table-column prop="medicineName" label="药品" width="100">
+                    </el-table-column>
+                    <el-table-column prop="specification" label="规格" width="130">
+                    </el-table-column>
+                    <el-table-column prop="singledose" label="剂量" width="80">
+                    </el-table-column>
+                    <el-table-column prop="frequency" label="频率" width="80">
+                    </el-table-column>
+                    <el-table-column prop="attention" label="注意事项" width="190">
+                    </el-table-column>
+                  </el-table>
+
                 </div>
                 <div class="example-pagination-block">
                   <el-pagination @current-change="changeReport" layout="prev, pager, next" :total="total_p" />
@@ -434,81 +470,69 @@ input {
           </va-modal>
         </tr>
       </table>
-      <va-form class="w-[300px]" tag="form" @submit.prevent="enter">
-        主诉：
-        <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
-        <br /><br />现病史：
-        <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
-        <br /><br />既往史：
-        <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
-        <br /><br />体征：<input type="text" v-model="symptom" name="firstname" placeholder="请输入" />
-        <br /><br />门诊诊断：
-        <input type="text" v-model="diagnose" name="firstname" placeholder="请输入" />
-        <br /><br />诊疗建议:
-        <input type="text" v-model="prescription" name="firstname" placeholder="请输入" />
-        <br /><br />处方:
 
-        <el-select v-model="select_medi" @change="selectMedicine()" filterable placeholder="从药品库中选择药品">
-          <el-option v-for="(item, index) in stocks" :key="index" :label="item" :value="item">
-          </el-option>
-        </el-select>
-        <el-table :data="medicine" stripe style="width: 100%" max-height="500">
-          <el-table-column prop="name" label="药品" width="80">
-          </el-table-column>
-          <el-table-column prop="spec" label="规格" width="80">
-          </el-table-column>
-          <el-table-column label="单次剂量" width="120">
-            <template #default="scope">
-              <input class="input2" type="text" v-model="all_meds[scope.$index].single" name="firstname" placeholder="" />
-            </template>
-          </el-table-column>
-          <el-table-column label="用法" width="70">
-            <template #default="scope">
-              <input class="input2" type="text" v-model="all_med[scope.$index].ad" name="firstname" placeholder="" />
-            </template>
-          </el-table-column>
-          <el-table-column label="频率" width="100">
-            <template #default="scope">
-              <input class="input2" type="text" v-model="all_med[scope.$index].fre" name="firstname" placeholder="" />
-            </template>
-          </el-table-column>
-          <el-table-column label="数量" width="110">
-            <template #default="scope">
-              <el-input-number v-model="all_med[scope.$index].count" :min="1" :max="30" size="large"
-                controls-position="right" style="width: 70px"></el-input-number>
-            </template>
-          </el-table-column>
-          <el-table-column label="注意事项" width="140">
-            <template #default="scope">
-              <input class="input2" type="text" v-model="all_med[scope.$index].tips" name="firstname" placeholder="" />
-            </template>
-          </el-table-column>
-          <el-table-column label="编辑" width="80">
-            <template #default="scope">
-              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+      主诉：
+      <input type="text" v-model="problem" name="firstname" placeholder="请输入" />
+      <br /><br />现病史：
+      <input type="text" v-model="illness" name="firstname" placeholder="请输入" />
+      <br /><br />既往史：
+      <input type="text" v-model="past_illness" name="firstname" placeholder="请输入" />
+      <br /><br />体征：<input type="text" v-model="symptom" name="firstname" placeholder="请输入" />
+      <br /><br />门诊诊断：
+      <input type="text" v-model="diagnose" name="firstname" placeholder="请输入" />
+      <br /><br />诊疗建议:
+      <input type="text" v-model="prescription" name="firstname" placeholder="请输入" />
+      <br /><br />处方:
 
-        同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
+      <el-select v-model="select_medi" @change="selectMedicine()" filterable placeholder="从药品库中选择药品">
+        <el-option v-for="(item, index) in stocks" :key="index" :label="item" :value="item">
+        </el-option>
+      </el-select>
+      <el-table :data="medicine" stripe style="width: 100%" max-height="500">
+        <el-table-column prop="name" label="药品" width="80">
+        </el-table-column>
+        <el-table-column prop="spec" label="规格" width="80">
+        </el-table-column>
+        <el-table-column label="单次剂量" width="120">
+          <template #default="scope">
+            <input class="input2" type="text" v-model="all_med[scope.$index].single" name="firstname" placeholder="" />
+          </template>
+        </el-table-column>
+        <el-table-column label="用法" width="70">
+          <template #default="scope">
+            <input class="input2" type="text" v-model="all_med[scope.$index].ad" name="firstname" placeholder="" />
+          </template>
+        </el-table-column>
+        <el-table-column label="频率" width="100">
+          <template #default="scope">
+            <input class="input2" type="text" v-model="all_med[scope.$index].fre" name="firstname" placeholder="" />
+          </template>
+        </el-table-column>
+        <el-table-column label="数量" width="110">
+          <template #default="scope">
+            <el-input-number v-model="all_med[scope.$index].count" :min="1" :max="30" size="large"
+              controls-position="right" style="width: 70px"></el-input-number>
+          </template>
+        </el-table-column>
+        <el-table-column label="注意事项" width="140">
+          <template #default="scope">
+            <input class="input2" type="text" v-model="all_med[scope.$index].tips" name="firstname" placeholder="" />
+          </template>
+        </el-table-column>
+        <el-table-column label="编辑" width="80">
+          <template #default="scope">
+            <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-        <!-- <va-button @click="showModal2 = !showModal2">
-                    确认处方
-                </va-button>
+      同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
 
-                <va-modal v-model="showModal2" ok-text="Apply">
-                    <h3 class="va-h3">
-                        您是否确认提交现有处方，请注意处方一旦提交不能更改
-                    </h3>
-                    <va-button id="re-button" type="submit" preset="primary" class="mt-3">
-                        确认
-                    </va-button>
-                </va-modal> -->
-        <br />
-        <va-button id="re-button" type="submit" preset="primary" class="mt-3">
-          确认
-        </va-button>
-      </va-form>
+      <br />
+      <va-button id="re-button" type="submit" preset="primary" class="mt-3" @click="showConfirmationDialog">
+        确认
+      </va-button>
+
       <img src="../../assets/zhang.png" alt="图片描述">
     </div>
 
@@ -561,7 +585,7 @@ export default {
       dept: "普通外科",
 
       //处方药品
-      all_medicine: [], //存储药房中所有药品,包含medicineName和specification属性
+      all_medicine: [], //药房中所有药品,包含medicineName和specification属性
       stocks: [], //在checkbox中选择药品，存储所有药品的全称
       medicine: [], //辅助在表格前端显示，只有name和spec两个属性
       all_num: 0, //现在已有药品数量
@@ -576,6 +600,7 @@ export default {
       prescription: "",
 
       //就诊历史
+      isfirst: "",
       his_rep: {},
       showModal: false,
       showModal2: false,
@@ -613,6 +638,9 @@ export default {
 
       //今日日期
       date: "",
+
+      //显示自定义提示框
+      showDialog: false,
     };
   },
   components: {
@@ -635,7 +663,7 @@ export default {
     let all_med = reactive(med);
 
     return {
-      all_med, //处方中所有的药品和药品属性
+      all_med, //已经选择的所有的药品和药品属性
     };
   },
 
@@ -742,6 +770,7 @@ export default {
       } catch (error) {
         console.error("Error:", error);
       }
+      console.log(this.all_medicine);
 
       //获得病假申请
       const url3 = "http://124.223.143.21/api/Leave/GetLeaveApplicationsByDoctor?doctorId=" + this.doctorId;
@@ -941,6 +970,11 @@ export default {
       this.ID = this.patients[i].patientId;
       this.period = this.patients[i].period;
       console.log(this.patients[i].period);
+
+      //获取当前就诊病人的就诊历史
+      this.getHistory();
+
+
     },
 
     //添加药品
@@ -1002,6 +1036,21 @@ export default {
       this.all_num = this.all_num - 1;
 
       console.log(this.medicine);
+    },
+
+    //确认处方前的提示
+    showConfirmationDialog() {
+      // 使用 window.confirm() 函数显示确认提示框
+      const confirmed = window.confirm("您是否确认提交处方？");
+
+      // 根据用户选择来执行相应的操作
+      if (confirmed) {
+        // 用户点击了确认按钮，执行提交操作
+        this.enter();
+      } else {
+        // 用户点击了取消按钮，取消操作
+        // 可以选择不执行任何操作或者做其他处理
+      }
     },
 
     //确认处方
@@ -1087,27 +1136,38 @@ export default {
       } catch (error) {
         console.log("error", error);
       }
-      //数据修正
-      if (this.his_rep.patientInfo.gender) {
-        this.his_rep.patientInfo.gender = "男";
-      } else {
-        this.his_rep.patientInfo.gender = "女";
+
+      if (this.his_rep.records === undefined || this.his_rep.records.length === 0) {
+        this.isfirst = "初诊";
+        // 获取按钮元素
+        const button = document.getElementById('isfirst_button');
+        // 禁用按钮
+        button.disabled = true;
       }
-      const birthDate = this.his_rep.patientInfo.birthDate;
-      const yearSubstring = birthDate.substring(0, 4); // 提取前四位子串
-      const yearAsNumber = parseInt(yearSubstring); // 转换为数字
-      const age = 2023 - yearAsNumber;
-      this.his_rep.patientInfo.birthDate = age;
+      else {
+        this.isfirst = "复诊";
+        //数据修正
+        if (this.his_rep.patientInfo.gender) {
+          this.his_rep.patientInfo.gender = "男";
+        } else {
+          this.his_rep.patientInfo.gender = "女";
+        }
+        const birthDate = this.his_rep.patientInfo.birthDate;
+        const yearSubstring = birthDate.substring(0, 4); // 提取前四位子串
+        const yearAsNumber = parseInt(yearSubstring); // 转换为数字
+        const age = 2023 - yearAsNumber;
+        this.his_rep.patientInfo.birthDate = age;
 
-      for (let i = 0; i < this.his_rep.records.length; i++) {
-        const diagnoseTime = this.his_rep.records[i].record.diagnoseTime;
-        const shortenedTime = diagnoseTime.substring(0, 10); // 提取前10位子串
-        this.his_rep.records[i].record.diagnoseTime = shortenedTime;
+        for (let i = 0; i < this.his_rep.records.length; i++) {
+          const diagnoseTime = this.his_rep.records[i].record.diagnoseTime;
+          const shortenedTime = diagnoseTime.substring(0, 10); // 提取前10位子串
+          this.his_rep.records[i].record.diagnoseTime = shortenedTime;
+        }
+
+        this.total_p = this.his_rep.records.length * 10;
+
+        console.log(this.his_rep);
       }
-
-      this.total_p = this.his_rep.records.length * 10;
-
-      console.log(this.his_rep);
 
       //发送假条数据
       var requestOptions2 = {
@@ -1120,6 +1180,7 @@ export default {
         .then(response => { console.log(response); return response.text(); })
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
+
     },
 
     //就诊历史翻页
