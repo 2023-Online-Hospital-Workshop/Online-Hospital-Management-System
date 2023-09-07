@@ -35,15 +35,15 @@
   <div style="margin-top:80px">
     <div class="row justify-center" cols="12" sm="6" md="4" lg="3" v-for="(record, index) in displayedAllRecords "
       :key="index">
-      <va-modal v-model="modalShown" class="feedbackBox" hide-default-actions>
-        <center>
+      <va-modal v-model="modalShown[realIndex(index)]" class="feedbackBox" hide-default-actions>
+        <div style="text-align: center;">
           <span v-for="star in 5" :key="star" class="star"
             :class="{ active: feedbacks[realIndex(index)].hoverRating >= star || feedbacks[realIndex(index)].selectedRating >= star }"
             @mouseover="setHoverRating(realIndex(index), star)" @mouseout="setHoverRating(realIndex(index), 0)"
             @click.stop="setSelectedRating(realIndex(index), star)">
             ★
           </span>
-        </center>
+        </div>
         <p style="height: 10px;"></p>
         <va-input v-model="feedbacks[realIndex(index)].comment" class="mb-6" type="textarea" placeholder="请在此输入您的评论..."
           :min-rows="3" :max-rows="3" @click.stop />
@@ -62,17 +62,14 @@
               :style="{ color: record.status === 0 ? '#3498db' : record.status === -1 ? '#e74c3c' : '#2451c0' }">{{
                 record.status === 0 ? '待就诊' : record.status === -1 ? '已取消' : '已就诊' }}</span>
           </div>
+          <!-- 在待就诊状态应有比较当前时间与预约时间，判断预约过号的逻辑，为了演示不增加 -->
 
-          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013" size="small"
+          <va-button round icon="close" v-if="record.status == 0" color="#f6f2c8" border-color="#9d7013"
             text-color="#9d7013" @click="cancelAppointment(record, realIndex(index))">
             取消
           </va-button>
           &nbsp;&nbsp;&nbsp;&nbsp;
-
           <span class="title-date">{{ record.date }}</span>
-
-          &nbsp;
-          <span class="title-dept">{{ record.department }}</span>
         </va-card-title>
 
         <!-- 第二行 -->
@@ -114,12 +111,13 @@
             查看处方
           </va-button>
 
-          <va-button :disabled="record.status != 1" color="primary" class="button" @click="payBill(record)">
+          <va-button :disabled="record.status != 1 || record.payState == 0" color="primary" class="button"
+            @click="payBill(record)">
             支付账单
           </va-button>
 
           <va-button :disabled="record.status != 1 || feedbacks[realIndex(index)].isSubmitted == true" color="primary"
-            class="feedback-button" @click="modalShown = !modalShown">
+            class="feedback-button" @click="modalShown[realIndex(index)] = !modalShown[realIndex(index)]">
             反馈评价
           </va-button>
 
@@ -175,7 +173,7 @@ export default {
       itemsPerPage: 6,
       periodDict: {},
       // 显示反馈评价窗口
-      modalShown: false,
+      modalShown: [],
       // 显示聊天窗口
       chatShown: false,
       // 聊天记录
@@ -227,89 +225,102 @@ export default {
     for (let i = 4; i <= 7; i++) {
       this.periodDict[i] = `${i + 9}:00-${i + 10}:00`;
     }
-
-
-    // 这个要改成轮询
-    axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
-      .then((response) => {
-        console.log(response.data);
-        const newData = response.data; // 获取响应数据
-        // 将新数据转化为 record 对象并添加到 allRecords 数组中
-        this.allRecords = newData.map(item => ({
-          patient: item.patient.name,
-          // patientID: this.userID,
-          patientID: this.userID,
-          patientGender: item.patient.gender ? "男" : "女",
-          patientBirth: item.patient.birthDate,
-          doctor: item.doctor.name,
-          doctorID: item.doctor.doctorId,
-          date: item.date.split('T')[0],
-          appointmentTime: item.period,
-          waitingCount: item.queueCount,
-          status: item.state,
-          diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
-        }));
-        this.allRecords.sort((record1, record2) => {
-          const date1 = new Date(record1.date);
-          const date2 = new Date(record2.date);
-          return date2 - date1; // 比较结果决定排序顺序
-        });
-        console.log(this.allRecords);
-        this.feedbacks = this.allRecords.map(item => ({
-          diagnoseId: item.diagnoseId,
-          hoverRating: 0,
-          selectedRating: 0,
-          comment: '',
-          isSubmitted: false
-        }));
-        this.leaveNotes = this.allRecords.map(item => ({
-          diagnoseId: item.diagnoseId,
-          leaveNoteInput: '',
-          isSubmitted: false
-        }));
-        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
-          params: {
-            PatientId: this.userID
-          }
-        })
-          .then((response) => {
-            for (let idData of response.data) {
-              let tmp = idData.substring(0, idData.length - 3);
-              let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
-              if (selectedObject) {
-                selectedObject.isSubmitted = true;
-              }
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-        axios.get('http://124.223.143.21:4999/api/Comment/whether', {
-          params: {
-            PatientId: this.userID
-          }
-        })
-          .then((response) => {
-            console.log("checkComment");
-            console.log(response);
-            for (let idData of response.data) {
-              let tmp = idData;
-              let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
-              if (selectedObject) {
-                console.log("found");
-                selectedObject.isSubmitted = true;
-              }
-            }
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    this.getData();
+    this.startDataRefreshTimer();
   },
   methods: {
+    getData() {
+      axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
+        .then((response) => {
+          // console.log(response.data);
+          const newData = response.data; // 获取响应数据
+          // 将新数据转化为 record 对象并添加到 allRecords 数组中
+          this.allRecords = newData.map(item => ({
+            patient: item.patient.name,
+            // patientID: this.userID,
+            patientID: this.userID,
+            patientGender: item.patient.gender ? "男" : "女",
+            patientBirth: item.patient.birthDate,
+            doctor: item.doctor.name,
+            doctorID: item.doctor.doctorId,
+            date: item.date.split('T')[0],
+            appointmentTime: item.period,
+            waitingCount: item.queueCount,
+            status: item.state,
+            diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
+            payState: item.payState,
+          }));
+          this.allRecords.sort((record1, record2) => {
+            const date1 = new Date(record1.date);
+            const date2 = new Date(record2.date);
+            return date2 - date1; // 比较结果决定排序顺序
+          });
+          console.log(this.allRecords);
+          this.feedbacks = this.allRecords.map(item => ({
+            diagnoseId: item.diagnoseId,
+            hoverRating: 0,
+            selectedRating: 0,
+            comment: '',
+            isSubmitted: false
+          }));
+          this.leaveNotes = this.allRecords.map(item => ({
+            diagnoseId: item.diagnoseId,
+            leaveNoteInput: '',
+            isSubmitted: false
+          }));
+          for (let i = 0; i < this.allRecords.length; i++) {
+            this.modalShown[i] = false;
+          }
+
+          axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+            params: {
+              PatientId: this.userID
+            }
+          })
+            .then((response) => {
+              for (let idData of response.data) {
+                let tmp = idData.substring(0, idData.length - 3);
+                let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
+                if (selectedObject) {
+                  selectedObject.isSubmitted = true;
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          axios.get('http://124.223.143.21:4999/api/Comment/whether', {
+            params: {
+              PatientId: this.userID
+            }
+          })
+            .then((response) => {
+              // console.log("checkComment");
+              // console.log(response);
+              for (let idData of response.data) {
+                let tmp = idData;
+                let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
+                if (selectedObject) {
+                  // console.log("found");
+                  selectedObject.isSubmitted = true;
+                }
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
+    startDataRefreshTimer() {
+      setInterval(() => {
+        this.getData(); // 获取最新数据
+      }, 30000); // 定时器每隔30s轮询
+    },
+
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
         params: {
@@ -359,8 +370,6 @@ export default {
       })
         .then((response) => {
           let prescriptionData = response.data;
-          console.log("prescriptionData");
-          console.log(prescriptionData);
           const PAGE_MARGIN = 5;
           const doc = new jsPDF({
             unit: "mm",
@@ -414,7 +423,7 @@ export default {
             styles: {
               font: 'MyFont',
               fontSize: 7,
-              cellPadding: { top: 0, right: 1, bottom: 1, left: 0 }
+              cellPadding: { top: 0, right: 2, bottom: 1, left: 0 }
             },
           });
           penHeight += 35;
@@ -441,7 +450,7 @@ export default {
           console.log(medicineData);
 
           const totalWidth = doc.internal.pageSize.width - PAGE_MARGIN * 2; // 获取页面宽度
-          const columnWidth1 = totalWidth * 0.15; // 前四列宽度各15%
+          const columnWidth1 = totalWidth * 0.14; // 前四列宽度各14%
           const columnWidth5 = totalWidth * 0.40; // 第五列宽度40%
           doc.autoTable({
             theme: 'plain',
@@ -450,7 +459,7 @@ export default {
             styles: {
               font: 'MyFont',
               fontSize: 6,
-              cellPadding: { top: 0, right: 2, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
+              cellPadding: { top: 0, right: 4, bottom: 8 / (tmpMedicines.length + 1), left: 0 }
             },
             columnStyles: {
               0: { columnWidth: columnWidth1 },
@@ -469,6 +478,17 @@ export default {
           const finalHeight = pageHeight - doc.getTextDimensions(formattedTime).h;
           doc.text(formattedTime, timeX, finalHeight);
           doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
+          // 加入印章
+          const imgData = require("../assets/stamp.jpg");
+          doc.addImage({
+            imageData: imgData,
+            x: pageWidth - 35,
+            y: pageHeight - 32,
+            width: 25,
+            height: 25,
+            format: "jpg"
+          });
+
           // doc.save("example.pdf");
           const blob = doc.output('blob');
           const url = URL.createObjectURL(blob);
@@ -511,13 +531,14 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
+        this.modalShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
       const leaveNote = this.leaveNotes[recordIndex];
       if (leaveNote) {
         const inputData = {
-          diagnoseId: this.allRecords[recordIndex].diagnoseId,
+          diagnosedId: this.allRecords[recordIndex].diagnoseId,
           leaveDays: leaveNote.leaveNoteInput,
         };
         console.log("leaveNote inputData");
@@ -525,12 +546,12 @@ export default {
         axios.post('http://124.223.143.21/api/Leave', null, { params: inputData })
           .then(response => {
             console.log('POST request successful:', response.data);
+            leaveNote.isSubmitted = true;
           })
           .catch(error => {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录提交了 ${leaveNote.leaveNoteInput}的请假天数`);
-        leaveNote.isSubmitted = true;
       }
     },
     showChat() {
