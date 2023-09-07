@@ -115,6 +115,12 @@ export default {
     },
   },
   methods: {
+    setCookie(name, value, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      var expires = "expires=" + d.toGMTString();
+      document.cookie = name + "=" + value + "; " + expires;
+    },
     edit() {
       //使得可编辑
       if (this.editStates === "编辑") {
@@ -132,9 +138,10 @@ export default {
       //接跳转到首页的路由
       this.$router.push("/");
       this.showInfo = !this.showInfo;
+      this.setCookie("token", "", -1);
     },
     toggleInfo() {
-      this.studentId = sessionStorage.getItem('userID');
+      this.studentId = sessionStorage.getItem("userID");
       this.showInfo = !this.showInfo;
       if (this.showInfo === true) {
         var self = this;
