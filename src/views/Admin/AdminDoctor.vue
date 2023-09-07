@@ -1,15 +1,12 @@
 <template>
   <el-container>
-
     <el-main>
       <!-- 条件区 -->
       <div class="conditions">
         <center>
-          <span class="select">
-            <va-select v-model="selected" :options="departments" />
-          </span>
           <span class="search">
             <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
+            <!-- <va-date-picker v-model="value" /> -->
           </span>
         </center>
       </div>
@@ -18,26 +15,60 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller
+          :current-page="curPage" hoverable :wrapper-size="570" virtual-scroller noDataFilteredHtml="无数据" noDataHtml="无数据"
           @filtered="filteredCount = $event.items.length">
+
 
           <!-- 新建区 -->
           <template #headerAppend>
             <tr class="table-curd__slot">
+              <th>
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择医生ID" v-model="newID"
+                  :options="doctorIDs" />
+              </th>
+              <th>
+                <va-input style="width:99%; font-weight: 100;" v-model="newName" readonly />
+              </th>
+              <th>
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择诊室" v-model="newRoom"
+                  :options="availableRooms" />
+              </th>
+              <th>
+                <va-popover color="backgroundElement" placement="top" trigger="click">
+                  <va-button style="width:99%; font-weight:100;" color="backgroundElement">{{ newDate }}</va-button>
+                  <template #body>
+                    <div>
+                      <va-date-picker stateful v-model="formattedNewDate" @update:model-value="updateDate()"
+                        :allowed-years="(date) => date.getFullYear() !== currentDate.getFullYear()" />
+                    </div>
+                  </template>
+                </va-popover>
+              </th>
+              <th>
+                <va-select style="width:99%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper"
+                  :options="timePers" />
+              </th>
+              <th>
+                <va-button :disabled="!createdItemValid" style="width:99%; font-weight: 100;" color="backgroundElement"
+                  @click="addItem">
+                  添加
+                </va-button>
+              </th>
+            </tr>
+            <!-- <tr class="table-curd__slot">
               <th v-for="col in tableColumns.slice(0, -1)" :key="col">
                 <va-input v-model="createdItem[col]" :placeholder="col" />
               </th>
               <th>
                 <va-button :disabled="!createdItemValid" block @click="addItem">添加</va-button>
               </th>
-            </tr>
+            </tr> -->
           </template>
           <!-- 新建区 -->
 
           <!-- 修改操作 -->
           <template #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
-            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="showConfirm = true; deletedRow = rowIndex" />
           </template>
 
           <!-- 分页 -->
@@ -45,7 +76,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10" />
               </td>
             </tr>
           </template>
@@ -55,13 +86,8 @@
       <!-- 表格 -->
 
       <!-- 弹窗 -->
-      <va-modal v-model="showModal" title="编辑坐诊信息" size="small" ok-text="确认" cancel-text="取消" @ok="confirmUpdate"
-        no-outside-dismiss @cancel="cancelUpdate">
-        <div v-for="col in tableColumns.slice(0, -1)" :key="col">
-          <br>
-          <div class="modal-label">{{ col }}</div>
-          <va-input v-model="editedItem[col]" />
-        </div>
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消" @ok="deleteItem(deletedRow)">
+        <span>确定删除吗？</span>
       </va-modal>
       <!-- 弹窗 -->
 
@@ -70,41 +96,23 @@
 </template>
 
 <script>
-
+import axios from 'axios';
 export default {
   data() {
-    const departments = ["所有科室", "消化内科", "神经内科", "检验科", "泌尿外科", "呼吸内科", "骨科"];
     const perPage = 10;
-    const tableColumns = ["ID", "姓名", "科室", "坐诊开始时间", "坐诊结束时间", "修改"];
+    const tableColumns = ["ID", "医生姓名", "诊室", "日期", "坐诊时间", "修改"];
 
     return {
       // 筛选
       filter: "",
       filteredCount: 0,
-      departments,
-      selected: departments[0],
 
       // 表格
       tableColumns,
       tableItems: [],
-      allItems: [],
 
       // 编辑
-      createdItem: {
-        "ID": "",
-        "姓名": "",
-        "科室": "",
-        "坐诊开始时间": "",
-        "坐诊结束时间": "",
-      },
-      editedRow: 0,
-      editedItem: {
-        "ID": "",
-        "姓名": "",
-        "科室": "",
-        "坐诊开始时间": "",
-        "坐诊结束时间": "",
-      },
+      deletedRow: 0,
 
       // 分页
       perPage,
@@ -112,7 +120,33 @@ export default {
 
       // 弹窗
       showModal: false,
+      showConfirm: false,
 
+      // 数据库中的医生ID
+      doctorIDs: [],
+
+      // 数据库中的科室列表
+      departments: [],
+
+      currentYear: 2023,
+
+      newID: "请选择医生ID",
+
+      newName: "医生姓名",
+
+      newRoom: "请选择诊室",
+
+      newDate: "请选择日期",
+
+      formattedNewDate: new Date(),
+
+      availableRooms: [],
+
+      showDatepicker: false,
+
+      newTimeper: "请选择坐诊时间",
+
+      timePers: ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"],
     }
   },
 
@@ -124,14 +158,38 @@ export default {
 
     // 新项是否合法
     createdItemValid() {
-      for (let col in this.createdItem) {
-        this.createdItem[col];
-        if (this.createdItem[col] == "") {
+      if (this.newID == "请选择医生ID") {
+        return false;
+      }
+      if (this.newRoom == "请选择诊室") {
+        return false;
+      }
+      if (this.newDate == "请选择日期") {
+        return false;
+      }
+      if (this.newTimeper == "请选择坐诊时间") {
+        return false;
+      }
+      for (let i = 0; i < this.tableItems.length; ++i) {
+        let flag = false;
+        if (this.tableItems[i]["ID"] != this.newID) {
+          flag = true;
+        }
+        if (this.tableItems[i]["诊室"] != this.newRoom) {
+          flag = true;
+        }
+        if (this.tableItems[i]["日期"] != this.newDate) {
+          flag = true;
+        }
+        if (this.tableItems[i]["坐诊时间"] != this.newTimeper) {
+          flag = true;
+        }
+        if (!flag) {
           return false;
         }
       }
       return true;
-    }
+    },
   },
 
   methods: {
@@ -147,18 +205,29 @@ export default {
 
     // 添加表项
     addItem() {
-      // 新建对象
-      let newItem = {};
-      for (let col in this.createdItem) {
-        newItem[col] = this.createdItem[col];
-        this.createdItem[col] = ""; // 重置createdItem
-      }
-
       // 传入后端
+      let myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      let raw = JSON.stringify({
+        "doctorId": this.newID,// newItem["ID"],
+        "clinicName": this.newRoom,// newItem["诊室"],
+        "dateTime": this.newDate, // newItem["日期"],
+        "period": this.toPeriod(this.newTimeper), // (newItem["坐诊日期"]),
+      });
+      let requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      fetch("http://124.223.143.21/api/Consultationinfo/AddConsult", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          console.warn(result);
+          this.getTable();
+        })
+        .catch(error => console.log('error', error));
 
-
-      // 加入表项
-      this.tableItems.push(newItem);
     },
 
     // 打开编辑窗口
@@ -167,25 +236,87 @@ export default {
         this.editedItem[col] = this.tableItems[rowIndex][col];
       }
       this.editedRow = rowIndex;
+      this.editedOptions = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"];
+      for (let i = 0; i < this.tableItems.length; ++i) { // 遍历所有列表项
+        let flag = true; // 前几项属性是否都相同
+        for (let col in this.tableColumns.slice(0, -2)) { // 遍历所有属性
+          let att = this.tableColumns[col];
+          if (this.editedItem[att] != this.tableItems[i][att]) {
+            flag = false;
+            break;
+          }
+        }
+        if (flag) { // 筛掉所有重复的
+          this.editedOptions = this.editedOptions.filter(item => item != this.tableItems[i]["坐诊时间"]);
+        }
+      }
       this.showModal = true;
-      console.log(this.showModal);
     },
 
     // 删除项
     deleteItem(rowIndex) {
-      this.tableItems.splice(rowIndex, 1);
+      let myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      let raw = JSON.stringify({
+        "doctorId": this.tableItems[rowIndex]["ID"],
+        "dateTime": this.tableItems[rowIndex]["日期"],
+        "period": this.toPeriod(this.tableItems[rowIndex]["坐诊时间"]),
+      });
+      let requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      fetch("http://124.223.143.21/api/Consultationinfo/CancelConsult", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          console.warn(result);
+          this.getTable();
+        })
+        .catch(error => console.log('error', error));
 
+    },
+
+    // 时间转换为 period
+    toPeriod(time) {
+      let startTime = parseInt(time.slice(0, 2));
+      return [8, 9, 10, 13, 14, 15, 16].findIndex(val => val == startTime) + 1;
     },
 
     // 确认编辑
     confirmUpdate() {
       // 写入后端
-      for (let col in this.editedItem) {
-        this.tableItems[this.editedRow][col] = this.editedItem[col];
-      }
-
-      // 刷新表项
-      this.getTable();
+      let myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      let raw = JSON.stringify({
+        "old": {
+          "doctorId": this.tableItems[this.editedRow]["ID"],
+          "clinicName": this.tableItems[this.editedRow]["诊室"],
+          "dateTime": this.tableItems[this.editedRow]["日期"],
+          "period": this.toPeriod(this.tableItems[this.editedRow]["坐诊时间"]),
+        },
+        "new": {
+          "doctorId": this.editedItem["ID"],
+          "clinicName": this.editedItem["诊室"],
+          "dateTime": this.editedItem["日期"],
+          "period": this.toPeriod(this.editedItem["坐诊时间"]),
+        }
+      });
+      let requestOptions = {
+        method: 'PUT',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      // console.log(raw);
+      fetch("http://124.223.143.21/api/Consultationinfo/ChangeConsult", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          console.warn(result);
+          this.getTable();
+        })
+        .catch(error => console.log('error', error));
     },
 
     // 取消编辑
@@ -193,30 +324,77 @@ export default {
       return;
     },
 
+    // 更新表格
     getTable() {
-      this.allItems = [];
-      this.tableItems = [];
-      for (let i = 0; i < 15; ++i) {
-        this.allItems.push({
-          ID: 36436,
-          姓名: "袁野",
-          科室: "泌尿外科",
-          坐诊开始时间: "2023-5-" + (i + 1).toString() + " 9:00",
-          坐诊结束时间: "2023-5-" + (i + 1).toString() + " 17:00",
-        });
-        this.tableItems.push({
-          ID: 36436,
-          姓名: "袁野",
-          科室: "泌尿外科",
-          坐诊开始时间: "2023-5-" + (i + 1).toString() + " 9:00",
-          坐诊结束时间: "2023-5-" + (i + 1).toString() + " 17:00",
-        });
-      }
+      fetch("http://124.223.143.21/api/Consultationinfo/AllConsultInfo", {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          // console.log(result);
+          this.tableItems = [];
+          for (let i = 0; i < result.length; ++i) {
+            this.tableItems.push({
+              "ID": result[i].doctorId,
+              "诊室": result[i].clinicName,
+              "日期": result[i].date.slice(0, 10),
+              "坐诊时间": result[i].startTime + " - " + result[i].endTime,
+            });
+          }
+          for (let i = 0; i < this.tableItems.length; ++i) {
+            fetch("http://124.223.143.21/api/Doctors/id?id=" + this.tableItems[i]["ID"], {
+              method: 'GET',
+              redirect: 'follow'
+            }).then(response => response.text())
+              .then(result => {
+                result = JSON.parse(result);
+                this.tableItems[i]["医生姓名"] = result.name;
+              })
+              .catch(error => console.log('error', error));
+          }
+        })
+        .catch(error => console.log('error', error));
     },
+
+    // 获取表格候选信息（医生ID，诊室列表，日期）
+    getInfo() {
+      axios.get('http://124.223.143.21:4999/api/Doctors')
+        .then(response => {
+          console.log(response);
+          for (let i = 0; i < response.data.length; i++) {
+            const item = response.data[i];
+            this.doctorIDs.push(item.doctorId);
+          }
+        })
+        .catch(error => console.log('error', error));
+
+      axios.get('http://124.223.143.21/api/Consultationinfo/GetAllRooms')
+        .then(response => {
+          console.log(response);
+          for (let i = 0; i < response.data.length; i++) {
+            const item = response.data[i];
+            this.availableRooms.push(item.consultingRoomName);
+          }
+        })
+        .catch(error => console.log('error', error));
+
+      // this.newDate = new Date();
+      // this.currentYear = this.newDate.getFullYear();
+    },
+
+    updateDate() {
+      var y = this.formattedNewDate.getFullYear();
+      var m = (this.formattedNewDate.getMonth() + 1).toString().padStart(2, '0');
+      var d = this.formattedNewDate.getDate().toString().padStart(2, '0');
+      this.newDate = y + '-' + m + '-' + d;
+    }
+
   },
 
   mounted() {
     this.getTable();
+    this.getInfo();
   },
 
   watch: {
@@ -224,14 +402,19 @@ export default {
       this.curPage = 1;
     },
 
-    selected() {
-      this.curPage = 1;
-      this.tableItems = [];
-      for (let i = 0; i < this.allItems.length; ++i) {
-        if (this.selected == "所有科室" || this.allItems[i]["科室"] == this.selected) {
-          this.tableItems.push(this.allItems[i]);
-        }
+    newID(newVal) {
+      if (newVal == "请选择医生ID") {
+        return;
       }
+      fetch("http://124.223.143.21/api/Doctors/id?id=" + newVal, {
+        method: 'GET',
+        redirect: 'follow'
+      }).then(response => response.text())
+        .then(result => {
+          result = JSON.parse(result);
+          this.newName = result.name;
+        })
+        .catch(error => console.log('error', error));
     }
   },
 
@@ -250,7 +433,7 @@ export default {
 .table {
   --va-form-element-default-width: 0;
 
-  .va-input {
+  .va-select {
     display: block;
   }
 

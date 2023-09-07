@@ -83,7 +83,6 @@
 
 <script>
 import axios from "axios";
-import userState from "../../store/user.js";
 export default {
   name: "PatientInfo",
   data() {
@@ -135,9 +134,8 @@ export default {
       this.showInfo = !this.showInfo;
     },
     toggleInfo() {
-      this.studentId = userState.state.userID;
+      this.studentId = sessionStorage.getItem('userID');
       this.showInfo = !this.showInfo;
-      console.log(userState.state.role);
       if (this.showInfo === true) {
         var self = this;
         axios

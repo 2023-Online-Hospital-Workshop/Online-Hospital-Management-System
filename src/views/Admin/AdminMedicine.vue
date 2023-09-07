@@ -16,8 +16,12 @@
       <!-- 条件区 -->
       <div class="conditions">
         <center>
-          <span class="search">
+          <span>
             <va-input v-model="filter" placeholder="请输入相关信息"></va-input>
+          </span>
+          <span v-if="curTab == 0">
+            <va-input placeholder="扫码入库" class="mb-6" id="scannedData" v-model="scannedDataInput"
+              @keydown.enter="sendData()" />
           </span>
           <span v-if="curTab == 0" class="checkbox">
             <va-checkbox v-model="warningOnly" :label="checkboxLabel" />
@@ -29,20 +33,26 @@
       <!-- 表格 -->
       <div class="table">
         <va-data-table :items="tableItems" :columns="tableColumns" :filter-method="filterFunction" :per-page="perPage"
-          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller
+          :current-page="curPage" :wrapper-size="530" hoverable virtual-scroller noDataFilteredHtml="无数据" noDataHtml="无数据"
           @filtered="filteredCount = $event.items.length">
 
           <!-- 新建区 -->
           <template v-if="curTab == 0" #headerAppend>
             <tr class="table-curd__slot">
-              <th v-for="col in stockColumns.slice(0, -1)" :key="col">
-                <va-input v-model="createdItem[col]" :placeholder="col" />
+              <th v-for="col in stockColumns.slice(0, -3)" :key="col">
+                <va-input style="width:99%" v-model="createdItem[col]" :placeholder="col" />
               </th>
               <th>
-                <va-input v-model="createdItemWarning" placeholder="预警" readonly />
+                <va-input style="width:99%" v-model='createdItem["库存"]' placeholder="库存" mask="numeral" />
               </th>
               <th>
-                <va-button :disabled="!createdItemValid" block @click="addItem">添加</va-button>
+                <va-input style="width:99%" v-model='createdItem["阈值"]' placeholder="阈值" mask="numeral" />
+              </th>
+              <th>
+                <va-input style="width:99%" v-model="createdItemWarning" placeholder="预警" readonly />
+              </th>
+              <th>
+                <va-button style="width:99%" :disabled="!createdItemValid" block @click="addItem">添加</va-button>
               </th>
             </tr>
           </template>
@@ -50,8 +60,7 @@
 
           <!-- 修改操作 -->
           <template v-if="curTab == 0" #cell(修改)="{ rowIndex }">
-            <va-button preset="plain" icon="edit" @click="openItemEdition(rowIndex)" />
-            <va-button preset="plain" icon="delete" class="ml-3" @click="deleteItem(rowIndex)" />
+            <va-button preset="plain" icon="delete" class="ml-3" @click="showConfirm = true; deletedRow = rowIndex" />
           </template>
           <!-- 修改操作 -->
 
@@ -60,7 +69,7 @@
             <br>
             <tr>
               <td colspan="6">
-                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" />
+                <va-pagination v-model="curPage" :pages="pages" style="justify-content: center" :visible-pages="10" />
               </td>
             </tr>
           </template>
@@ -76,6 +85,11 @@
         <div class="modal-label">库存</div>
         <va-input v-model="editedStock" />
       </va-modal>
+
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消"
+        @ok="deleteItem(deletedRow)">
+        <span>确定删除吗？</span>
+      </va-modal>
       <!-- 弹窗 -->
 
     </el-main>
@@ -83,7 +97,7 @@
 </template>
 
 <script>
-import user from '../../store/user.js';
+import axios from 'axios'
 export default {
   data() {
     const tabTitles = [
@@ -121,6 +135,7 @@ export default {
       },
       editedStock: 0,
       editedRow: 0,
+      deletedRow: 0,
 
       // 分页
       perPage: 8,
@@ -128,6 +143,13 @@ export default {
 
       // 弹窗
       showModal: false,
+
+      scannedDataInput: '', // 用于绑定输入框的数据  
+      MedicineData: {
+        showapi_res_body: {
+        }
+      },
+      showConfirm: false,
     }
   },
 
@@ -142,12 +164,12 @@ export default {
       if (this.createdItem["库存"] == 0 || this.createdItem["阈值"] == 0) {
         return "";
       }
-      return this.createdItem["库存"] < this.createdItem["阈值"] ? "是" : "否";
+      return parseInt(this.createdItem["库存"]) < parseInt(this.createdItem["阈值"]) ? "是" : "否";
     },
 
     // 新项是否合法
     createdItemValid() {
-      for (var col in this.createdItem) {
+      for (let col in this.createdItem) {
         this.createdItem[col];
         if (this.createdItem[col] == "") {
           return false;
@@ -158,6 +180,42 @@ export default {
   },
 
   methods: {
+
+    //自动扫码挂号
+    sendData() {
+      const scannedData = this.scannedDataInput;
+
+      // 检查是否有扫描到数据
+      if (scannedData) {
+        console.log(scannedData);
+        const formData = new FormData();
+
+        formData.append("showapi_appid", '1475668'); // 这里需要改成自己的appid
+        formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); // 这里需要改成自己的应用的密钥secret
+        formData.append("code", scannedData);
+
+        axios
+          .post("https://route.showapi.com/66-22?", formData)
+          .then((response) => {
+            this.MedicineData = response.data;
+            console.log(this.MedicineData);
+            console.log(this.MedicineData.showapi_res_body.goodsName);
+            console.log(this.MedicineData.showapi_res_body.manuName);
+            this.createdItem["药品名"] = this.MedicineData.showapi_res_body.goodsName;
+            this.createdItem["生产单位"] = this.MedicineData.showapi_res_body.manuName;
+
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("操作失败!");
+          });
+        //清空
+        this.scannedDataInput = '';
+      } else {
+        alert('请先扫描数据！');
+      }
+    },
+
     // 筛选函数
     filterFunction(source) {
       if (source) {
@@ -197,7 +255,7 @@ export default {
             this.tableItems.push({ // 填入表项
               "药品名": result[i].medicineName,
               "生产单位": result[i].manufacturer,
-              "生产日期": result[i].productionDate.replace("T", " "),
+              "生产日期": result[i].productionDate,
               "库存": result[i].medicineAmount,
               "阈值": result[i].thresholdValue,
               "预警": flag ? "是" : "否",
@@ -229,17 +287,15 @@ export default {
         .then(result => {
           result = JSON.parse(result); // 将结果转为JSON
           this.tableItems = []; // 清空表项
-          console.log(result);
           for (let i = 0; i < result.length; ++i) {
             this.tableItems.push({
               "药品名": result[i].medicineName,
               "生产单位": result[i].manufacturer,
-              "生产日期": result[i].productiondate.replace("T", " "),
-              "清理日期": result[i].cleanDate.replace("T", " "),
+              "生产日期": result[i].productiondate,
+              "清理日期": result[i].cleanDate,
               "清理负责管理员": result[i].cleanAdministrator,
             });
           }
-          console.log(this.tableItems);
         })
         .catch(error => console.log('error', error));
     },
@@ -250,48 +306,49 @@ export default {
       let newItem = {};
       newItem["预警"] = this.createdItemWarning;
       for (let col in this.createdItem) {
-        console.log(col);
         newItem[col] = this.createdItem[col];
         this.createdItem[col] = ""; // 重置createdItem
       }
 
       // 传入后端
-      // let myHeaders = new Headers();
-      // myHeaders.append("Content-Type", "application/json");
-      // let raw = JSON.stringify({
-      //   "medicineName": newItem["药品名"],
-      //   "manufacturer": newItem["生产单位"],
-      //   "productionDate": newItem["生产日期"].replace(" ", "T"),
-      //   "medicineAmount": newItem["库存"],
-      //   "thresholdValue": newItem["阈值"],
-      //   "administratorId": user.state.userID,
-      //   "medicineShelflife": 0,
-      //   "purchasePrice": 0,
-      //   "medicineType": "",
-      //   "applicableSymptom": "",
-      //   "specification": "",
-      //   "singledose": "",
-      //   "administration": "",
-      //   "attention": "",
-      //   "frequency": "",
-      //   "sellingprice": 0,
-      // });
-      // let requestOptions = {
-      //   method: 'POST',
-      //   headers: myHeaders,
-      //   body: raw,
-      //   redirect: 'follow'
-      // };
-
-      // fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
-      //   .then(response => response.text())
-      //   .then(result => {
-      //     if (result != "Medicine stock added successfully.") {
-      //       alert("库存已存在！");
-      //     }
-      //     this.toStock();
-      //   })
-      //   .catch(error => console.log('error', error));
+      let myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      let raw = JSON.stringify({
+        "medicineName": newItem["药品名"],
+        "manufacturer": newItem["生产单位"],
+        "productionDate": newItem["生产日期"],
+        "medicineShelflife": 1, // 暂定
+        "medicineAmount": parseInt(newItem["库存"]),
+        "thresholdValue": parseInt(newItem["阈值"]),
+        "administratorId": sessionStorage.getItem('userID'),
+        "purchasePrice": 1, // 暂定
+        "medicineType": "1", // 暂定
+        "applicableSymptom": "1", // 暂定
+        "specification": "1", // 暂定
+        "singledose": "1", // 暂定
+        "administration": "1", // 暂定
+        "attention": "1", // 暂定
+        "frequency": "1", // 暂定
+        "sellingprice": 1, // 暂定
+      });
+      let requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: raw,
+        redirect: 'follow'
+      };
+      fetch("http://124.223.143.21/api/Medicine/AddStock", requestOptions)
+        .then(response => response.text())
+        .then(result => {
+          if (result != "Medicine stock added successfully.") {
+            alert("参数错误！");
+          }
+          this.toStock();
+        })
+        .catch(error => {
+          alert("数据冲突！");
+          console.log('error', error)
+        });
 
     },
 
@@ -307,14 +364,14 @@ export default {
       fetch("http://124.223.143.21/api/Medicine/CleanMedicine"
         + "?medicineName=" + this.tableItems[rowIndex]["药品名"]
         + "&manufacturer=" + this.tableItems[rowIndex]["生产单位"]
-        + "&productionDate="+ this.tableItems[rowIndex]["生产日期"]
-        + "&administratorId=" + user.state.userID, {
+        + "&productionDate=" + this.tableItems[rowIndex]["生产日期"]
+        + "&administratorId=" + sessionStorage.getItem('userID'), {
         method: 'PUT',
         redirect: 'follow'
       })
         .then(response => response.text())
         .then(result => {
-          if(result == "Medicine cleaned successfully.") {
+          if (result == "Medicine cleaned successfully.") {
             this.toStock();
           }
           else {
@@ -322,30 +379,6 @@ export default {
           }
         })
         .catch(error => console.log('error', error));
-    },
-
-    // 更新库存
-    confirmUpdate() {
-      fetch("http://124.223.143.21/api/Medicine/UpdateStock"
-        + "?medicineName=" + this.tableItems[this.editedRow]["药品名"]
-        + "&newAmount=" + this.editedStock.toString(), {
-        method: 'PUT',
-        redirect: 'follow'
-      }).then(response => response.text())
-        .then(result => {
-          if (result == "Medicine stock updated successfully.") {
-            this.toStock();
-          }
-          else {
-            alert("请求非法！");
-          }
-        })
-        .catch(error => console.log('error', error));
-    },
-
-    // 取消更新
-    cancelUpdate() {
-      return;
     },
   },
 
@@ -353,9 +386,7 @@ export default {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
-
-    // debug
-    user.state.userID = "23201";
+    console.log("adminID:", sessionStorage.getItem('userID'));
   },
 
   watch: {
@@ -403,8 +434,9 @@ export default {
   height: 7%;
 }
 
-.checkbox {
-  margin-left: 5%;
+.conditions span {
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .table {

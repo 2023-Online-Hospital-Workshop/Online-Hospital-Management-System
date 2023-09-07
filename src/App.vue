@@ -6,8 +6,24 @@
 </template>
 
 <script>
+import { useRouter } from "vue-router";
 export default {
   components: {},
+  setup() {
+    const router = useRouter();
+    function redirectToHome() {
+      router.push({
+        path: '/Patient/ask-ai'
+      });
+    }
+    return {
+      redirectToHome
+    };
+  },
+
+  created() {
+
+  }
 };
 </script>
 
