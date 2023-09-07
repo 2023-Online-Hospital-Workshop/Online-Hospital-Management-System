@@ -103,7 +103,7 @@
             查看处方
           </va-button>
 
-          <va-button :disabled="record.status != 1 || record.payState == 0" color="primary" class="button"
+          <va-button :disabled="record.status != 1 || record.payState == 1" color="primary" class="button"
             @click="payBill(record)">
             支付账单
           </va-button>
