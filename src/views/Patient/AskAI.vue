@@ -5,13 +5,16 @@
     <div class="main">
       <div class="box">
         <div class="title">
-          <span class="title-hn" style="vertical-align:middle">AI小济</span>
+          <span class="title-hn" style="vertical-align:middle">AI小济-您的人工智能小助理</span>
         </div>
         <div id="content" class="content">
           <div v-for="(item,index) in info" :key="index">
             <div class="info_r info_default" v-if="item.type == 'leftinfo'">
               <img src="../../assets/talk.png" class="pic_r" />
-              <div class="con_r con_text">
+              <img v-if="item.is_image"
+             :src="require(`@/assets/${item.content}`)"
+             :style="{ 'verticalAlign': 'top', 'marginTop': '-25px', 'width': item.width, 'height': item.height }" />
+              <div  v-else class="con_r con_text">
                 <div>{{item.content}}</div>
                 <div v-for="(item2,index) in item.question" :key="index">
                   <div class="con_que" @click="clickRobot(item2.content,item2.id)">
@@ -73,6 +76,16 @@ import RobotAI2 from "@/components/Robot2.vue"
               "您好，欢迎来到济康同行，我是您的AI助手小济，您可以向我提问~",
             question: [],
           },
+          {
+            type: "leftinfo",
+            time: this.getTodayTime(),
+            name: "robot",
+            content: "hello.gif",
+            width: '200px',
+            height: '200px',
+            question: [],
+            is_image: true,
+          },
         ],
         timer: null,
         robotQuestion: [
@@ -119,6 +132,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             type: "rightinfo",
             time: this.getTodayTime(),
             content: text,
+            is_image: false,
           };
           this.info.push(obj);
           this.appendRobotMsg(this.customerText);
@@ -150,6 +164,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             name: "robot",
             content: answerText,
             question: [],
+            is_image: false,
           };
           this.info.push(obj);
         } else {
@@ -160,6 +175,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             name: "robot",
             content: answerText,
             question: this.robotQuestion,
+            is_image: false,
           };
           this.info.push(obj);
         }
@@ -218,7 +234,7 @@ import RobotAI2 from "@/components/Robot2.vue"
  
       },
       showTimer() {
-        this.timer = setTimeout(this.endMsg, 1000*60);
+        this.timer = setTimeout(this.endMsg, 1000*180);
       },
       getTodayTime() {
         // 获取当前时间
@@ -305,7 +321,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             border-radius: 6px;
             padding: 10px;
             margin-left: 10px;
-            margin-top: -20px;
+            top: 0px;
           }
           .time_r {
             margin-left: 60px;
@@ -380,7 +396,7 @@ import RobotAI2 from "@/components/Robot2.vue"
     font-size: 10px;
     color: #ffffff;
     position: absolute;
-    right: -20%;
+    right: -15%;
     top: 25%;
     cursor: pointer;
     border: none;
