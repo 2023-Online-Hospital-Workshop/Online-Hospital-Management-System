@@ -304,6 +304,8 @@ export default {
             self.totIncome += item.sellIncome;
             self.totOutcome += item.purchaseCost;
           });
+          self.totIncome = self.totIncome.toFixed(2);
+          self.totOutcome = self.totOutcome.toFixed(2);
         })
         .catch(function (error) {
           console.error(error);
