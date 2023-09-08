@@ -230,29 +230,6 @@ export default {
 
     },
 
-    // 打开编辑窗口
-    openItemEdition(rowIndex) {
-      for (let col in this.editedItem) {
-        this.editedItem[col] = this.tableItems[rowIndex][col];
-      }
-      this.editedRow = rowIndex;
-      this.editedOptions = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"];
-      for (let i = 0; i < this.tableItems.length; ++i) { // 遍历所有列表项
-        let flag = true; // 前几项属性是否都相同
-        for (let col in this.tableColumns.slice(0, -2)) { // 遍历所有属性
-          let att = this.tableColumns[col];
-          if (this.editedItem[att] != this.tableItems[i][att]) {
-            flag = false;
-            break;
-          }
-        }
-        if (flag) { // 筛掉所有重复的
-          this.editedOptions = this.editedOptions.filter(item => item != this.tableItems[i]["坐诊时间"]);
-        }
-      }
-      this.showModal = true;
-    },
-
     // 删除项
     deleteItem(rowIndex) {
       let myHeaders = new Headers();

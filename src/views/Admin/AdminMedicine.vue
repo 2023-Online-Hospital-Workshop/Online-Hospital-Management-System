@@ -181,7 +181,7 @@ export default {
 
   methods: {
 
-    //自动扫码挂号
+    //自动扫码
     sendData() {
       const scannedData = this.scannedDataInput;
 
