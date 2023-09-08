@@ -1,15 +1,146 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
+.bgImage {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
 .parent-box {
   width: 70%;
+  margin: 80px auto 0;
   height: 200px;
 
+  .card-box {
+    background: url('~@/assets/bg.png') left center no-repeat;
+    background-size: 100% 100%;
+    height: 302px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    .card-content {
+      margin-left: 315px;
+      font-size: 30px;
+      font-weight: bold;
+      color: #ffffff;
+      padding: 56px 56px 0;
+      div {
+        margin-bottom: 25px;
+      }
+    }
+  }
+  .nmain {
+    display: flex;
+    justify-content: space-between;
+
+    .main-item {
+      width: 56%;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      flex-direction: column;
+      height: 423px;
+      background: #ffffff;
+      box-shadow: -1px 4px 10px 0px rgba(142, 151, 176, 0.61);
+      border-radius: 20px;
+      &:nth-of-type(2) {
+        width: 40%;
+        background: url('~@/assets/bg3.png') right bottom no-repeat;
+        background-color: #fff;
+      }
+      .ndate {
+        padding: 20px;
+        width: 100%;
+        &::v-deep .va-date-picker__picker-wrapper {
+          .va-day-picker__calendar__day-wrapper {
+            margin-bottom: 18px;
+          }
+          .va-date-picker-cell {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+          }
+          .va-day-picker__weekday {
+            margin-bottom: 5px;
+          }
+          .va-date-picker-cell:after,
+          .va-date-picker-cell:before {
+            border-radius: 16px;
+          }
+        }
+        &::v-deep .va-date-picker-header {
+          margin-bottom: 10px;
+        }
+      }
+      .main-item-title {
+        width: 526px;
+        height: 51px;
+        background: #2e53ba;
+        border-radius: 0 0 60px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 32px;
+        color: #f0f0f0;
+        font-weight: bold;
+        font-size: 25px;
+      }
+      .main-content {
+        div {
+          margin-bottom: 10px;
+        }
+        font-weight: 500;
+        color: #000000;
+        line-height: 35px;
+        font-size: 20px;
+      }
+    }
+  }
+  .nbtns {
+    margin-top: 40px;
+    .btn-line {
+      display: flex;
+      padding-left: 140px;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      .type {
+        width: 78px;
+        height: 68px;
+        background: #ffffff;
+        border: 4px solid #163cb0;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: bold;
+        color: #163cb0;
+      }
+      .line {
+        display: flex;
+        gap: 20px;
+        .btn {
+          width: 240px;
+          height: 70px;
+          background: url('~@/assets/bg2.png') left top no-repeat;
+          background-size: 100% 100%;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          padding: 0 22px;
+          color: #ffffff;
+          font-size: 17px;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
 }
 
 .image-left {
   width: 140px;
   min-height: 140px;
-
 }
 
 .text {
@@ -31,11 +162,11 @@
 }
 
 .button {
-  width: 100%
+  width: 100%;
 }
 
 .hide {
-  color: transparent
+  color: transparent;
 }
 
 .time {
@@ -55,81 +186,245 @@
   box-shadow: 0 0px 0px;
   font-size: large;
   font-weight: bold;
-  color: #1a5a99
+  color: #1a5a99;
+}
+#main-page {
+  margin-right: 20%;
+  margin-left: 17%;
+}
+
+#kp {
+  display: flex;
+}
+
+.date-picker {
+  display: flex;
+}
+
+.date {
+  --va-date-picker-line-height: 50px;
+  --va-date-picker-font-size: 15px;
+  --va-date-picker-cell-size: 35px;
+}
+
+.card {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.promptcard {
+  width: 100px;
+}
+
+.flex {
+  display: flex;
+}
+
+.image-left {
+  flex: 0 0 auto;
+  width: 140px;
+  height: 100px;
+}
+
+.text {
+  flex: 1 1 auto;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.title {
+  font-weight: bold;
+  font-size: larger;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.time {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.time-slot {
+  width: calc(50% - 10px);
+  height: 65px;
+  /*flex-basis: 25%;*/
+  --va-button-group-button-margin: 10px;
+}
+
+.button-groups {
+  display: flex;
+  /* 使用 Flex 布局 */
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  /* 对齐方式为左对齐 */
+  gap: 10px;
+  /* 间距为 10px */
+}
+
+* {
+  font-family: AliRegular;
+  /* 应用字体 */
+  --va-font-family: AliRegular;
 }
 </style>
 
 
 <template>
-  <template>
-    <va-modal v-model="showModal" ok-text="确认" cancel-text="取消">
-      <p></p>
-      <p v-html="alertText"></p>
-      <p style="text-align: center;"><img :src="imgUrl" alt="图片"></p>
-    </va-modal>
-  </template>
-  <div id="main-page" class="parent-box">
-    <h1 class="va-h3">门诊预约挂号</h1>
-    <div>
-      <va-card color="primary" class="card" id="kp">
-        <img class="image-left" src="../../assets/yuyue.png" />
-        <div class="text">
-          <va-card-content>预约科室： {{ this.$route.params.selectedDep }}</va-card-content>
-          <va-card-content>同济大学校医院 &nbsp;{{ this.$route.params.selectedDoctor }}&nbsp;医生</va-card-content>
-          <va-card-content>医生职称： {{ this.$route.params.doctorTitle }}</va-card-content>
+  <div class="parent-box">
+    <img src="@/assets/bg4.png" class="bgImage" alt="" />
+    <div class="card-box">
+      <div class="card-content">
+        <div>预约科室： {{ this.$route.params.selectedDep }}</div>
+        <div>
+          同济大学校医院 &nbsp;{{ this.$route.params.selectedDoctor }}&nbsp;医生
         </div>
-      </va-card>
-    </div>
-
-    <!--<div class="button-group">
-      <va-button-toggle
-        size="large"
-        v-model="model"
-        preset="secondary"
-        border-color="primary"
-        @click="fetchData(model)"
-        :options="options"
-      ></va-button-toggle>
-    </div>-->
-
-    <div class="flex flex-wrap gap-5">
-      <va-card square outlined stripe class="promptcard">
-        <div class="title">预约挂号须知</div>
-        <va-card-content>
-          <span style="font-size: large;margin:5px;line-height: 20px;">1.该医生挂号费用为<span style="font-weight: bold;">{{
-            fee[this.$route.params.doctorTitle] }}元</span>，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br><br></span>
-          <span style="font-size: large;margin:5px;line-height: 20px;">2.就诊当日超时未取号患者号源自动取消<br><br></span>
-          <span
-            style="font-size: large;margin:5px;line-height: 20px;">3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理<br><br></span>
-          <span
-            style="font-size: large;margin:5px;line-height: 20px;">4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处出示预约二维码进行报到<br><br></span>
-        </va-card-content>
-      </va-card>
-
-      <div class="flex gap-5 flex-wrap date-picker">
-        <va-date-picker stateful v-model="value" @click="fetchData(value)" class="date" :allowed-days="(date) => (workday.indexOf(String(date.getDate())) !== -1
-          && date.getDate() >= currentDate
-          && date.getMonth() == currentMonth)
-          || date.getMonth() > currentMonth" />
       </div>
     </div>
-    <div class="button-groups" v-if="isWorkday()">
+    <div class="nmain">
+      <div class="main-item">
+        <div class="main-item-title">预约挂号须知</div>
+        <div class="main-content">
+          <div>
+            1.该医生挂号费用为<span style="font-weight: bold"
+              >{{ fee[this.$route.params.doctorTitle] }}元</span
+            >，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。
+          </div>
+          <div>2.就诊当日超时未取号患者号源自动取消</div>
+          <div>
+            3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理
+          </div>
+          <div>
+            4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处出示预约二维码进行报到
+          </div>
+        </div>
+      </div>
+      <div class="main-item">
+        <va-date-picker
+          stateful
+          v-model="value"
+          @click="fetchData(value)"
+          class="ndate data"
+          :allowed-days="
+            (date) =>
+              (workday.indexOf(String(date.getDate())) !== -1 &&
+                date.getDate() >= currentDate &&
+                date.getMonth() == currentMonth) ||
+              date.getMonth() > currentMonth
+          "
+        />
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-5">
+      <!-- <va-card square outlined stripe class="promptcard">
+        <div class="title">预约挂号须知</div>
+        <va-card-content>
+          <span style="font-size: large; margin: 5px; line-height: 20px"
+            >1.该医生挂号费用为<span style="font-weight: bold"
+              >{{ fee[this.$route.params.doctorTitle] }}元</span
+            >，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。<br /><br
+          /></span>
+          <span style="font-size: large; margin: 5px; line-height: 20px"
+            >2.就诊当日超时未取号患者号源自动取消<br /><br
+          /></span>
+          <span style="font-size: large; margin: 5px; line-height: 20px"
+            >3.为避免爽约造成号源浪费，取消预约至少在预约就诊前一个工作日按照原预约渠道办理<br /><br
+          /></span>
+          <span style="font-size: large; margin: 5px; line-height: 20px"
+            >4.成功预约后请在当日预约时间前往同济大学校医院，于对应科室管理员处出示预约二维码进行报到<br /><br
+          /></span>
+        </va-card-content>
+      </va-card> -->
+
+      <!-- <div class="flex gap-5 flex-wrap date-picker">
+        <va-date-picker
+          stateful
+          v-model="value"
+          @click="fetchData(value)"
+          class="date"
+          :allowed-days="
+            (date) =>
+              (workday.indexOf(String(date.getDate())) !== -1 &&
+                date.getDate() >= currentDate &&
+                date.getMonth() == currentMonth) ||
+              date.getMonth() > currentMonth
+          "
+        />
+      </div> -->
+    </div>
+    <div class="button-groups nbtns" v-if="isWorkday()">
+      <div class="btn-line">
+        <div class="type">上午</div>
+        <div class="line">
+          <div class="btn" @click="onButtonClick(0)">
+            <div class="btn-time">8:00-9:00</div>
+            <div class="num">{{ number[0] }}/10</div>
+          </div>
+          <div class="btn" @click="onButtonClick(1)">
+            <div class="btn-time">9:00-10:00</div>
+            <div class="num">{{ number[1] }}/10</div>
+          </div>
+          <div class="btn" @click="onButtonClick(2)">
+            <div class="btn-time">10:00-11:00</div>
+            <div class="num">{{ number[2] }}/10</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-line">
+        <div class="type">下午</div>
+        <div class="line">
+          <div class="btn" @click="onButtonClick(3)">
+            <div class="btn-time">13:00-14:00</div>
+            <div class="num">{{ number[3] }}/10</div>
+          </div>
+          <div class="btn" @click="onButtonClick(4)">
+            <div class="btn-time">14:00-15:00</div>
+            <div class="num">{{ number[4] }}/10</div>
+          </div>
+          <div class="btn" @click="onButtonClick(5)">
+            <div class="btn-time">15:00-16:00</div>
+            <div class="num">{{ number[5] }}/10</div>
+          </div>
+          <div class="btn" @click="onButtonClick(6)">
+            <div class="btn-time">16:00-17:00</div>
+            <div class="num">{{ number[6] }}/10</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- <div class="button-groups" v-if="isWorkday()">
       <va-button-group preset="primary" class="time">
-        <div style="display: inline-block;margin-top: 30px;font-weight: bold;">上午：</div>
-        <va-button id="time1" class="time-slot" @click="onButtonClick(0)" hover-behavior="opacity" :hover-opacity="0.4">
-          <span style="margin-right: 100px">&nbsp;&nbsp;8:00-&nbsp;&nbsp;9:00</span>{{ number[0] }}/10
+        <div style="display: inline-block; margin-top: 30px; font-weight: bold">
+          上午：
+        </div>
+        <va-button
+          id="time1"
+          class="time-slot"
+          @click="onButtonClick(0)"
+          hover-behavior="opacity"
+          :hover-opacity="0.4"
+        >
+          <span style="margin-right: 100px"
+            >&nbsp;&nbsp;8:00-&nbsp;&nbsp;9:00</span
+          >{{ number[0] }}/10
         </va-button>
         <va-button id="time2" class="time-slot" @click="onButtonClick(1)">
-          <span style="margin-right: 100px"> &nbsp;&nbsp;9:00-10:00</span>{{ number[1] }}/10
+          <span style="margin-right: 100px"> &nbsp;&nbsp;9:00-10:00</span
+          >{{ number[1] }}/10
         </va-button>
         <va-button id="time3" class="time-slot" @click="onButtonClick(2)">
           <span style="margin-right: 100px">10:00-11:00</span>{{ number[2] }}/10
         </va-button>
-
       </va-button-group>
 
       <va-button-group preset="primary" class="time">
-        <div style="display: inline-block;margin-top: 30px;font-weight: bold;">下午：</div>
+        <div style="display: inline-block; margin-top: 30px; font-weight: bold">
+          下午：
+        </div>
         <va-button id="time4" class="time-slot" @click="onButtonClick(3)">
           <span style="margin-right: 100px">13:00-14:00</span>{{ number[3] }}/10
         </va-button>
@@ -143,11 +438,18 @@
           <span style="margin-right: 100px">16:00-17:00</span>{{ number[6] }}/10
         </va-button>
       </va-button-group>
-    </div>
+    </div> -->
 
     <div class="center-text" v-else>
       <p>当日无可预约时间</p>
     </div>
+    <template>
+      <va-modal v-model="showModal" ok-text="确认" cancel-text="取消">
+        <p></p>
+        <p v-html="alertText"></p>
+        <p style="text-align: center"><img :src="imgUrl" alt="图片" /></p>
+      </va-modal>
+    </template>
   </div>
 </template>
 
