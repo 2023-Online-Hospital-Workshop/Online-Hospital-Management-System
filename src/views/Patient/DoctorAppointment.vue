@@ -1,4 +1,3 @@
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .bgImage {
@@ -273,7 +272,6 @@
   --va-font-family: AliRegular;
 }
 </style>
-
 
 
 <template>
