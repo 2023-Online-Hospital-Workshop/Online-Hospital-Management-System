@@ -1,3 +1,279 @@
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="scss">
+.bgImage {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+}
+.parent-box {
+  width: 70%;
+  margin: 80px auto 0;
+  height: 200px;
+
+  .card-box {
+    background: url('~@/assets/bg.png') left center no-repeat;
+    background-size: 100% 100%;
+    height: 302px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    .card-content {
+      margin-left: 315px;
+      font-size: 30px;
+      font-weight: bold;
+      color: #ffffff;
+      padding: 56px 56px 0;
+      div {
+        margin-bottom: 25px;
+      }
+    }
+  }
+  .nmain {
+    display: flex;
+    justify-content: space-between;
+
+    .main-item {
+      width: 56%;
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      flex-direction: column;
+      height: 423px;
+      background: #ffffff;
+      box-shadow: -1px 4px 10px 0px rgba(142, 151, 176, 0.61);
+      border-radius: 20px;
+      &:nth-of-type(2) {
+        width: 40%;
+        background: url('~@/assets/bg3.png') right bottom no-repeat;
+        background-color: #fff;
+      }
+      .ndate {
+        padding: 20px;
+        width: 100%;
+        &::v-deep .va-date-picker__picker-wrapper {
+          .va-day-picker__calendar__day-wrapper {
+            margin-bottom: 18px;
+          }
+          .va-date-picker-cell {
+            width: 32px;
+            height: 32px;
+            border-radius: 16px;
+          }
+          .va-day-picker__weekday {
+            margin-bottom: 5px;
+          }
+          .va-date-picker-cell:after,
+          .va-date-picker-cell:before {
+            border-radius: 16px;
+          }
+        }
+        &::v-deep .va-date-picker-header {
+          margin-bottom: 10px;
+        }
+      }
+      .main-item-title {
+        width: 526px;
+        height: 51px;
+        background: #2e53ba;
+        border-radius: 0 0 60px 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 32px;
+        color: #f0f0f0;
+        font-weight: bold;
+        font-size: 25px;
+      }
+      .main-content {
+        div {
+          margin-bottom: 10px;
+        }
+        font-weight: 500;
+        color: #000000;
+        line-height: 35px;
+        font-size: 20px;
+      }
+    }
+  }
+  .nbtns {
+    margin-top: 40px;
+    .btn-line {
+      display: flex;
+      padding-left: 140px;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      .type {
+        width: 78px;
+        height: 68px;
+        background: #ffffff;
+        border: 4px solid #163cb0;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        font-weight: bold;
+        color: #163cb0;
+      }
+      .line {
+        display: flex;
+        gap: 20px;
+        .btn {
+          width: 240px;
+          height: 70px;
+          background: url('~@/assets/bg2.png') left top no-repeat;
+          background-size: 100% 100%;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          padding: 0 22px;
+          color: #ffffff;
+          font-size: 17px;
+          justify-content: space-between;
+        }
+      }
+    }
+  }
+}
+
+.image-left {
+  width: 140px;
+  min-height: 140px;
+}
+
+.text {
+  font-weight: lighter;
+  font-size: larger;
+  margin: 5px;
+  line-height: 20px;
+}
+
+.button-group {
+  width: 100%;
+  /* 设置按钮组的宽度为100% */
+  display: flex;
+  height: 50px;
+  /* 设置按钮组的高度为50像素（可根据需要进行调整） */
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+}
+
+.button {
+  width: 100%;
+}
+
+.hide {
+  color: transparent;
+}
+
+.time {
+  width: 100%;
+  display: flex;
+  margin: 20px;
+  flex-wrap: wrap;
+}
+
+.time-slot {
+  width: 45%;
+  height: 65px;
+  /*flex-basis: 50%;*/
+  margin: 20px;
+  background-color: #f0f4f8;
+  border-color: #89bcef;
+  box-shadow: 0 0px 0px;
+  font-size: large;
+  font-weight: bold;
+  color: #1a5a99;
+}
+#main-page {
+  margin-right: 20%;
+  margin-left: 17%;
+}
+
+#kp {
+  display: flex;
+}
+
+.date-picker {
+  display: flex;
+}
+
+.date {
+  --va-date-picker-line-height: 50px;
+  --va-date-picker-font-size: 15px;
+  --va-date-picker-cell-size: 35px;
+}
+
+.card {
+  margin-bottom: 20px;
+  padding: 20px;
+}
+
+.promptcard {
+  width: 100px;
+}
+
+.flex {
+  display: flex;
+}
+
+.image-left {
+  flex: 0 0 auto;
+  width: 140px;
+  height: 100px;
+}
+
+.text {
+  flex: 1 1 auto;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.title {
+  font-weight: bold;
+  font-size: larger;
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.time {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.time-slot {
+  width: calc(50% - 10px);
+  height: 65px;
+  /*flex-basis: 25%;*/
+  --va-button-group-button-margin: 10px;
+}
+
+.button-groups {
+  display: flex;
+  /* 使用 Flex 布局 */
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  /* 对齐方式为左对齐 */
+  gap: 10px;
+  /* 间距为 10px */
+}
+
+* {
+  font-family: AliRegular;
+  /* 应用字体 */
+  --va-font-family: AliRegular;
+}
+</style>
+
+
 <template>
   <div class="parent-box">
     <img src="@/assets/bg4.png" class="bgImage" alt="" />

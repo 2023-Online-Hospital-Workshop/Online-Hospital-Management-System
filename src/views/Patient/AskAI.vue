@@ -1,11 +1,11 @@
  
 <template>
-  <RobotAI2 />
   <div class="container">
+    <img src="@/assets/bg4.png" class="bgImage" alt="" />
     <div class="main">
       <div class="box">
         <div class="title">
-          <span class="title-hn" style="vertical-align:middle">AI小济-您的人工智能小助理</span>
+          <span class="title-hn" style="vertical-align:middle;font-size: 25px">AI小济-您的人工智能小助理</span>
         </div>
         <div id="content" class="content">
           <div v-for="(item,index) in info" :key="index">
@@ -43,18 +43,18 @@
       <div class="setproblem">
         <textarea
           placeholder="请输入您的问题..."
-          style="height: 68px;width: 100%;resize:none;padding-right:80px;outline: none;border-color:#ccc;border-radius:5px;"
+          style="height: 68px;width: 100%;resize:none;padding-right:80px;outline: none;border-radius:5px;"
           id="text"
           v-model="customerText"
           @keyup.enter="sentMsg()"
         ></textarea>
         <button @click="sentMsg()" class="setproblems">
-
-          <span style="vertical-align: 4px;">发 送</span>
+          <img src="@/assets/send.png" style="width:25px;height:25px;margin-top:10px;margin-left:-5px;margin-top:12px"/>
         </button>
       </div>
     </div>
   </div>
+  <RobotAI2 />
 </template>
 <script>
 import RobotAI2 from "@/components/Robot2.vue"
@@ -312,7 +312,7 @@ import RobotAI2 from "@/components/Robot2.vue"
       #content {
         height: 100%;
         overflow-y: scroll;
-        font-size: 14px;
+        font-size: 16px;
         width: 100%;
         margin-top: 30px;
         .con_text {
@@ -327,13 +327,14 @@ import RobotAI2 from "@/components/Robot2.vue"
         }
         .info_r {
           position: relative;
+          margin-top: 30px;
           .circle_r {
             position: absolute;
             left: 0%;
           }
           .pic_r {
-            width: 45px;
-            height: 45px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
           }
           .con_r {
@@ -345,12 +346,13 @@ import RobotAI2 from "@/components/Robot2.vue"
             background-color: #e2e2e2;
             border-radius: 6px;
             padding: 10px;
-            margin-left: 10px;
+            margin-left: 20px;
             top: 0px;
             line-height: 20px;
+            font-size: 16px;
           }
           .time_r {
-            margin-left: 60px;
+            margin-left: 80px;
             color: #999999;
             font-size: 12px;
           }
@@ -358,22 +360,22 @@ import RobotAI2 from "@/components/Robot2.vue"
         .info_l {
           text-align: right;
           // margin-right: 20px;
-          color: #ffffff;
           color: #3163C5;
           margin-top: 10px;
+          font-size: 16px;
 
           // .circle_l {
           //   // vertical-align: -10px;
           // }
           .pic_l {
-            width: 45px;
-            height: 45px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             margin: 13px;
             margin-top: 9px;
           }
           .time_l {
-            margin-right: 80px;
+            margin-right: 90px;
             color: #999999;
             font-size: 12px;
             margin-top: 5px;
@@ -411,10 +413,11 @@ import RobotAI2 from "@/components/Robot2.vue"
     top: 15%;
     box-sizing: border-box;
     position: absolute;
+    border:5px solid #C0D3FF;
   }
   .setproblem button {
-    width: 5.875rem;
-    height: 2.5rem;
+    width: 3rem;
+    height: 3rem;
     line-height: 2.5rem;
     background: #3163C5;
     opacity: 1;
@@ -422,10 +425,11 @@ import RobotAI2 from "@/components/Robot2.vue"
     font-size: 10px;
     color: #ffffff;
     position: absolute;
-    right: -15%;
-    top: 25%;
+    right: -10%;
+    top: 20%;
     cursor: pointer;
     border: none;
+    border-radius: 50%;
   }
  
   .czkj-item-title {
@@ -448,7 +452,14 @@ import RobotAI2 from "@/components/Robot2.vue"
  
   .czkj-question-msg {
     float: left;
-    font-size: 14px;
+    font-size: 16px;
     color: #3163C5;
   }
+
+  .bgImage {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+ }
 </style>
