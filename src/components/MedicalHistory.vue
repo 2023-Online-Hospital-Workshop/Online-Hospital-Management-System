@@ -213,7 +213,7 @@ export default {
   },
   methods: {
       getData() {
-      axios.get(`http://124.223.143.21:4999/Registration/Patient/${this.userID}`)
+      axios.get(`http://124.223.143.21:4999/api/Registration/Patient/${this.userID}`)
         .then((response) => {
           console.log(response.data);
           const newData = response.data; // 获取响应数据
@@ -329,7 +329,7 @@ export default {
       };
       console.log(inputModel);
       console.log(index);
-      axios.put('http://124.223.143.21/Registration/cancel', inputModel)
+      axios.put('http://124.223.143.21/api/Registration/cancel', inputModel)
         .then(response => {
           if (response.status === 200) {
             this.allRecords[index].status = -1; // Update status to '已取消'
