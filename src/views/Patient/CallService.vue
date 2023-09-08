@@ -6,6 +6,7 @@
     </div>
   </template>
   
+  
   <script>
   import { ref, computed, onMounted } from "vue";
   import SideBar from "@/components/SideBar.vue";

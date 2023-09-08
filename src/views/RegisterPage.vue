@@ -6,7 +6,6 @@
 
       <!-- Step Indicator -->
       <div class="steps">
-        <el-text style="color:#002fb0" @click="returnLogin">返回登录</el-text>
         <div class="circle" :class="{active: step === 1}" @click="changeStep(1)">1</div>
         <div class="circle" :class="{active: step === 2}" @click="changeStep(2)">2</div>
         <div class="circle" :class="{active: step === 3}" @click="changeStep(3)">3</div>
@@ -69,7 +68,7 @@
       <!-- Step 3: Password -->
       <el-form v-if="step === 3" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
         <el-form-item label="手机号码">
-          <el-input type="flex" v-model="registerForm.phoneNumber" auto-complete="off" placeholder="请输入手机号码"></el-input>
+          <el-input type="password" v-model="registerForm.phoneNumber" auto-complete="off" placeholder="请输入手机号码"></el-input>
         </el-form-item>
         <el-form-item label="验证码">
           <el-row type="flex" justify="space-between">
@@ -137,66 +136,11 @@ export default {
     }
   },
   methods: {
-    returnLogin() {
-      this.router.push({
-        path: '/',
-      });
-    },
     changeStep(step) {
-      if (this.step >= step) {
-        this.step = step
-      }
+      this.step = step
     },
     nextStep() {
-      if (this.step == 1) {
-        if (this.registerForm.name == ''){
-          this.$msgbox.alert("姓名不能为空")
-        }
-        else if (this.registerForm.gender == ''){
-          this.$msgbox.alert("请选择性别")
-        }
-        else if (this.registerForm.birthdate == ''){
-          this.$msgbox.alert("请选择出生日期")
-        }
-        else{
-          this.step++;
-        }
-      }
-
-      else if (this.step == 2) {
-        if (this.registerForm.identity == 'identity1') {
-          if (this.registerForm.patientId == ''){
-            this.$msgbox.alert("ID不能为空")
-          }
-          else{
-            this.step++;
-          }
-        }
-        if (this.registerForm.identity == 'identity2') {
-          if (this.registerForm.doctorId == ''){
-            this.$msgbox.alert("ID不能为空")
-          }
-          else if (this.registerForm.title == ''){
-            this.$msgbox.alert("职称不能为空")
-          }
-          else if (this.registerForm.secondaryDepartment == ''){
-            this.$msgbox.alert("二级科室不能为空")
-          }
-          else{
-            this.step++;
-          }
-        }
-        if (this.registerForm.identity == 'identity3') {
-          if (this.registerForm.administratorId == ''){
-            this.$msgbox.alert("ID不能为空")
-          }
-          else{
-            this.step++;
-          }
-        }
-      }
-
-      else if (this.step == 3) {
+      if (this.step == 3) {
         console.log(this.registerForm.phoneNumber.toString())
         console.log(this.registerForm.verificationCode.toString())
         axios
@@ -222,6 +166,9 @@ export default {
         });
       }
 
+      if (this.step < 3) {
+        this.step++;
+      }
     },
     submitForm() {
       // Implement form submission here
@@ -253,13 +200,12 @@ export default {
               }, 2000);
 
             } else {
-              this.$message.error('信息有误，注册失败');
+              this.$message.error('注册失败');
               console.log('注册失败')
             }
           })
           .catch(error => {
             console.error(error);
-            this.$message.error('信息有误，注册失败');
           });
         }
 

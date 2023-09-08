@@ -91,6 +91,7 @@ export default {
     },
 
     changeStep(step) {
+<<<<<<< HEAD
       if (this.step >= step) {
         this.step = step
       }
@@ -104,6 +105,12 @@ export default {
         }
       }
       else if (this.step == 2) {
+=======
+      this.step = step
+    },
+    nextStep() {
+      if (this.step == 2) {
+>>>>>>> dcbb78be86c1bddfad15ffa30d0b508e693c2720
         console.log(this.registerForm.phoneNumber.toString())
         console.log(this.registerForm.verificationCode.toString())
         axios
@@ -128,6 +135,13 @@ export default {
           console.error(error);
         });
       }
+<<<<<<< HEAD
+=======
+
+      if (this.step < 2) {
+        this.step++;
+      }
+>>>>>>> dcbb78be86c1bddfad15ffa30d0b508e693c2720
     },
     submitForm() {
       // Implement form submission here
@@ -136,7 +150,11 @@ export default {
         console.log(this.registerForm.ID.toString())
         console.log(this.registerForm.password.toString())
          axios
+<<<<<<< HEAD
         .put("http://124.223.143.21:4999/api/Login" + this.registerForm.identity, {
+=======
+        .post("http://124.223.143.21:4999/api/Login" + this.registerForm.identity, {
+>>>>>>> dcbb78be86c1bddfad15ffa30d0b508e693c2720
               ID: this.registerForm.ID.toString(),
               NewPassword: this.registerForm.password.toString(),
             })

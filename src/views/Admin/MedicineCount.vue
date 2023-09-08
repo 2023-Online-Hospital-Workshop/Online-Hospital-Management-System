@@ -434,10 +434,4 @@ export default {
 .va-data-table__table-expanded-content td {
   background-color: var(--va-background-element);
 }
-
-* {
-  /* 应用字体 */
-  font-family: AliRegular;
-  --va-font-family: AliRegular;
-}
 </style>

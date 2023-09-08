@@ -273,10 +273,4 @@ export default defineComponent({
   background-color: red; /* 设置背景色为红色 */
   color: white; /* 设置文本颜色为白色 */
 }
-
-* {
-  /* 应用字体 */
-  font-family: AliRegular;
-  --va-font-family: AliRegular;
-}
 </style>

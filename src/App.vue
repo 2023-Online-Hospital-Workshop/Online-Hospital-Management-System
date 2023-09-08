@@ -6,23 +6,22 @@
 </template>
 
 <script>
-import { useRouter } from "vue-router";
 export default {
   components: {},
-  setup() {
-    const router = useRouter();
-    function redirectToHome() {
-      router.push({
-        path: '/Patient/ask-ai'
-      });
-    }
-    return {
-      redirectToHome
-    };
-  },
-
   created() {
-
+    setTimeout(() => {
+      window.L2Dwidget.init({
+        pluginRootPath: '../live2dw/',
+        pluginJsPath: 'lib/',
+        pluginModelPath: 'live2d-widget-model-koharu/assets/',
+        tagMode: false,
+        debug: false,
+        model: {jsonPath: '/live2dw/live2d-widget-model-koharu/assets/koharu.model.json'},
+        display: {position: 'left', width: 150, height: 300},
+        mobile: {show: true},
+        log: false
+      });
+    })
   }
 };
 </script>

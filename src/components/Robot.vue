@@ -1,24 +1,12 @@
-<template>
-  <div id="app">
-    <img src="../assets/robot.gif" style="position:fixed; width: 200px; height: 200px; top: 68vh; left:160vh"
-         @click="redirectToHome">
-  </div>
-</template>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+	</head>
+	<body>
+	</body>
+	<script src="https://cdn.jsdelivr.net/gh/stevenjoezhang/live2d-widget/autoload.js"></script>
+</html>
 
-<script>
-import { useRouter } from "vue-router";
-export default {
-  name: "RobotAI",
-    setup() {
-    const router = useRouter();
-    function redirectToHome() {
-      router.push({
-        path: '/Patient/ask-ai'
-      });
-    }
-    return {
-      redirectToHome
-    };
-  },
-}
-</script>
