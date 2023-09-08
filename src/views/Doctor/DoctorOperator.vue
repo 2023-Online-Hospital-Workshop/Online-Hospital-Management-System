@@ -521,9 +521,7 @@ input {
       同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
 
       <br />
-      <va-button id="re-button" type="submit" preset="primary" class="mt-3" @click="showConfirmationDialog">
-        确认
-      </va-button>
+      <el-button type="primary" @click="open">确认</el-button>
 
       <img src="../../assets/signature.png" alt="图片描述" style="max-width: 200px; height: auto; float: right;">
     </div>
@@ -539,6 +537,7 @@ import axios from "axios";
 import { reactive } from "vue";
 //import userInfo from "../../store/user.js";
 import DoctorInfo from "../../components/Info/DoctorInfo.vue";
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
   name: "App",
@@ -574,12 +573,9 @@ export default {
       //doctorId: userInfo.state.userID,
       dept: "普通外科",
 
-      //处方药品
+      //库存药品
       all_medicine: [], //药房中所有药品,包含medicineName和specification属性
       stocks: [], //在checkbox中选择药品，存储所有药品的全称
-      medicine: [], //辅助在表格前端显示，只有name和spec两个属性
-      all_num: 0, //现在已有药品数量
-      select_medi: "",
 
       //就诊单
       problem: "",
@@ -588,6 +584,10 @@ export default {
       symptom: "",
       diagnose: "",
       prescription: "",
+      all_num: 0, //现在已有药品数量
+      select_medi: "", //在选择框中已经选择的药品
+      medicine: [], //辅助在表格前端显示，只有name和spec两个属性
+
 
       //就诊历史
       isfirst: "",
@@ -971,8 +971,27 @@ export default {
 
       //获取当前就诊病人的就诊历史
       this.getHistory();
+    },
 
-
+    //清空处方
+    delete() {
+      this.problem = "";
+      this.illness = "";
+      this.past_illness = "";
+      this.symptom = "";
+      this.diagnose = "";
+      this.prescription = "";
+      this.all_num = 0; //现在已有药品数量
+      this.select_medi = ""; //在选择框中已经选择的药品
+      this.medicine = []; //辅助在表格前端显示，只有name和spec两个属性
+      for (let j = 0; j < 15; j++) {
+        this.all_med[j].name = "";
+        this.all_med[j].spec = "";
+        this.all_med[j].single = "";
+        this.all_med[j].ad = "";
+        this.all_med[j].tips = "";
+        this.all_med[j].fre = "";
+      }
     },
 
     //添加药品
@@ -1037,19 +1056,32 @@ export default {
     },
 
     //确认处方前的提示
-    showConfirmationDialog() {
-      // 使用 window.confirm() 函数显示确认提示框
-      const confirmed = window.confirm("您是否确认提交处方？");
-
-      // 根据用户选择来执行相应的操作
-      if (confirmed) {
-        // 用户点击了确认按钮，执行提交操作
-        this.enter();
-      } else {
-        // 用户点击了取消按钮，取消操作
-        // 可以选择不执行任何操作或者做其他处理
-      }
+    open() {
+      ElMessageBox.confirm(
+        '请问您是否确认提交处方?',
+        '提示',
+        {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          this.enter();
+          ElMessage({
+            type: 'success',
+            message: '处方提交成功',
+          })
+          this.delete();
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消提交',
+          })
+        })
     },
+
 
     //确认处方
     enter() {    //一旦已经就诊就无法再次发送处方
@@ -1218,7 +1250,7 @@ export default {
       this.leave_app.shift();
     },
 
-    //假条模板
+    //处方模板
     handle(index) {
       for (let j = 0; j < 15; j++) {
         this.all_med[j].name = "";
