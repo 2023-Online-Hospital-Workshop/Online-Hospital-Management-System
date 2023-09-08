@@ -24,9 +24,8 @@
         <div class="c-title">校医院就诊流程</div>
         <div class="c-bottom">
 
-          
           <img style="width: 80%;margin: 0 auto;" src="@/assets/bg5.png" alt="">
-          
+
         </div>
       </div>
       <div class="content">
