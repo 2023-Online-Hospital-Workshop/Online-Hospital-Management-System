@@ -10,6 +10,7 @@
           </span>
         </center>
       </div>
+
       <!-- 条件区 -->
 
       <!-- 表格 -->
@@ -45,11 +46,16 @@
                 </va-popover>
               </th>
               <th>
-                <va-select style="width:99%; font-weight: 100;" placeholder="请选择坐诊时间" v-model="newTimeper"
-                  :options="timePers" />
+                <va-select style="width:46%; font-weight: 100;" placeholder="请选择起始时间" v-model="newStartTime"
+                  :options="startTime" />
+                <va-input readonly style="font-weight: 100;">
+                  ~
+                </va-input>
+                <va-select style="width:43%; font-weight: 100;" placeholder="请选择结束时间" v-model="newEndTime"
+                  :options="endTime" />
               </th>
               <th>
-                <va-button :disabled="!createdItemValid" style="width:99%; font-weight: 100;" color="backgroundElement"
+                <va-button style="width:99%; font-weight: 100;" color="backgroundElement"
                   @click="addItem">
                   添加
                 </va-button>
@@ -125,6 +131,9 @@ export default {
       // 数据库中的医生ID
       doctorIDs: [],
 
+      // 数据库中的医生姓名
+      doctorNames: [],
+
       // 数据库中的科室列表
       departments: [],
 
@@ -145,8 +154,22 @@ export default {
       showDatepicker: false,
 
       newTimeper: "请选择坐诊时间",
-
+      
       timePers: ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"],
+
+      newStartTime: "请选择起始时间",
+
+      newEndTime: "请选择结束时间",
+
+      defaultStTime: ["请选择起始时间", "08:00", "09:00", "10:00", "13:00", "14:00", "15:00", "16:00"],
+
+      startTime: ["请选择起始时间", "08:00", "09:00", "10:00", "13:00", "14:00", "15:00", "16:00"],
+
+      defaultEdTime: ["请选择结束时间", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"],
+
+      endTime: ["请选择结束时间", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"],
+
+      timePoints: ["08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00"],
     }
   },
 
@@ -156,40 +179,6 @@ export default {
       return Math.ceil(this.filteredCount / this.perPage);
     },
 
-    // 新项是否合法
-    createdItemValid() {
-      if (this.newID == "请选择医生ID") {
-        return false;
-      }
-      if (this.newRoom == "请选择诊室") {
-        return false;
-      }
-      if (this.newDate == "请选择日期") {
-        return false;
-      }
-      if (this.newTimeper == "请选择坐诊时间") {
-        return false;
-      }
-      for (let i = 0; i < this.tableItems.length; ++i) {
-        let flag = false;
-        if (this.tableItems[i]["ID"] != this.newID) {
-          flag = true;
-        }
-        if (this.tableItems[i]["诊室"] != this.newRoom) {
-          flag = true;
-        }
-        if (this.tableItems[i]["日期"] != this.newDate) {
-          flag = true;
-        }
-        if (this.tableItems[i]["坐诊时间"] != this.newTimeper) {
-          flag = true;
-        }
-        if (!flag) {
-          return false;
-        }
-      }
-      return true;
-    },
   },
 
   methods: {
@@ -208,53 +197,42 @@ export default {
       // 传入后端
       let myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
-      let raw = JSON.stringify({
-        "doctorId": this.newID,// newItem["ID"],
-        "clinicName": this.newRoom,// newItem["诊室"],
-        "dateTime": this.newDate, // newItem["日期"],
-        "period": this.toPeriod(this.newTimeper), // (newItem["坐诊日期"]),
-      });
-      let requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow'
-      };
-      fetch("http://124.223.143.21/api/Consultationinfo/AddConsult", requestOptions)
-        .then(response => response.text())
-        .then(result => {
-          console.warn(result);
-          this.getTable();
-        })
-        .catch(error => console.log('error', error));
 
-    },
-
-    // 打开编辑窗口
-    openItemEdition(rowIndex) {
-      for (let col in this.editedItem) {
-        this.editedItem[col] = this.tableItems[rowIndex][col];
-      }
-      this.editedRow = rowIndex;
-      this.editedOptions = ["08:00 - 09:00", "09:00 - 10:00", "10:00 - 11:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00"];
-      for (let i = 0; i < this.tableItems.length; ++i) { // 遍历所有列表项
-        let flag = true; // 前几项属性是否都相同
-        for (let col in this.tableColumns.slice(0, -2)) { // 遍历所有属性
-          let att = this.tableColumns[col];
-          if (this.editedItem[att] != this.tableItems[i][att]) {
-            flag = false;
-            break;
-          }
+      var l, r;
+      for (let i = 0; i < this.timePoints.length; i++) {
+        if (this.newStartTime == this.timePoints[i]) {
+          l = i;
         }
-        if (flag) { // 筛掉所有重复的
-          this.editedOptions = this.editedOptions.filter(item => item != this.tableItems[i]["坐诊时间"]);
+        if (this.newEndTime == this.timePoints[i]) {
+          r = i;
         }
       }
-      this.showModal = true;
+
+      for (; l < r; l++) {
+        let raw = JSON.stringify({
+          "doctorId": this.newID,
+          "clinicName": this.newRoom,
+          "dateTime": this.newDate,
+          "period": this.toPeriod(this.timePoints[l].toString() + " - " + this.timePoints[l + 1].toString()), // (newItem["坐诊日期"]),
+        });
+        let requestOptions = {
+          method: 'POST',
+          headers: myHeaders,
+          body: raw,
+          redirect: 'follow'
+        };
+        fetch("http://124.223.143.21/api/Consultationinfo/AddConsult", requestOptions)
+          .then(response => response.text())
+          .then(() => {
+            this.getTable();
+          })
+          .catch(error => console.log('error', error));
+      }
     },
 
     // 删除项
     deleteItem(rowIndex) {
+      var lastNum = this.tableItems.length % this.perPage;
       let myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
       let raw = JSON.stringify({
@@ -270,9 +248,14 @@ export default {
       };
       fetch("http://124.223.143.21/api/Consultationinfo/CancelConsult", requestOptions)
         .then(response => response.text())
-        .then(result => {
-          console.warn(result);
+        .then(() => {
           this.getTable();
+          // var word = this.filter;
+          // this.filter = "114514";
+          // this.filter = word;
+          if (lastNum == 1 && this.curPage == this.pages) {
+            this.curPage--;
+          }
         })
         .catch(error => console.log('error', error));
 
@@ -309,13 +292,11 @@ export default {
         body: raw,
         redirect: 'follow'
       };
-      // console.log(raw);
       fetch("http://124.223.143.21/api/Consultationinfo/ChangeConsult", requestOptions)
         .then(response => response.text())
-        .then(result => {
-          console.warn(result);
-          this.getTable();
-        })
+        .then(
+          this.getTable()
+        )
         .catch(error => console.log('error', error));
     },
 
@@ -326,52 +307,40 @@ export default {
 
     // 更新表格
     getTable() {
-      fetch("http://124.223.143.21/api/Consultationinfo/AllConsultInfo", {
-        method: 'GET',
-        redirect: 'follow'
-      }).then(response => response.text())
-        .then(result => {
-          result = JSON.parse(result);
-          // console.log(result);
-          this.tableItems = [];
-          for (let i = 0; i < result.length; ++i) {
-            this.tableItems.push({
-              "ID": result[i].doctorId,
-              "诊室": result[i].clinicName,
-              "日期": result[i].date.slice(0, 10),
-              "坐诊时间": result[i].startTime + " - " + result[i].endTime,
-            });
-          }
-          for (let i = 0; i < this.tableItems.length; ++i) {
-            fetch("http://124.223.143.21/api/Doctors/id?id=" + this.tableItems[i]["ID"], {
-              method: 'GET',
-              redirect: 'follow'
-            }).then(response => response.text())
-              .then(result => {
-                result = JSON.parse(result);
-                this.tableItems[i]["医生姓名"] = result.name;
-              })
-              .catch(error => console.log('error', error));
-          }
-        })
-        .catch(error => console.log('error', error));
+        fetch("http://124.223.143.21/api/Consultationinfo/AllConsultInfo", {
+          method: 'GET',
+          redirect: 'follow'
+        }).then(response => response.text())
+          .then(result => {
+            result = JSON.parse(result);
+            this.tableItems = [];
+            for (let i = 0; i < result.length; ++i) {
+              this.tableItems.push({
+                "ID": result[i].doctorId,
+                "医生姓名": result[i].doctorName,
+                "诊室": result[i].clinicName,
+                "日期": result[i].date.slice(0, 10),
+                "坐诊时间": result[i].startTime + " - " + result[i].endTime,
+              });
+            }
+          })
+          .catch(error => console.log('error', error));
     },
 
     // 获取表格候选信息（医生ID，诊室列表，日期）
     getInfo() {
       axios.get('http://124.223.143.21:4999/api/Doctors')
         .then(response => {
-          console.log(response);
           for (let i = 0; i < response.data.length; i++) {
             const item = response.data[i];
             this.doctorIDs.push(item.doctorId);
+            this.doctorNames.push(item.name);
           }
         })
         .catch(error => console.log('error', error));
 
       axios.get('http://124.223.143.21/api/Consultationinfo/GetAllRooms')
         .then(response => {
-          console.log(response);
           for (let i = 0; i < response.data.length; i++) {
             const item = response.data[i];
             this.availableRooms.push(item.consultingRoomName);
@@ -393,7 +362,7 @@ export default {
   },
 
   mounted() {
-    this.getTable();
+    this.getTable("请选择日期");
     this.getInfo();
   },
 
@@ -415,7 +384,67 @@ export default {
           this.newName = result.name;
         })
         .catch(error => console.log('error', error));
-    }
+    },
+
+    newStartTime(newVal) {
+      switch (newVal) {
+        case "请选择起始时间":
+          this.endTime = this.defaultEdTime.slice(1, 8);
+          break;
+        case "08:00":
+          this.endTime = this.timePoints.slice(1, 4);
+          break;
+        case "09:00":
+          this.endTime = this.timePoints.slice(2, 4);
+          break;
+        case "10:00":
+          this.endTime = this.timePoints.slice(3, 4);
+          break;
+        case "13:00":
+          this.endTime = this.timePoints.slice(5, 9);
+          break;
+        case "14:00":
+          this.endTime = this.timePoints.slice(6, 9);
+          break;  
+        case "15:00":
+          this.endTime = this.timePoints.slice(7, 9);
+          break;
+        case "16:00":
+          this.endTime = this.timePoints.slice(8, 9);
+          break;
+      }
+      this.endTime.push("请选择结束时间");
+    },
+    
+    newEndTime(newVal) {
+      switch (newVal) {
+        case "请选择结束时间":
+          this.startTime = this.defaultStTime;
+          break;
+        case "09:00":
+          this.startTime = this.timePoints.slice(0, 1);
+          break;
+        case "10:00":
+          this.startTime = this.timePoints.slice(0, 2);
+          break;
+        case "11:00":
+          this.startTime = this.timePoints.slice(0, 3);
+          break;
+        case "14:00":
+          this.startTime = this.timePoints.slice(4, 5);
+          break;
+        case "15:00":
+          this.startTime = this.timePoints.slice(4, 6);
+          break;  
+        case "16:00":
+          this.startTime = this.timePoints.slice(4, 7);
+          break;
+        case "17:00":
+          this.startTime = this.timePoints.slice(4, 8);
+          break;
+      }
+      this.startTime.push("请选择起始时间");
+    },
   },
 
 }

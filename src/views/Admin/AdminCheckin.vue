@@ -102,7 +102,7 @@ export default defineComponent({
 
         // 发送请求
         axios
-          .put("http://124.223.143.21/Registration/Checkin", data)
+          .put("http://124.223.143.21/api/Registration/Checkin", data)
           .then((response) => {
             this.alertText = "报到成功！" + "时间：" + time + " " + response.data;
             this.uploadSuccess = true;
@@ -132,7 +132,7 @@ export default defineComponent({
     FetchData() {
       // 发送请求
       axios
-        .get("http://124.223.143.21/Registration/OfflineCheckin?", {
+        .get("http://124.223.143.21/api/Registration/OfflineCheckin?", {
           params: {
             patientId: this.patientId,
           },
@@ -234,7 +234,7 @@ export default defineComponent({
 
       // 发送请求
       axios
-        .put("http://124.223.143.21/Registration/Checkin", data)
+        .put("http://124.223.143.21/api/Registration/Checkin", data)
         .then((response) => {
           this.alertText = response.data + "！";
           this.uploadSuccess = true;
@@ -272,5 +272,11 @@ export default defineComponent({
 .el-tag--danger {
   background-color: red; /* 设置背景色为红色 */
   color: white; /* 设置文本颜色为白色 */
+}
+
+* {
+  /* 应用字体 */
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
 }
 </style>
