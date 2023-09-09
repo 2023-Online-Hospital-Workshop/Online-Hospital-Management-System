@@ -1286,7 +1286,33 @@ import DoctorInfo from "../../components/Info/DoctorInfo.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 
 export default {
-  name: "App",
+  name: 'App',
+  // mlj修改：自动填充
+  watch: {
+    'all_med': {
+      deep: true,
+      handler() {
+        console.log('Medicine changed');
+        console.log(this.all_med.pre)
+
+        this.all_med.forEach((medItem, medIndex) => {
+          this.pre_abbreviations.forEach((abbr, abbrIndex) => {
+            const regex = new RegExp(`${abbr}`, "gi");
+            if (medItem.fre && typeof medItem.fre === 'string') {
+              this.all_med[medIndex].fre = medItem.fre.replace(regex, this.pre_fullNames[abbrIndex]);
+            }
+          });
+          this.use_abbreviations.forEach((abbr, abbrIndex) => {
+            const regex = new RegExp(`${abbr}`, "gi");
+            if (medItem.ad && typeof medItem.ad === 'string') {
+              this.all_med[medIndex].ad = medItem.ad.replace(regex, this.use_fullNames[abbrIndex]);
+            }
+          });
+        });
+      }
+    }
+  },
+
   data() {
     return {
       // zzh添加：
@@ -1303,6 +1329,19 @@ export default {
       curPatientId: "",
       // 提示有新消息的红点状态
       unreadPrompts: [],
+      pre_abbreviations: [
+        "qd", "bid", "tid", "qid", "qn", "qod", "qw", "biw", "q2h", "g4h", "g8h"
+      ],
+      pre_fullNames: [
+        "1日1次", "1日2次", "1日3次", "1日4次", "每晚睡前1次", "隔日1次", "每周1次", "1周2次", "每2小时1次",
+        "每4小时1次", "每8小时1次"
+      ],
+      use_abbreviations: [
+        "sig", "PR.", "l.D", "l.V", "I.V.GTT.", "IH", "IM", "P.O"
+      ],
+      use_fullNames: [
+        "用法", "灌肠", "皮内注射", "静脉注射", "静脉点滴", "皮下注射", "肌肉注射", "此药口服"
+      ],
 
       //hcr:
       patients: [],
