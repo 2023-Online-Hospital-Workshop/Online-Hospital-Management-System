@@ -8,8 +8,10 @@
         class="card"
         style="background: rgb(0, 47, 176); color: white"
       >
-        <va-card-title>总收入</va-card-title>
-        <va-card-content>{{ totIncome }}</va-card-content>
+        <va-card-content
+          ><div class="card-title">总收入</div>
+          {{ totIncome }}</va-card-content
+        >
       </va-card>
       <div class="operator">-</div>
       <va-card
@@ -18,8 +20,10 @@
         class="card"
         style="background: rgb(0, 47, 176); color: white"
       >
-        <va-card-title>总支出</va-card-title>
-        <va-card-content>{{ totOutcome }}</va-card-content>
+        <va-card-content
+          ><div class="card-title">总支出</div>
+          {{ totOutcome }}</va-card-content
+        >
       </va-card>
       <div class="operator">=</div>
       <va-card
@@ -29,8 +33,10 @@
         style="color: white"
         :style="{ background: profitColor }"
       >
-        <va-card-title>盈利</va-card-title>
-        <va-card-content>{{ profit }}</va-card-content>
+        <va-card-content
+          ><div class="card-title">盈利</div>
+          {{ profit }}</va-card-content
+        >
       </va-card>
     </div>
     <va-data-table class="table" :items="items" :columns="columns" striped>
@@ -397,10 +403,18 @@ export default {
 };
 </script>
 <style scoped>
+.va-data-table {
+  --va-data-table-thead-font-size: 1rem;
+}
 .title {
   font-size: 5vh;
   text-align: center;
   margin-top: 10px;
+}
+.card-title {
+  font-size: 25px;
+  margin-bottom: 10px;
+  font-weight: bold;
 }
 .cards {
   display: flex;
@@ -408,11 +422,13 @@ export default {
   justify-content: center;
   gap: 20px;
   margin-top: 18px;
+  font-size: 30px;
 }
 .card {
   width: 200px;
   border-radius: 15%;
   box-shadow: 0 4px 8px rgba(77, 76, 76, 0.1); /* 水平偏移, 垂直偏移, 模糊距离, 阴影颜色 */
+  font-size: 30px;
 }
 .operator {
   font-size: 2em;
