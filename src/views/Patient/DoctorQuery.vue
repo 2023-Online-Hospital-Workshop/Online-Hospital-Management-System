@@ -234,7 +234,7 @@ export default {
             <div class="doctors-left">
               <div class="img-box">
                 <img :src="doctor.photoUrl" alt="Doctor Photo" />
-                <div class="btn">预约</div>
+                <va-button class="btn">预约</va-button>
               </div>
             </div>
             <div class="doctors-right">
