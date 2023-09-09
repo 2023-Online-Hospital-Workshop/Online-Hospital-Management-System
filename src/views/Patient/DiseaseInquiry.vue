@@ -1,4 +1,4 @@
-<template>
+<template style="font-family: AliRegular;">
   <div id="main-page">
     <img src="@/assets/bg4.png" class="bgImage" alt="" />
     <h1 class="va-h3">常见病信息查询</h1>

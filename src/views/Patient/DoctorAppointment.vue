@@ -294,7 +294,7 @@
 </style>
 
 
-<template>
+<template style="font-family: AliRegular;">
   <div class="parent-box">
     <img src="@/assets/bg4.png" class="bgImage" alt="" />
     <div class="card-box">

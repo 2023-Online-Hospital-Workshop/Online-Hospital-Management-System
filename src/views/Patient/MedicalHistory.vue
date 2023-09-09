@@ -1,4 +1,4 @@
-<template>
+<template style="font-family: AliRegular;">
   <!-- <chat-box v-if="chatShown" style="z-index: 999;"></chat-box> -->
   <va-modal v-model="chatShown" hide-default-actions="true">
     <div style="width: 500px; height: 600px;">

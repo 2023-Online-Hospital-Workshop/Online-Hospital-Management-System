@@ -146,7 +146,7 @@ export default {
 }
 </script>
 
-<template>
+<template style="font-family: AliRegular;">
   <div id="main-page">
     <h1 class="va-h3">选择医生</h1>
     <div>
