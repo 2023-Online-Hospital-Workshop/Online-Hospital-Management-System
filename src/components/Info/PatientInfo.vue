@@ -259,7 +259,7 @@ export default {
   cursor: pointer;
   .name {
     margin-left: 10px;
-    font-size: 24px;
+    font-size: 18px;
   }
   position: relative;
 }
