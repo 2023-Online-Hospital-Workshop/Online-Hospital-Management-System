@@ -345,7 +345,7 @@
         .line {
           width: 8px;
           height: 100%;
-          background: #b2bde2;
+          background: #4865ce;
         }
 
         &:nth-of-type(1) {
@@ -473,6 +473,17 @@
       }
     }
 
+    .font {
+      margin: 10px 0 20px;
+
+      &::v-deep .el-textarea__inner {
+        width: 95%;
+        background: #f1f3f5;
+        border: none;
+        font-size: 13px;
+      }
+    }
+
     &::v-deep .el-table {
       .el-table__header th {
         background-color: #f5f5f5;
@@ -526,7 +537,7 @@ input {
 }
 
 #info {
-  border-spacing: 40px 10px;
+  border-spacing: 10px 10px;
   /* 设置单元格之间的间距 */
   border-collapse: separate;
   /* 设置表格边框合并模式 */
@@ -598,7 +609,7 @@ input {
 }
 
 .gh {
-  color: rgb(255, 0, 0)!important;
+  color: rgb(255, 0, 0) !important;
 }
 </style>
 
@@ -891,7 +902,7 @@ input {
             <img src="@/assets/icon11.png" alt="" />
             <div class="user-info">
               <div>{{ pt.number }}号：{{ pt.name }}</div>
-              <div class="status" :class="{gh: pt.treatmentState === '未就诊' }">
+              <div class="status" :class="{ gh: pt.treatmentState === '未就诊' }">
                 {{ pt.treatmentState }}
               </div>
             </div>
@@ -967,7 +978,7 @@ input {
               <div class="base-item-title">初诊/复诊：</div>
               <div class="base-item-value">{{ isfirst }}</div>
             </div>
-            <div class="base-btn base-btn1" @click="showModal = !showModal">
+            <div id="isfirst_button" class="base-btn base-btn1" @click="showModal = !showModal">
               查看就诊历史
             </div>
           </div>
@@ -979,14 +990,22 @@ input {
             <table id="info">
               <tr>
                 <td>姓名：{{ his_rep.patientInfo.name }}</td>
+              </tr>
+              <tr>
                 <td>性别：{{ his_rep.patientInfo.gender }}</td>
+              </tr>
+              <tr>
                 <td>年龄：{{ his_rep.patientInfo.birthDate }}</td>
               </tr>
               <tr>
                 <td>卡号：{{ his_rep.patientInfo.patientId }}</td>
+              </tr>
+              <tr>
                 <td>
                   科室：{{ his_rep.records[p].doctor.secondaryDepartment }}
                 </td>
+              </tr>
+              <tr>
                 <td>医生：{{ his_rep.records[p].doctor.name }}</td>
               </tr>
               <div>
@@ -1056,7 +1075,8 @@ input {
           <el-table-column prop="spec" label="规格"> </el-table-column>
           <el-table-column label="单次剂量" width="120">
             <template #default="scope">
-              <input class="input2" type="text" v-model="all_med[scope.$index].single" name="firstname" placeholder="" />
+              <el-input type="textarea" :rows="4" class="textarea font" name="firstname" placeholder="请输入"
+                v-model="all_med[scope.$index].single"></el-input>
             </template>
           </el-table-column>
           <el-table-column label="用法" width="70">
@@ -1077,7 +1097,8 @@ input {
           </el-table-column>
           <el-table-column label="注意事项" width="140">
             <template #default="scope">
-              <input class="input2" type="text" v-model="all_med[scope.$index].tips" name="firstname" placeholder="" />
+              <el-input type="textarea" :rows="4" class="textarea font" name="firstname" placeholder="请输入"
+                v-model="all_med[scope.$index].tips"></el-input>
             </template>
           </el-table-column>
           <el-table-column label="编辑" width="80">
@@ -1718,7 +1739,7 @@ export default {
         this.all_med[j].fre = "";
       }
       //删除就诊人信息
-      this.name=""
+      this.name = ""
       this.age = 0
       this.contact = ""
       this.counsellor = ""
@@ -1795,13 +1816,8 @@ export default {
         this.his_rep.records.length === 0
       ) {
         this.isfirst = '初诊'
-        // 获取按钮元素
-        const button = document.getElementById('isfirst_button')
-        // 禁用按钮
-        button.disabled = true
       } else {
         this.isfirst = '复诊'
-        //数据修正
         if (this.his_rep.patientInfo.gender) {
           this.his_rep.patientInfo.gender = '男'
         } else {
