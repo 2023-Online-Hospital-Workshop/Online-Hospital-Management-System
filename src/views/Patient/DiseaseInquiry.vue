@@ -1,15 +1,15 @@
 <template>
   <div id="main-page">
+    <img src="@/assets/bg4.png" class="bgImage" alt="" />
     <h1 class="va-h3">常见病信息查询</h1>
     <div>
     
       <va-card class="card">
-      
       <div class="flex flex-row">
         
         <va-card class="search-card">
           <div class="search-container">
-            <va-input v-model="searchKeyword" placeholder="输入关键词进行搜索"></va-input>
+            <va-input v-model="searchKeyword" placeholder="输入关键词进行搜索" style="min-width:400px"></va-input>
             <va-button color="primary" @click="fetchDiseaseData(searchKeyword)">搜索</va-button>
           </div>
         </va-card>
@@ -35,23 +35,23 @@
 
     </div>
     <div style="display: flex;">
-    <div class="flex flex-wrap gap-5">
+    <div class="flex flex-wrap gap-5" style="flex: 1; width: 75%;">
       <va-accordion v-model="value" class="max-w-sm" popout>
-        <va-collapse style="width: 820px;" text-color="textPrimary"
+        <va-collapse  text-color="textPrimary"
       color="textInverted" v-for="(DiseaseItem, index) in DiseaseData.showapi_res_body.pagebean.contentlist" :key="index" :header="DiseaseItem.name" @click="SearchDisease(DiseaseItem.id)">
       
            <div class="space" style="height: auto;">
             <span class="text" >疾病名称：</span>{{ DiseaseItem.name }}<br><br>
             <span class="text" >一级科室：</span>{{ DiseaseItem.typeName }}<br><br>
             <span class="text" >二级科室：</span>{{ DiseaseItem.subTypeName }}<br><br>
-            <span class="text">简介：</span>{{ DetailData.showapi_res_body.item.summary }}
+            <span class="text ">简介：</span><span style="line-height: 1.5em;">{{ DetailData.showapi_res_body.item.summary }}</span>
             <div class="kh">konghang</div>
           </div>
       </va-collapse>
       </va-accordion>
     </div>
 
-    <div>
+    <div  style="flex">
       <va-card stripe class="tip">
         <va-card-content class="title">健康资讯</va-card-content>
           <!-- 遍历新闻数据并显示 -->
@@ -82,6 +82,12 @@
   margin-top: 12px;
   margin-left: 20%;
   margin-right: 14%;
+}
+.bgImage {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
 }
 .card {
   margin-bottom: 20px;
@@ -217,8 +223,8 @@ export default {
       // 创建请求参数对象
       const formData = new FormData();
      
-      formData.append("showapi_appid", '1475668'); // 这里需要改成自己的appid
-      formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); // 这里需要改成自己的应用的密钥secret
+      formData.append("showapi_appid", '1475668'); 
+      formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); 
       formData.append("typeId", "");
       formData.append("subTypeId", "");
       formData.append("key",searchKeyword);
@@ -243,11 +249,10 @@ export default {
       const formData = new FormData();
      
       formData.append("showapi_timestamp", d);
-      formData.append("showapi_appid", '1475668'); // 这里需要改成自己的appid
-      formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); // 这里需要改成自己的应用的密钥secret
+      formData.append("showapi_appid", '1475668');
+      formData.append("showapi_sign", '2c780d7234d547a49d4df8a0e9331f2d'); 
       formData.append("id", id);
       
-
       // 发送POST请求
       axios
         .post("http://route.showapi.com/546-3", formData)
