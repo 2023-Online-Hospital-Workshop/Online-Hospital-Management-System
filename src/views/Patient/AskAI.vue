@@ -4,7 +4,7 @@
     <div class="main">
       <div class="box">
         <div class="title" style="margin-left: 15%">
-          <span class="title-hn" style="vertical-align:middle;font-size: 25px">AI小济-您的人工智能小助理</span>
+          <span class="title-hn" style="vertical-align:middle;font-size: 25px;font-family: AliRegular;">AI小济-您的人工智能小助理</span>
         </div>
         <div id="content" class="content">
           <div v-for="(item,index) in info" :key="index">
@@ -14,7 +14,7 @@
              :src="require(`@/assets/${item.content}`)"
              :style="{ 'verticalAlign': 'top', 'marginTop': '-25px', 'width': item.width, 'height': item.height }" />
               <div  v-else class="con_r con_text">
-                <div>{{item.content}}</div>
+                <div style="font-family: AliRegular;">{{item.content}}</div>
                 <div v-for="(item2,index) in item.question" :key="index">
                   <div class="con_que" @click="clickRobot(item2.content,item2.id)">
                     <div class="czkj-question-msg">
@@ -322,21 +322,25 @@ import RobotAI2 from "@/components/Robot2.vue"
         height: 100%;
         overflow-y: scroll;
         font-size: 16px;
+        font-family: AliRegular;
         width: 100%;
         margin-top: 30px;
         .con_text {
           color: #333;
+          font-family: AliRegular;
           margin-bottom: 5px;
         }
         .con_que {
           color: #1c88ff;
           height: 30px;
           line-height: 30px;
+          font-family: AliRegular;
           cursor: pointer;
         }
         .info_r {
           position: relative;
           margin-top: 30px;
+          font-family: AliRegular;
           .circle_r {
             position: absolute;
             left: 0%;
@@ -360,11 +364,13 @@ import RobotAI2 from "@/components/Robot2.vue"
             top: 0px;
             line-height: 20px;
             font-size: 16px;
+            font-family: AliRegular;
           }
           .time_r {
             margin-left: 20%;
             color: #999999;
             font-size: 12px;
+            font-family: AliRegular;
           }
         }
         .info_l {
@@ -373,6 +379,7 @@ import RobotAI2 from "@/components/Robot2.vue"
           color: #3163C5;
           margin-top: 10px;
           font-size: 16px;
+          font-family: AliRegular;
 
           // .circle_l {
           //   // vertical-align: -10px;
@@ -401,6 +408,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             color: #fff;
             margin-right: 5px;
             line-height: 20px;
+            font-family: AliRegular;
           }
         }
         #question {
@@ -424,6 +432,7 @@ import RobotAI2 from "@/components/Robot2.vue"
     box-sizing: border-box;
     position: absolute;
     border:5px solid #C0D3FF;
+    font-family: AliRegular;
   }
   .setproblem button {
     width: 3rem;
@@ -433,6 +442,7 @@ import RobotAI2 from "@/components/Robot2.vue"
     opacity: 1;
     border-radius: 4px;
     font-size: 10px;
+    font-family: AliRegular;
     color: #ffffff;
     position: absolute;
     right: -8%;
@@ -458,11 +468,13 @@ import RobotAI2 from "@/components/Robot2.vue"
     line-height: 20px;
     min-height: 20px;
     overflow: hidden;
+    font-family: AliRegular;
   }
  
   .czkj-question-msg {
     float: left;
     font-size: 16px;
+    font-family: AliRegular;
     color: #3163C5;
   }
 
@@ -472,4 +484,7 @@ import RobotAI2 from "@/components/Robot2.vue"
   bottom: 0;
   z-index: -1;
  }
+  *{
+    font-family: AliRegular;
+  }
 </style>
