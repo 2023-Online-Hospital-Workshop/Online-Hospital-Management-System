@@ -337,7 +337,7 @@ export default {
     startDataRefreshTimer() {
       setInterval(() => {
         this.getData(); // 获取最新数据
-      }, 30000); // 定时器每隔30s轮询
+      }, 15000); // 定时器每隔15s轮询
     },
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
@@ -550,7 +550,7 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
-        this.modelShown[recordIndex] = false;
+        this.modalShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
@@ -560,8 +560,8 @@ export default {
           diagnosedId: this.allRecords[recordIndex].diagnoseId,
           leaveDays: leaveNote.leaveNoteInput,
         };
-        console.log("leaveNote inputData");
-        console.log(inputData);
+        // console.log("leaveNote inputData");
+        // console.log(inputData);
         axios.post('http://124.223.143.21/api/Leave', null, { params: inputData })
           .then(response => {
             console.log('POST request successful:', response.data);
