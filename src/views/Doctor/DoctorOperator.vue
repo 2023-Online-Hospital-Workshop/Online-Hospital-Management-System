@@ -596,6 +596,10 @@ input {
   border-color: transparent transparent transparent #002fb0;
   float: right;
 }
+
+.gh {
+  color: rgb(255, 0, 0)!important;
+}
 </style>
 
 <template>
@@ -878,6 +882,7 @@ input {
     </va-modal>
 
     <div class="container">
+      <va-button @click="nextPatient()"> 叫号 </va-button>
       <div class="registe">
         <div class="title1">患者挂号信息</div>
         <div class="registe-list">
@@ -886,13 +891,10 @@ input {
             <img src="@/assets/icon11.png" alt="" />
             <div class="user-info">
               <div>{{ pt.number }}号：{{ pt.name }}</div>
-              <div class="status">
+              <div class="status" :class="{gh: pt.treatmentState === '未就诊' }">
                 {{ pt.treatmentState }}
               </div>
             </div>
-          </div>
-          <div class="btn1">
-            <el-button type="primary" round>叫号</el-button>
           </div>
         </div>
       </div>
@@ -929,7 +931,7 @@ input {
 
       <div class="diagnostic">
         <h1 class="c-title">同济大学校医院门诊病历</h1>
-        <div class="title1">皮肤科 日期:{{ date }}</div>
+        <div class="title1">内科 日期:{{ date }}</div>
         <div class="title1 base">基本信息</div>
         <div class="base-box">
           <div class="base-line">
@@ -1018,27 +1020,6 @@ input {
             <label> </label>
           </div>
         </va-modal>
-        <!-- <table id="info">
-          <tr>
-            <td>姓名：{{ name }}</td>
-            <td>性别：{{ gender }}</td>
-            <td>年龄：{{ age }}</td>
-          </tr>
-          <tr>
-            <td>卡号：{{ ID }}</td>
-            <td>电话：{{ contact }}</td>
-            <td>辅导员：{{ counsellor }}</td>
-          </tr>
-          <tr>
-            <td>初诊/复诊：{{ isfirst }}</td>
-            <td>
-              <va-button id="isfirst_button" @click="showModal = !showModal">
-                查看就诊历史
-              </va-button>
-            </td>
-          
-          </tr>
-        </table> -->
 
         <div class="title1">主诉：</div>
         <el-input type="textarea" :rows="4" class="textarea" placeholder="请输入" v-model="problem">
@@ -1109,22 +1090,7 @@ input {
         <div class="title1" style="margin: 20px 0">
           同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
         </div>
-        <el-button type="primary" @click="showConfirmationDialog" round>确认</el-button>
-        <!-- <va-button
-          id="re-button"
-          type="submit"
-          preset="primary"
-          class="mt-3"
-          @click="showConfirmationDialog"
-        >
-          确认
-        </va-button> -->
-
-        <!-- <img
-          src="../../assets/signature.png"
-          alt="图片描述"
-          style="max-width: 200px; height: auto; float: right"
-        /> -->
+        <el-button type="primary" @click="open">确认</el-button>
       </div>
 
       <div id="cebian"></div>
@@ -1137,6 +1103,7 @@ import axios from 'axios'
 import { reactive } from 'vue'
 //import userInfo from "../../store/user.js";
 import DoctorInfo from '../../components/Info/DoctorInfoNew.vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 export default {
   name: 'App',
@@ -1157,6 +1124,7 @@ export default {
       // 提示有新消息的红点状态
       unreadPrompts: [],
 
+      //hcr:
       patients: [],
       value: '请输入',
       //病人信息
@@ -1169,7 +1137,6 @@ export default {
       counsellor: '',
       num: 0, //当前就诊患者的序号
       doctorId: sessionStorage.getItem('userID'),
-      //doctorId: userInfo.state.userID,
       dept: '普通外科',
 
       //处方药品
@@ -1374,8 +1341,8 @@ export default {
         const data = await response.json()
         for (let i = 0; i < data.length; i++) {
           this.patients.push(data[i].patient)
-          this.patients[i].number = i
-          this.patients[i].treatmentState = '已挂号'
+          this.patients[i].number = i + 1
+          this.patients[i].treatmentState = "未就诊"
           this.patients[i].period = data[i].period
         }
       } catch (error) {
@@ -1496,6 +1463,7 @@ export default {
         })
       }
 
+      //自动叫号
       this.nextPatient()
     },
 
@@ -1603,6 +1571,7 @@ export default {
     //叫号
     async nextPatient() {
       let i = this.num + 1 //当前就诊患者序号
+
       //判断今日所有病人是否已经就诊完成
       if (i === this.patients.length + 1) {
         return
@@ -1613,6 +1582,10 @@ export default {
       let j = i - 1
       const item = document.getElementById('item' + j)
       item.style.color = 'red'
+      console.log(this.num)
+      //把正在就诊的病人状态改为已就诊
+      this.patients[this.num - 1].treatmentState = "已就诊";
+
 
       //显示当前就诊病人信息
       i = i - 1
@@ -1631,7 +1604,6 @@ export default {
       this.counsellor = this.patients[i].counsellor
       this.ID = this.patients[i].patientId
       this.period = this.patients[i].period
-      console.log(this.patients[i].period)
 
       //获取当前就诊病人的就诊历史
       this.getHistory()
@@ -1698,44 +1670,64 @@ export default {
       console.log(this.medicine)
     },
 
-    //确认处方前的提示
-    showConfirmationDialog() {
-      // 使用 window.confirm() 函数显示确认提示框
-      const confirmed = window.confirm('您是否确认提交处方？')
+    //确认处方按钮
+    open() {
+      ElMessageBox.confirm(
+        '请问您是否确认提交处方?',
+        '提示',
+        {
+          confirmButtonText: '确认',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      )
+        .then(() => {
+          this.enter()
+          ElMessage({
+            type: 'success',
+            message: '处方提交成功',
+          });
+          this.delete()
+          this.nextPatient()  //自动叫号
+        })
+        .catch(() => {
+          ElMessage({
+            type: 'info',
+            message: '取消提交',
+          });
+        });
+    },
 
-      // 根据用户选择来执行相应的操作
-      if (confirmed) {
-        // 用户点击了确认按钮，执行提交操作
-        this.enter()
-      } else {
-        // 用户点击了取消按钮，取消操作
-        // 可以选择不执行任何操作或者做其他处理
+    //清空处方
+    delete() {
+      this.problem = "";
+      this.illness = "";
+      this.past_illness = "";
+      this.symptom = "";
+      this.diagnose = "";
+      this.prescription = "";
+      this.all_num = 0; //现在已有药品数量
+      this.select_medi = ""; //在选择框中已经选择的药品
+      this.medicine = []; //辅助在表格前端显示，只有name和spec两个属性
+      for (let j = 0; j < 15; j++) {
+        this.all_med[j].name = "";
+        this.all_med[j].spec = "";
+        this.all_med[j].single = "";
+        this.all_med[j].ad = "";
+        this.all_med[j].tips = "";
+        this.all_med[j].fre = "";
       }
+      //删除就诊人信息
+      this.name=""
+      this.age = 0
+      this.contact = ""
+      this.counsellor = ""
+      this.ID = ""
+      this.period = ""
     },
 
     //确认处方
     enter() {
-      //一旦已经就诊就无法再次发送处方
-      //把正在就诊的病人状态改为已就诊
-      //this.patients[this.num - 1].treatmentState = "已就诊";
-
-      // //向后端发送已经就诊的病人和对应的医生id
-      // var requestOptions = {
-      //     method: 'POST',
-      //     redirect: 'follow'
-      // };
-      // const url = "http://124.223.143.21/api/Confirm?doctorId=23002&patientId=" + this.patients[this.num - 1].patientId;
-      // fetch(url, requestOptions)
-      //     .then(response => response.text())
-      //     .then(result => console.log(result))
-      //     .catch(error => console.log('error', error));
-
-      //向后端发送就诊单
-      // let a = ""; //处方信息
-      // for (let i = 0; i < this.all_num; i++) {
-      //     a = a + this.all_med[i].name + "+" + this.all_med[i].spec + "#" + this.all_med[i].single + "@" + this.all_med[i].ad;
-      //     a = a + "!" + this.all_med[i].fre + "$" + this.all_med[i].count + "%" + this.all_med[i].tips + ";";
-      // }
       let a = ''
       for (let i = 0; i < this.all_num; i++) {
         a =
@@ -1777,9 +1769,6 @@ export default {
         .then((result) => console.log(result))
         .catch((error) => console.log('error', error))
       console.log(data)
-
-      //叫号下一位病人
-      this.nextPatient()
     },
 
     //得到就诊历史
