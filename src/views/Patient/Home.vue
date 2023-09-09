@@ -20,15 +20,13 @@
           </div>
         </div>
       </div>
-      <div class="content">
-        <div class="c-title">校医院就诊流程</div>
-        <div class="c-bottom">
+      <div style="text-align: center; margin:150px; transform: scale(1.5);">
+
 
 
           <img style="width: 80%;margin: 0 auto;" src="@/assets/bg5.png" alt="">
 
 
-        </div>
       </div>
       <div class="content">
         <div class="c-title">校医院地图</div>
