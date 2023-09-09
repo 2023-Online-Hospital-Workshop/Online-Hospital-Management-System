@@ -1138,13 +1138,13 @@ export default {
 
         this.all_med.forEach((medItem, medIndex) => {
           this.pre_abbreviations.forEach((abbr, abbrIndex) => {
-            const regex = new RegExp(`\\b${abbr}\\b`, "gi");
+            const regex = new RegExp(`${abbr}`, "gi");
             if (medItem.fre && typeof medItem.fre === 'string') {
               this.all_med[medIndex].fre = medItem.fre.replace(regex, this.pre_fullNames[abbrIndex]);
             }
           });
           this.use_abbreviations.forEach((abbr, abbrIndex) => {
-            const regex = new RegExp(`\\b${abbr}\\b`, "gi");
+            const regex = new RegExp(`${abbr}`, "gi");
             if (medItem.ad && typeof medItem.ad === 'string') {
               this.all_med[medIndex].ad = medItem.ad.replace(regex, this.use_fullNames[abbrIndex]);
             }
