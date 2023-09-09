@@ -12,8 +12,22 @@
       <div class="content">
         <div class="c-title">校医院简介</div>
         <div class="c-bottom">
-          <div class="detail">
-            校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍校医院历史介绍。
+          <div class="detail" style="line-height:1.5em">
+            <p>济康同行医院是一所<span class="my-text">综合性医疗机构</span>，位于上海市嘉定区，作为同济大学医学院的重要教学医院，校医院拥有丰富的经验和杰出的医疗团队。<br><br></p>
+
+            <p>本医院设有<span
+                class="my-text">多个临床科室和医疗中心</span>，涵盖了内科、外科、眼科、耳鼻喉科等各个医疗领域。配备了先进的医疗设备，手术室设施和实验室设备，以确保为患者提供高质量的医疗服务。<br><br>
+            </p>
+
+            <p>本医院注重<span class="my-text">医疗教育和科研工作</span>，与同济大学医学院紧密合作，培养了一大批医学人才和科研精英。<br><br></p>
+            <p>济康同行医院还积极参与<span class="my-text">国际医疗合作与交流</span>，与多个国际医疗机构建立了合作关系，为患者提供国际水准的医疗服务。<br><br></p>
+            <p>济康同行医院秉承<span
+                class="my-text">“以患者为中心”</span>的宗旨，致力于为患者提供全面、高效、温暖的医疗护理。无论是常规医疗还是复杂的疾病治疗，医院的专业医护团队都将竭诚为患者的健康和幸福而努力。<br>
+            </p><br><br>
+
+            <div><span class="my-text">济康同行医院地址：</span>上海市嘉定校区曹安公路4800号</div>
+            <div><span class="my-text">负责人联系电话：</span>13744558454</div>
+
           </div>
           <div class="detail">
             <img src="@/assets/img1.png" alt="">
@@ -46,6 +60,8 @@ import SideBar from '@/components/SideBar.vue'
 import Header from '@/components/Header.vue'
 import { useStore } from 'vuex'
 import img1 from '@/assets/img.png'  // 这边引入图片
+import news1 from '@/assets/list1.jpeg'
+import news3 from '@/assets/list3.png'
 export default {
   name: 'HomePage',
   components: {
@@ -61,9 +77,13 @@ export default {
         imgUrl: img1,
       },
       {
-        imgUrl: img1,
+        imgUrl: news1,
+      },
+      {
+        imgUrl: news3,
       },
     ]
+    
 
     const isCollapse = computed(() => store.state.aside.isCollapse)
 
@@ -84,24 +104,29 @@ export default {
 <style lang="scss" scoped>
 .ncontainer {
   width: 70vw;
-  min-width: 1330px;
+  //min-width: 1330px;
+  min-height: 400px;
   margin: 100px auto 50px;
+
   .bgImage {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  z-index: -1;
-}
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+  }
+
   .bannerImg {
     width: 100%;
     height: 100%;
   }
+
   .content {
     margin: 30px 10px 0;
     padding-bottom: 10px;
     background: #FFFFFF;
-    box-shadow: -1px 4px 10px 0px rgba(142,151,176,0.61);
+    box-shadow: -1px 4px 10px 0px rgba(142, 151, 176, 0.61);
     border-radius: 20px;
+
     .c-title {
       width: 526px;
       height: 51px;
@@ -116,16 +141,19 @@ export default {
       font-weight: bold;
       font-size: 25px;
     }
+
     .c-bottom {
       display: flex;
       margin: 48px 33px;
       justify-content: space-between;
+
       .detail {
         width: 47%;
         font-weight: 500;
         color: #000000;
         line-height: 32px;
         font-size: 22px;
+
         img {
           width: 100%;
           height: 100%;
@@ -134,4 +162,7 @@ export default {
     }
   }
 }
-</style>
+
+.my-text {
+  font-weight: bold;
+}</style>
