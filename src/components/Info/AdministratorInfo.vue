@@ -246,7 +246,8 @@ export default {
   margin-right: 10px;
   .name {
     margin-left: 10px;
-    font-size: 24px;
+    font-size: 16px;
+    font-family: AliRegular;
   }
   position: relative;
 }
@@ -316,6 +317,7 @@ export default {
   .name1 {
     margin-top: 10px;
     font-size: 20px;
+    font-family: AliRegular;
   }
 }
 

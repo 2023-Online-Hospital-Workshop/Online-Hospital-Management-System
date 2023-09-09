@@ -5,7 +5,7 @@
         active-color="backgroundPrimary">
         <va-sidebar-item-content  :class="{ selectedStyle: item.path === selectedItem, unselectedStyle: item.path !== selectedItem }">
           <va-icon style="font-size: 30px;" :name="item.icon" />
-          <va-sidebar-item-title style="font-size: 20px">
+          <va-sidebar-item-title style="font-size: 18px">
             {{ item.label }}
           </va-sidebar-item-title>
         </va-sidebar-item-content>
