@@ -1,15 +1,16 @@
 <template>
-  <div class="mb-6 h-64 sidebar" :style="{ backgroundColor: 'transparent', 'pointer-events': is_expand ? 'none' : 'auto' }">
-    <va-sidebar color="primary" gradient minimized-width="64px" :width="is_expand ? '0px' : '200px'">
+  <div class="mb-6 h-64 sidebar" :style="{backgroundColor: 'transparent', 'pointer-events': is_expand ? 'none' : 'auto' }">
+    <va-sidebar color="primary" gradient minimized-width="64px" :width="is_expand ? '0px' : '220px'">
       <va-sidebar-item @click="clickMenu(item)" v-for="item in noChildren" :index="item.path" :key="item.path"
         active-color="backgroundPrimary">
-        <va-sidebar-item-content>
-          <va-icon :name="item.icon" />
-          <va-sidebar-item-title>
+        <va-sidebar-item-content  :class="{ selectedStyle: item.path === selectedItem, unselectedStyle: item.path !== selectedItem }">
+          <va-icon style="font-size: 30px;" :name="item.icon" />
+          <va-sidebar-item-title style="font-size: 20px">
             {{ item.label }}
           </va-sidebar-item-title>
         </va-sidebar-item-content>
       </va-sidebar-item>
+      <img src="../assets/dun.png" style="margin-top: 80px"/>
     </va-sidebar>
   </div>
 </template>
@@ -33,6 +34,7 @@ export default {
     const menu = computed(() => store.state.state.aside_data[props.role]);
     const aside_title = computed(() => store.state.state.aside_title[props.role]);
     const is_expand = ref(store.state.state.is_expand);
+    const selectedItem = ref('');
 
     const noChildren = computed(() => {
       return menu.value.filter((item) => {
@@ -47,6 +49,8 @@ export default {
     });
 
     const clickMenu = (item) => {
+      console.log(item.path)
+      selectedItem.value = item.path;
       router.push({
         name: item.name,
       });
@@ -73,6 +77,7 @@ export default {
       hasChildren,
       clickMenu,
       is_expand,
+      selectedItem
     };
   },
 };
@@ -112,5 +117,14 @@ export default {
   font-family: AliRegular;
   /* 应用字体 */
   --va-font-family: AliRegular;
+}
+.selectedStyle {
+  background-color: #fafafa;
+  height: 25px;
+  border-radius: 5px;
+  color: #002fb0;
+}
+.unselectedStyle {
+
 }
 </style>
