@@ -5635,6 +5635,11 @@ pify@^4.0.1:
   resolved "https://registry.npmjs.org/pify/-/pify-4.0.1.tgz"
   integrity sha512-uB80kBFb/tfd68bVleG9T5GGsGPjJrLAUpR5PZIrhBnIaRTQRjqdJSsIKkOP6OAIFbj7GOrcudc5pNjZ+geV2g==
 
+pinyin-match@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.npmmirror.com/pinyin-match/-/pinyin-match-1.2.4.tgz#94381bb6501cfd3c24f923fe36c81710d8c49bcc"
+  integrity sha512-HpUiaSxcG3rrpKAMZXq/rMHbEp7wvfu9B64lHJBy+63xAr/hVdBC8xqkWWPnNyjSb19ihdh8FnXo+9m6jAr9Mg==
+
 pkg-dir@^4.1.0:
   version "4.2.0"
   resolved "https://registry.npmjs.org/pkg-dir/-/pkg-dir-4.2.0.tgz"

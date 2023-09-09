@@ -304,6 +304,8 @@ export default {
             self.totIncome += item.sellIncome;
             self.totOutcome += item.purchaseCost;
           });
+          self.totIncome = self.totIncome.toFixed(2);
+          self.totOutcome = self.totOutcome.toFixed(2);
         })
         .catch(function (error) {
           console.error(error);
@@ -409,6 +411,8 @@ export default {
 }
 .card {
   width: 200px;
+  border-radius: 15%;
+  box-shadow: 0 4px 8px rgba(77, 76, 76, 0.1); /* 水平偏移, 垂直偏移, 模糊距离, 阴影颜色 */
 }
 .operator {
   font-size: 2em;
