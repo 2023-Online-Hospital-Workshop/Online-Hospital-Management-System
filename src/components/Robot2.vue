@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <img src="../assets/robot2.gif" style="position:fixed; width: 250px; height: 250px; top: 65vh; left:150vh"
+    <img src="../assets/robot2.gif" style="position:fixed; width: 250px; height: 250px; top: 67vh; left:160vh"
          @click="redirectToHome">
   </div>
 </template>

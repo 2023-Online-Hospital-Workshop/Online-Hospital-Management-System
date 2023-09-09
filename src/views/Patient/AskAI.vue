@@ -1,10 +1,9 @@
  
 <template>
   <div class="container">
-    <img src="@/assets/bg4.png" class="bgImage" alt="" />
     <div class="main">
       <div class="box">
-        <div class="title">
+        <div class="title" style="margin-left: 15%">
           <span class="title-hn" style="vertical-align:middle;font-size: 25px">AI小济-您的人工智能小助理</span>
         </div>
         <div id="content" class="content">
@@ -32,7 +31,7 @@
               <div class="con_r con_text">
                 <span class="con_l">{{item.content}}</span>
                 <span class="circle circle_l">
-                  <img src="../../assets/patient.png" class="pic_l" />
+                  <img src="../../assets/icon11.png" class="pic_l" />
                 </span>
               </div>
               <div class="time_l">{{item.time}}</div>
@@ -97,13 +96,23 @@ import RobotAI2 from "@/components/Robot2.vue"
             content: "我应该如何准备我的初次就诊？",
             index: 4,
           },
-          { id: 5, content: "我错过了我的预约时间，怎么办？", index: 5 },
+          { id: 5, content: "我错过了我的预约时间，怎么办？", index: 5 }
+        ],
+        keyWords: [
+          { id: 1, content: "是否需要看医生？是否就医", index: 1 },
+          { id: 2, content: "预约专家门诊线上预约", index: 2 },
+          { id: 3, content: "有疑虑复查咨询", index: 3 },
+          {
+            id: 4,
+            content: "初次就诊",
+            index: 4,
+          },
+          { id: 5, content: "错过了", index: 5 },
           { id: 6, content: "喉咙痛喉咙难受喉咙疼嗓子痛嗓子疼嗓子难受", index: 5 },
           { id: 7, content: "我头疼我头痛最近头", index: 5 },
           { id: 8, content: "肚子痛腹部疼痛腹部痛？", index: 5 },
           { id: 9, content: "小腿抽筋", index: 5 },
           { id: 10, content: "心跳加速心跳快", index: 5 },
-
         ],
         robotAnswer: [
           {
@@ -162,8 +171,8 @@ import RobotAI2 from "@/components/Robot2.vue"
           let answerText = "";
           let flag = false;
 
-          for (let i = 0; i < this.robotQuestion.length; i++) {
-              const question = this.robotQuestion[i].content;
+          for (let i = 0; i < this.keyWords.length; i++) {
+              const question = this.keyWords[i].content;
               const answer = this.robotAnswer[i].content;
 
               // 判断是否存在3个或更多的连续字符
@@ -336,11 +345,12 @@ import RobotAI2 from "@/components/Robot2.vue"
             width: 60px;
             height: 60px;
             border-radius: 50%;
+            margin-left: 15%;
           }
           .con_r {
             display: inline-block;
             /* max-width: 253px; */
-            width: 55%;
+            width: 40%;
             min-height: 55px;
             /* min-height: 20px; */
             background-color: #e2e2e2;
@@ -352,7 +362,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             font-size: 16px;
           }
           .time_r {
-            margin-left: 80px;
+            margin-left: 20%;
             color: #999999;
             font-size: 12px;
           }
@@ -405,7 +415,7 @@ import RobotAI2 from "@/components/Robot2.vue"
     height: 20%;
     position: absolute;
     margin-top: 3.75rem;
-    margin-left: 3%;
+    margin-left: 15%;
 
   }
   .setproblem textarea {
@@ -425,7 +435,7 @@ import RobotAI2 from "@/components/Robot2.vue"
     font-size: 10px;
     color: #ffffff;
     position: absolute;
-    right: -10%;
+    right: -8%;
     top: 20%;
     cursor: pointer;
     border: none;
