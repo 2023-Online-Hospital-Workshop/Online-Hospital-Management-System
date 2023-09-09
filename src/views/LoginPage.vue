@@ -213,7 +213,7 @@ export default {
               this.setCookie("ID",this.loginForm.username,3)
               this.setCookie("role",this.role_num,3)
             }
-            
+
           } else {
             // 登录失败
             console.error("登录失败");
@@ -387,5 +387,9 @@ export default {
   font-family: Arial;
   font-size: 12px;
   letter-spacing: 1px;
+}
+* {
+    font-family: AliRegular;
+    --va-font-family: AliRegular;
 }
 </style>

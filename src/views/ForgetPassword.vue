@@ -336,5 +336,9 @@ export default {
   font-size: 12px;
   letter-spacing: 1px;
 }
+* {
+    font-family: AliRegular;
+    --va-font-family: AliRegular;
+}
 
 </style>
