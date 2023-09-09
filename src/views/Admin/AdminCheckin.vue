@@ -1,7 +1,6 @@
 <template>
   <template>
     <va-modal v-model="showModal" ok-text="确认" cancel-text="取消">
-      <p></p>
       <p>
         {{ alertText }}
       </p>
@@ -9,59 +8,71 @@
   </template>
 
   <div id="main-page">
-    <div style="margin:5px;font-size: xx-large;font-weight: bold;"><span>扫码报到</span></div>
-    <div style="margin:50px;"><va-input outline placeholder="扫码输入" class="mb-6" id="scannedData"
-        v-model="scannedDataInput" @keydown.enter="sendData()" /></div>
-    <div class="my-8"><va-divider /></div>
-    <div style="margin:20px;font-size: xx-large;font-weight: bold;"><span>手动报到</span></div>
-    <div style="margin:50px;"><va-input outline placeholder="请输入患者ID" class="mb-6" id="studentid"
-        v-model="patientId" /><va-button @click="FetchData()">search</va-button></div>
+    <va-card class="card">
+      <div class="card-content">
+        <div style="margin-left:50px;font-size: xx-large;font-weight: bold;"><span>扫码报到</span></div>
+        <div style="margin:50px;"><va-input outline placeholder="请扫码" class="mb-6" id="scannedData"
+            v-model="scannedDataInput" @keydown.enter="sendData()" /></div>
+        <div class="my-8"><va-divider /></div>
+      </div>
+    </va-card>
+    <va-card class="card">
+      <div class="card-content">
+        <div style="margin-left:50px;font-size: xx-large;font-weight: bold;"><span>手动报到</span></div>
+        <div style="margin:50px;">
+          <va-input outline placeholder="请输入患者ID" class="mb-6" id="studentid" v-model="patientId" />
+          <va-button style="margin-left:20px;border-radius: 10px;" @click="FetchData()">搜索</va-button>
+        </div>
+      </div>
 
-    <div>
-      <el-table v-if="CheckinInfo.length > 0" :data="CheckinInfo" style="width: 100%" max-height="400">
-        <el-table-column fixed prop="patientName" label="患者姓名" width="150" />
-        <el-table-column prop="doctorName" label="就诊医生姓名" width="150" />
-        <el-table-column prop="doctorDepartment" label="就诊科室" width="150" />
-        <el-table-column prop="appointmentDate" label="预约日期" width="180" />
-        <el-table-column prop="period" label="预约时间段" width="180" />
-        <el-table-column prop="registrationFee" label="挂号费" width="80" />
+      <div class="card-content">
+        <el-table v-if="CheckinInfo.length > 0" :data="CheckinInfo" style="width: 100%;" max-height="400">
+          <el-table-column fixed prop="patientName" label="患者姓名" width="150" />
+          <el-table-column prop="doctorName" label="就诊医生姓名" width="150" />
+          <el-table-column prop="doctorDepartment" label="就诊科室" width="150" />
+          <el-table-column prop="appointmentDate" label="预约日期" width="180" />
+          <el-table-column prop="period" label="预约时间段" width="180" />
+          <el-table-column prop="registrationFee" label="挂号费" width="80" />
 
-        <el-table-column prop="checkin" label="状态" width="100">
+          <el-table-column prop="checkin" label="状态" width="100">
             <template #default="scope">
               <el-tag :type="scope.row.checkin === '未报到' ? 'danger' : ''">{{ scope.row.checkin }}</el-tag>
             </template>
           </el-table-column>
-          
-        <el-table-column fixed="right" label="点击报到" width="100">
-          <template #default="scope">
-            <el-button type="primary" size="small" @click.prevent="manual(scope.$index)">
-              报到
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
 
-      <div v-else>
-        <!-- 显示表头或其他提示 -->
-        <el-table style="width: 100%">
-          <!-- 表格列配置 -->
-          <el-table-column fixed prop="patientName" label="患者姓名" width="120" />
-          <el-table-column prop="doctorName" label="就诊医生姓名" width="120" />
-          <el-table-column prop="doctorDepartment" label="就诊科室" width="120" />
-          <el-table-column prop="appointmentDate" label="预约日期" width="120" />
-          <el-table-column prop="period" label="预约时间段" width="120" />
-          <el-table-column prop="registrationFee" label="挂号费" width="80" />
-          <el-table-column prop="checkin" label="状态" width="100"/>
-            
-          
           <el-table-column fixed="right" label="点击报到" width="100">
-            
+            <template #default="scope">
+              <el-button type="primary" size="small" @click.prevent="manual(scope.$index)">
+                报到
+              </el-button>
+            </template>
           </el-table-column>
         </el-table>
+
+        <div v-else>
+          <!-- 显示表头或其他提示 -->
+          <el-table style="width: 100%;">
+            <!-- 表格列配置 -->
+            <el-table-column fixed prop="patientName" label="患者姓名" width="120" />
+            <el-table-column prop="doctorName" label="就诊医生姓名" width="120" />
+            <el-table-column prop="doctorDepartment" label="就诊科室" width="120" />
+            <el-table-column prop="appointmentDate" label="预约日期" width="120" />
+            <el-table-column prop="period" label="预约时间段" width="120" />
+            <el-table-column prop="registrationFee" label="挂号费" width="80" />
+            <el-table-column prop="checkin" label="状态" width="100" />
+
+
+            <el-table-column fixed="right" label="点击报到" width="100">
+
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
-    </div>
+    </va-card>
   </div>
 </template>
+
+
 <script>
 import axios from 'axios';
 import { defineComponent } from "vue";
@@ -127,7 +138,7 @@ export default defineComponent({
         alert('请先扫描数据！');
       }
     },
-    
+
     //获取今日对应id用户的全部挂号信息
     FetchData() {
       // 发送请求
@@ -180,7 +191,7 @@ export default defineComponent({
               "period": periodText,
               "registrationFee": response.data[i].registrationFee,
               "checkin": checkinStatus,
-              "doctorId":response.data[i].doctorId,
+              "doctorId": response.data[i].doctorId,
             });
           }
           console.log(this.CheckinInfo);
@@ -190,13 +201,13 @@ export default defineComponent({
         });
 
     },
- 
+
     //手动报到
     manual(index) {
       console.log(this.CheckinInfo[index]);
       // 构建请求数据对象
       let periodText = this.CheckinInfo[index].period
-      let period=0;
+      let period = 0;
       switch (periodText) {
         case '8:00-9:00':
           period = 1;
@@ -228,7 +239,7 @@ export default defineComponent({
         patientId: this.patientId,
         doctorId: this.CheckinInfo[index].doctorId,
         time: this.CheckinInfo[index].appointmentDate,
-        period:period,
+        period: period,
       };
       console.log(data)
 
@@ -269,9 +280,24 @@ export default defineComponent({
 .va-table-responsive {
   overflow: auto;
 }
+
 .el-tag--danger {
-  background-color: red; /* 设置背景色为红色 */
-  color: white; /* 设置文本颜色为白色 */
+  background-color: red;
+  /* 设置背景色为红色 */
+  color: white;
+  /* 设置文本颜色为白色 */
+}
+
+.card {
+  border-radius: 50px;
+}
+
+.card-content {
+  margin: 30px;
+}
+
+.va-input {
+  box-shadow: 4px 4px 4px #aaa;
 }
 
 * {
