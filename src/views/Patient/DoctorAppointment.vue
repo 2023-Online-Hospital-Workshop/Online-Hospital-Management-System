@@ -1,4 +1,3 @@
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
 .bgImage {
@@ -7,6 +6,7 @@
   bottom: 0;
   z-index: -1;
 }
+
 .parent-box {
   width: 70%;
   margin: 80px auto 0;
@@ -19,17 +19,20 @@
     display: flex;
     align-items: center;
     margin-bottom: 40px;
+
     .card-content {
       margin-left: 315px;
       font-size: 30px;
       font-weight: bold;
       color: #ffffff;
       padding: 56px 56px 0;
+
       div {
         margin-bottom: 25px;
       }
     }
   }
+
   .nmain {
     display: flex;
     justify-content: space-between;
@@ -44,35 +47,43 @@
       background: #ffffff;
       box-shadow: -1px 4px 10px 0px rgba(142, 151, 176, 0.61);
       border-radius: 20px;
+
       &:nth-of-type(2) {
         width: 40%;
         background: url('~@/assets/bg3.png') right bottom no-repeat;
         background-color: #fff;
       }
+
       .ndate {
         padding: 20px;
         width: 100%;
+
         &::v-deep .va-date-picker__picker-wrapper {
           .va-day-picker__calendar__day-wrapper {
             margin-bottom: 18px;
           }
+
           .va-date-picker-cell {
             width: 32px;
             height: 32px;
             border-radius: 16px;
           }
+
           .va-day-picker__weekday {
             margin-bottom: 5px;
           }
+
           .va-date-picker-cell:after,
           .va-date-picker-cell:before {
             border-radius: 16px;
           }
         }
+
         &::v-deep .va-date-picker-header {
           margin-bottom: 10px;
         }
       }
+
       .main-item-title {
         width: 526px;
         height: 51px;
@@ -86,10 +97,12 @@
         font-weight: bold;
         font-size: 25px;
       }
+
       .main-content {
         div {
           margin-bottom: 10px;
         }
+
         font-weight: 500;
         color: #000000;
         line-height: 35px;
@@ -97,14 +110,17 @@
       }
     }
   }
+
   .nbtns {
     margin-top: 40px;
+
     .btn-line {
       display: flex;
       padding-left: 140px;
       align-items: center;
       gap: 20px;
       margin-bottom: 20px;
+
       .type {
         width: 78px;
         height: 68px;
@@ -118,9 +134,11 @@
         font-weight: bold;
         color: #163cb0;
       }
+
       .line {
         display: flex;
         gap: 20px;
+
         .btn {
           width: 240px;
           height: 70px;
@@ -189,6 +207,7 @@
   font-weight: bold;
   color: #1a5a99;
 }
+
 #main-page {
   margin-right: 20%;
   margin-left: 17%;
@@ -275,7 +294,6 @@
 </style>
 
 
-
 <template>
   <div class="parent-box">
     <img src="@/assets/bg4.png" class="bgImage" alt="" />
@@ -292,9 +310,8 @@
         <div class="main-item-title">预约挂号须知</div>
         <div class="main-content">
           <div>
-            1.该医生挂号费用为<span style="font-weight: bold"
-              >{{ fee[this.$route.params.doctorTitle] }}元</span
-            >，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。
+            1.该医生挂号费用为<span style="font-weight: bold">{{ fee[this.$route.params.doctorTitle]
+            }}元</span>，挂号费及收费标准与医院现场挂号相同，本平台不额外收取任何费用。
           </div>
           <div>2.就诊当日超时未取号患者号源自动取消</div>
           <div>
@@ -306,19 +323,12 @@
         </div>
       </div>
       <div class="main-item">
-        <va-date-picker
-          stateful
-          v-model="value"
-          @click="fetchData(value)"
-          class="ndate data"
-          :allowed-days="
-            (date) =>
-              (workday.indexOf(String(date.getDate())) !== -1 &&
-                date.getDate() >= currentDate &&
-                date.getMonth() == currentMonth) ||
-              date.getMonth() > currentMonth
-          "
-        />
+        <va-date-picker stateful v-model="value" @click="fetchData(value)" class="ndate data" :allowed-days="(date) =>
+            (workday.indexOf(String(date.getDate())) !== -1 &&
+              date.getDate() >= currentDate &&
+              date.getMonth() == currentMonth) ||
+            date.getMonth() > currentMonth
+          " />
       </div>
     </div>
     <div class="flex flex-wrap gap-5">
@@ -549,7 +559,7 @@ export default {
 
       // 新增部分
       axios
-        .get('http://124.223.143.21/Registration/GetRegist?', {
+        .get('http://124.223.143.21/api/Registration/GetRegist?', {
           params: {
             date: this.formattedDate,
             doctorId: this.$route.params.selectedId,
@@ -641,7 +651,7 @@ export default {
           return
         }
 
-        const url = 'http://124.223.143.21/Registration/regist'
+        const url = 'http://124.223.143.21/api/Registration/regist'
         const data = {
           patientId: sessionStorage.getItem('userID'),
           doctorId: this.$route.params.selectedId,
@@ -765,6 +775,7 @@ export default {
   bottom: 0;
   z-index: -1;
 }
+
 .parent-box {
   width: 70%;
   margin: 80px auto 0;
@@ -777,17 +788,20 @@ export default {
     display: flex;
     align-items: center;
     margin-bottom: 40px;
+
     .card-content {
       margin-left: 315px;
       font-size: 30px;
       font-weight: bold;
       color: #ffffff;
       padding: 56px 56px 0;
+
       div {
         margin-bottom: 25px;
       }
     }
   }
+
   .nmain {
     display: flex;
     justify-content: space-between;
@@ -802,35 +816,43 @@ export default {
       background: #ffffff;
       box-shadow: -1px 4px 10px 0px rgba(142, 151, 176, 0.61);
       border-radius: 20px;
+
       &:nth-of-type(2) {
         width: 40%;
         background: url('~@/assets/bg3.png') right bottom no-repeat;
         background-color: #fff;
       }
+
       .ndate {
         padding: 20px;
         width: 100%;
+
         &::v-deep .va-date-picker__picker-wrapper {
           .va-day-picker__calendar__day-wrapper {
             margin-bottom: 18px;
           }
+
           .va-date-picker-cell {
             width: 32px;
             height: 32px;
             border-radius: 16px;
           }
+
           .va-day-picker__weekday {
             margin-bottom: 5px;
           }
+
           .va-date-picker-cell:after,
           .va-date-picker-cell:before {
             border-radius: 16px;
           }
         }
+
         &::v-deep .va-date-picker-header {
           margin-bottom: 10px;
         }
       }
+
       .main-item-title {
         width: 526px;
         height: 51px;
@@ -844,10 +866,12 @@ export default {
         font-weight: bold;
         font-size: 25px;
       }
+
       .main-content {
         div {
           margin-bottom: 10px;
         }
+
         font-weight: 500;
         color: #000000;
         line-height: 35px;
@@ -855,14 +879,17 @@ export default {
       }
     }
   }
+
   .nbtns {
     margin-top: 40px;
+
     .btn-line {
       display: flex;
       padding-left: 140px;
       align-items: center;
       gap: 20px;
       margin-bottom: 20px;
+
       .type {
         width: 78px;
         height: 68px;
@@ -876,9 +903,11 @@ export default {
         font-weight: bold;
         color: #163cb0;
       }
+
       .line {
         display: flex;
         gap: 20px;
+
         .btn {
           width: 240px;
           height: 70px;
@@ -947,6 +976,7 @@ export default {
   font-weight: bold;
   color: #1a5a99;
 }
+
 #main-page {
   margin-right: 20%;
   margin-left: 17%;
@@ -1029,5 +1059,4 @@ export default {
   font-family: AliRegular;
   /* 应用字体 */
   --va-font-family: AliRegular;
-}
-</style>
+}</style>
