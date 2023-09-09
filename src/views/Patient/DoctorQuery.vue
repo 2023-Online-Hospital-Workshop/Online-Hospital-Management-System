@@ -131,7 +131,7 @@ export default {
       title_visible: false,
       searchKeyword: '', // 用于接收搜索框的数据
       departments: [], // 一级科室列表
-      selectedDepartment: '', // 选中的一级科室
+      selectedDepartment: 0, // 选中的一级科室
 
       filteredDoctors: [],
       value: 0,

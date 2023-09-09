@@ -228,6 +228,7 @@ export default {
             doctor: item.doctor.name,
             doctorID: item.doctor.doctorId,
             date: item.date.split('T')[0],
+            time: item.orderTime,
             appointmentTime: item.period,
             waitingCount: item.queueCount,
             status: item.state,
@@ -235,8 +236,8 @@ export default {
             payState: item.payState,
           }));
           this.allRecords.sort((record1, record2) => {
-            const date1 = new Date(record1.date);
-            const date2 = new Date(record2.date);
+            const date1 = new Date(record1.time);
+            const date2 = new Date(record2.time);
             return date2 - date1; // 比较结果决定排序顺序
           });
           console.log(this.allRecords);
