@@ -113,7 +113,8 @@
             反馈评价
           </va-button>
 
-          <va-button color="primary" class="button" @click="showChat(allRecords[realIndex(index)].diagnoseId, allRecords[realIndex(index)].doctorID)">
+          <va-button color="primary" class="button" :disabled="record.status != 1"
+          @click="showChat(allRecords[realIndex(index)].diagnoseId, allRecords[realIndex(index)].doctorID)">
             在线复诊
           </va-button>
 
@@ -150,7 +151,7 @@
 import axios from "axios";
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { myFont } from "../assets/font/myfont-normal"
+import { myFont } from "../../assets/font/myfont-normal"
 // import ChatBox from "./ChatBox.vue";
 
 export default {
@@ -458,7 +459,7 @@ export default {
           doc.text(formattedTime, timeX, finalHeight);
           doc.line(8, finalHeight - 3, pageWidth - 8, finalHeight - 3); // 绘制直线，横坐标范围：20 到 pageWidth - 20
           // 加入印章
-          const imgData = require("../assets/zhang.png");
+          const imgData = require("../../assets/zhang.png");
           doc.addImage({
             imageData: imgData,
             x: pageWidth - 35,

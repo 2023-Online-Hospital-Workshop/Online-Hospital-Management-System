@@ -6,7 +6,7 @@ import Home from '../views/Patient/Home.vue'
 import DoctorQuery from '../views/Patient/DoctorQuery.vue'
 import DoctorAppointment from '../views/Patient/DoctorAppointment.vue'
 import DiseaseInquiry from '../views/Patient/DiseaseInquiry.vue'
-import MedicalHistory from '../components/MedicalHistory.vue'
+import MedicalHistory from '../views/Patient/MedicalHistory.vue'
 import AppointmentSuccess from '../views/Patient/AppointmentSuccess.vue'
 import AskAI from '../views/Patient/AskAI.vue'
 
