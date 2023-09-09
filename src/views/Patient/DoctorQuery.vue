@@ -532,6 +532,8 @@ header {
 }
 
 * {
-  font-family: AliMedium;
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+  /* 应用字体 */
 }
 </style>
