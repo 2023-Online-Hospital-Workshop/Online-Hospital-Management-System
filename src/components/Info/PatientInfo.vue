@@ -259,7 +259,8 @@ export default {
   cursor: pointer;
   .name {
     margin-left: 10px;
-    font-size: 18px;
+    font-size: 16px;
+    font-family: AliRegular;
   }
   position: relative;
 }

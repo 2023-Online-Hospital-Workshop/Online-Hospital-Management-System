@@ -1,4 +1,4 @@
-<template>
+<template style="font-family: AliRegular;">
   <!-- <chat-box v-if="chatShown" style="z-index: 999;"></chat-box> -->
   <va-modal class="noteModal" v-model="lNoteShown" hide-default-actions="true">
     <div class="leave-form">

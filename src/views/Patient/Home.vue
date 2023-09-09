@@ -1,4 +1,4 @@
-<template>
+<template style="font-family: AliRegular;">
   <div>
     <SideBar :role="0" />
     <Header />
