@@ -4,7 +4,9 @@
       <va-sidebar-item @click="clickMenu(item)" v-for="item in noChildren" :index="item.path" :key="item.path"
         active-color="backgroundPrimary">
         <va-sidebar-item-content  :class="{ selectedStyle: item.path === selectedItem, unselectedStyle: item.path !== selectedItem }">
-          <va-icon style="font-size: 30px;" :name="item.icon" />
+          <div>
+            <i class="material-icons" style="font-size: 30px;">{{item.icon }}</i>
+          </div>
           <va-sidebar-item-title style="font-size: 18px">
             {{ item.label }}
           </va-sidebar-item-title>

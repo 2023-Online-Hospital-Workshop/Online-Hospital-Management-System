@@ -152,7 +152,7 @@ import RobotAI2 from "@/components/Robot2.vue"
                 "耳鼻喉科：如果咳嗽是由上呼吸道感染、鼻炎、喉炎等引起的，可以考虑这个科室。\n" +
                 "消化内科：如果你怀疑咳嗽与胃酸反流有关，那么消化内科可能更为合适。\n" +
                 "根据您的症状，建议您先去耳鼻喉科挂号，系统可以为您提供挂号预约服务。", index: 11, is_image: false },
-          { id: 12, content: "bg6.png", index: 12, is_image: true, width: '400px', height: '200px', },
+          { id: 12, content: "bg6.png", index: 12, is_image: true, width: '500px', height: '200px', },
         ],
       };
     },
@@ -262,7 +262,7 @@ import RobotAI2 from "@/components/Robot2.vue"
       sentMsgById(val, id) {
         clearTimeout(this.timer);
         this.showTimer();
- 
+
         let robotById = this.robotAnswer.filter((item) => {
           return item.id == id;
         });
@@ -306,7 +306,7 @@ import RobotAI2 from "@/components/Robot2.vue"
               contentHeight.scrollTop = contentHeight.scrollHeight;
             }
         });
- 
+
       },
       showTimer() {
         this.timer = setTimeout(this.endMsg, 1000*180);
@@ -493,14 +493,14 @@ import RobotAI2 from "@/components/Robot2.vue"
     border: none;
     border-radius: 50%;
   }
- 
+
   .czkj-item-title {
     line-height: 25px;
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
     margin-bottom: 5px;
   }
- 
+
   .czkj-item-question {
     cursor: pointer;
     display: block;
@@ -512,7 +512,7 @@ import RobotAI2 from "@/components/Robot2.vue"
     overflow: hidden;
     font-family: AliRegular;
   }
- 
+
   .czkj-question-msg {
     float: left;
     font-size: 16px;
