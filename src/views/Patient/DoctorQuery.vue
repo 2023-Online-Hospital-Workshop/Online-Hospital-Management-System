@@ -136,9 +136,8 @@ export default {
       filteredDoctors: [],
       value: 0,
       items: [
+         'https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
         'https://images.pexels.com/photos/1250655/pexels-photo-1250655.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-        'https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
-        'https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg',
         'https://images.pexels.com/photos/6129507/pexels-photo-6129507.jpeg?auto=compress&cs=tinysrgb&w=1600',
         'https://images.pexels.com/photos/7230227/pexels-photo-7230227.jpeg?auto=compress&cs=tinysrgb&w=1600',
       ],

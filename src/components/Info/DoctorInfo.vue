@@ -1,21 +1,16 @@
 <template>
   <div class="avatar-dropdown">
-    <va-icon
-      name="account_circle"
-      @click="toggleInfo"
-      class="header-icon"
-    ></va-icon>
-
+    <el-avatar :size="40" @click="toggleInfo" :src="src"></el-avatar>
+    <span class="name" @click="toggleInfo">{{ name }}</span>
     <el-collapse-transition>
       <div v-if="showInfo" class="info-content">
         <div id="info">
           <div id="info-avatar">
-            <va-avatar class="mr-6" font-size="30px" size="large">{{
-              getAvatar
-            }}</va-avatar>
+            <el-avatar :size="70" :src="src1"></el-avatar>
+            <div class="name1">{{ name }}</div>
           </div>
 
-          <div class="info-container">
+          <div class="info-container" v-if="getIcon !== 'edit'">
             <va-input
               v-model="doctorId"
               readonly
@@ -66,7 +61,42 @@
               ><template #prepend> 科室： </template></va-input
             >
           </div>
-          <va-button-group grow preset="primary" id="btn-group">
+          <div class="info-container" v-else>
+            <div class="info-line">
+              <div class="label">编号：</div>
+              <div class="info-value">{{ doctorId }}</div>
+            </div>
+            <div class="info-line">
+              <div class="label">姓名：</div>
+              <div class="info-value">{{ name }}</div>
+            </div>
+            <div class="info-line">
+              <div class="label">性别：</div>
+              <div class="info-value">{{ gender }}</div>
+            </div>
+            <div class="info-line">
+              <div class="label">电话：</div>
+              <div class="info-value">{{ contact }}</div>
+            </div>
+            <div class="info-line">
+              <div class="label">职称：</div>
+              <div class="info-value">{{ title }}</div>
+            </div>
+            <div class="info-line">
+              <div class="label">科室：</div>
+              <div class="info-value">{{ secondaryDepartment }}</div>
+            </div>
+          </div>
+          <div class="btns">
+            <div class="btn-item" @click="edit">
+              <i class="material-icons">{{ getIcon }}</i
+              >&nbsp;&nbsp;{{ editStates }}
+            </div>
+            <div class="btn-item" @click="exit">
+              <i class="material-icons">exit_to_app</i>&nbsp;&nbsp;退出
+            </div>
+          </div>
+          <!-- <va-button-group grow preset="primary" id="btn-group">
             <va-button @click="edit">
               <i class="material-icons">{{ getIcon }}</i
               >&nbsp;&nbsp;{{ editStates }}
@@ -74,7 +104,7 @@
             <va-button @click="exit">
               <i class="material-icons">exit_to_app</i> &nbsp;&nbsp;退出
             </va-button>
-          </va-button-group>
+          </va-button-group> -->
         </div>
       </div>
     </el-collapse-transition>
@@ -89,7 +119,8 @@ export default {
   data() {
     return {
       showInfo: false,
-
+      src: require("@/assets/me.png"),
+      src1: require("@/assets/icon11.png"),
       //医生属性
       doctorId: "",
       name: "",
@@ -99,6 +130,7 @@ export default {
       secondaryDepartment: "",
       birthdate: "",
       photourl: "",
+      password: "",
 
       //控制修改的相关属性
       editStates: "编辑",
@@ -115,7 +147,16 @@ export default {
       return this.name.charAt(0);
     },
   },
+  mounted() {
+    this.getName();
+  },
   methods: {
+    setCookie(name, value, exdays) {
+      var d = new Date();
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+      var expires = "expires=" + d.toGMTString();
+      document.cookie = name + "=" + value + "; " + expires;
+    },
     edit() {
       //使得可编辑
       if (this.editStates === "编辑") {
@@ -133,6 +174,21 @@ export default {
       //接跳转到首页的路由
       this.$router.push("/");
       this.showInfo = !this.showInfo;
+      this.setCookie("token", "", -1);
+    },
+    getName() {
+      var self = this;
+      this.doctorId = sessionStorage.getItem("userID");
+      axios
+        .get("http://124.223.143.21:4999/api/Doctors/id?", {
+          params: {
+            id: this.doctorId,
+          },
+        })
+        .then(function (response) {
+          self.name = response.data.name;
+          self.password = response.data.password;
+        });
     },
     toggleInfo() {
       this.doctorId = sessionStorage.getItem("userID");
@@ -175,6 +231,7 @@ export default {
         contact: this.contact,
         secondaryDepartment: this.secondaryDepartment,
         photourl: this.photourl,
+        Password: this.password,
       };
 
       console.log(JSON.stringify(doctor));
@@ -221,30 +278,67 @@ export default {
 };
 </script>
 
-<style scoped>
-.header-icon {
-  cursor: pointer;
-  color: white; /* 根据需要设置颜色 */
-  font-size: 24px; /* 调整大小 */
-  margin-right: 100px; /* 如果需要，可以添加边距 */
-  align-content: center;
-}
+<style scoped lang="scss">
 .avatar-dropdown {
-  position: absolute;
+  display: inline-flex;
   align-items: center;
-  width: 15%;
-  right: 0px;
-  text-align: right;
+  color: #fff;
+  cursor: pointer;
+  .name {
+    margin-left: 10px;
+    font-size: 24px;
+  }
+  position: relative;
 }
 
 .info-content {
   display: block;
-  width: 100%;
+  width: 250px;
   color: #154ec1;
   font-weight: bold;
   padding-bottom: 20px;
   position: absolute;
-  top: 45px;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  .info-line {
+    padding: 23px 23px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    height: 36px;
+    .info-value {
+      color: #000;
+      margin-left: 40px;
+    }
+  }
+  &::v-deep .va-input-wrapper__prepend-inner,
+  .label {
+    padding-left: 10px;
+    color: #0a33a9;
+    position: relative;
+    &::before {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 5px;
+      height: 16px;
+      background: #0a33a9;
+      border-radius: 3px;
+      content: "";
+    }
+  }
+  .btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .btn-item {
+      display: flex;
+      align-items: center;
+      margin: 20px;
+      cursor: pointer;
+    }
+  }
 }
 
 #info {
@@ -260,6 +354,10 @@ export default {
   border-top: 10px;
   padding-top: 10px;
   margin-bottom: 15px;
+  .name1 {
+    margin-top: 10px;
+    font-size: 20px;
+  }
 }
 
 .info-container {
