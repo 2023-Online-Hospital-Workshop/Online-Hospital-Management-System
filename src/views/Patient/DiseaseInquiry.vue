@@ -288,7 +288,7 @@ export default {
   mounted() {
     // 在组件挂载时调用fetchData方法获取新闻数据
     this.fetchNewsData();
-    this.fetchDiseaseData('头部');
+    this.fetchDiseaseData('口腔');
     
     
   }

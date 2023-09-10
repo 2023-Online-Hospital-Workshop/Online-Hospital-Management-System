@@ -39,7 +39,8 @@
         </el-form-item>
 
         <div class="rec-group">
-          <div class="rec"
+          <div
+            class="rec"
             v-for="(role_text, role_index) in roles_text"
             :label="role_text"
             :key="role_index"
@@ -60,9 +61,9 @@
             v-model="auto_login"
             :label="true"
             @click.prevent="onRadioChange"
-            >3天内自动登录</el-radio>
-          <el-button type="text" @click="toForget"
-            >忘记密码</el-button>
+            >3天内自动登录</el-radio
+          >
+          <el-button type="text" @click="toForget">忘记密码</el-button>
         </div>
       </el-form>
     </div>
@@ -131,15 +132,12 @@ export default {
     let AfterLogin = ["/Patient", "/doctor-operator", "/Admin"];
 
     axios
-      .get(
-        "http://124.223.143.21/api/Login/verifyToken",
-        {
-          params: {
-            User: UserList[this.role_num],
-            token: this.getCookie("token"),
-          },
-        }
-      )
+      .get("http://124.223.143.21/api/Login/verifyToken", {
+        params: {
+          User: UserList[this.role_num],
+          token: this.getCookie("token"),
+        },
+      })
       .then((response) => {
         this.$message.success("正在自动登录");
         if (response.data) {
@@ -150,14 +148,13 @@ export default {
             });
           }, 2000);
 
-          sessionStorage.setItem("userID", this.getCookie("ID"))
-          sessionStorage.setItem("role", this.getCookie("role"))
+          sessionStorage.setItem("userID", this.getCookie("ID"));
+          sessionStorage.setItem("role", this.getCookie("role"));
           return;
-
         } else {
           // 登录失败
           console.error("登录失败");
-          this.$msgbox.alert("用户名或密码错误，登录失败")
+          this.$msgbox.alert("用户名或密码错误，登录失败");
         }
       })
       .catch((error) => {
@@ -165,23 +162,25 @@ export default {
       });
   },
   methods: {
-
     setCookie(name, value, exdays) {
       var d = new Date();
-      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+      d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
       var expires = "expires=" + d.toGMTString();
       document.cookie = name + "=" + value + "; " + expires;
     },
 
     getCookie(name) {
       let ret, m;
-      if (typeof name === 'string' && name !== '') {
-        if ((m = String(document.cookie).match(
-          new RegExp('(?:^| )' + name + '(?:(?:=([^;]*))|;|$)')))) {
-            ret = m[1] ? decodeURIComponent(m[1]) : ''
-            }
-          }
-         return ret
+      if (typeof name === "string" && name !== "") {
+        if (
+          (m = String(document.cookie).match(
+            new RegExp("(?:^| )" + name + "(?:(?:=([^;]*))|;|$)")
+          ))
+        ) {
+          ret = m[1] ? decodeURIComponent(m[1]) : "";
+        }
+      }
+      return ret;
     },
 
     login() {
@@ -205,24 +204,23 @@ export default {
               path: AfterLogin[this.role_num],
             });
 
-            sessionStorage.setItem("userID", this.loginForm.username)
-            sessionStorage.setItem("role", this.role_num)
+            sessionStorage.setItem("userID", this.loginForm.username);
+            sessionStorage.setItem("role", this.role_num);
 
             if (this.auto_login) {
-              this.setCookie("token",response.data.slice(14),3)
-              this.setCookie("ID",this.loginForm.username,3)
-              this.setCookie("role",this.role_num,3)
+              this.setCookie("token", response.data.slice(14), 3);
+              this.setCookie("ID", this.loginForm.username, 3);
+              this.setCookie("role", this.role_num, 3);
             }
-
           } else {
             // 登录失败
             console.error("登录失败");
-            this.$msgbox.alert("用户名或密码错误，登录失败")
+            this.$msgbox.alert("用户名或密码错误，登录失败");
           }
         })
         .catch((error) => {
           console.error(error);
-          this.$msgbox.alert("用户名或密码错误，登录失败")
+          this.$msgbox.alert("用户名或密码错误，登录失败");
         });
     },
 
@@ -240,13 +238,13 @@ export default {
     },
 
     onRadioChange() {
-      console.log(this.auto_login)
-      this.auto_login = !this.auto_login
+      console.log(this.auto_login);
+      this.auto_login = !this.auto_login;
     },
 
     toForget() {
       this.router.push({
-        path: '/forget',
+        path: "/forget",
       });
     },
   },
@@ -389,15 +387,8 @@ export default {
   letter-spacing: 1px;
 }
 * {
-<<<<<<< HEAD
   font-family: AliRegular;
   --va-font-family: AliRegular;
   /* 应用字体 */
 }
 </style>
-=======
-    font-family: AliRegular;
-    --va-font-family: AliRegular;
-}
-</style>
->>>>>>> f405cecbce986e8f11b1e689ebd1be14ab183766
