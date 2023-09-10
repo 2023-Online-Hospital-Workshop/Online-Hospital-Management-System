@@ -337,7 +337,7 @@ export default {
     startDataRefreshTimer() {
       setInterval(() => {
         this.getData(); // 获取最新数据
-      }, 30000); // 定时器每隔30s轮询
+      }, 20000); // 定时器每隔20s轮询
     },
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
@@ -550,7 +550,7 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
-        this.modelShown[recordIndex] = false;
+        this.modalShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
