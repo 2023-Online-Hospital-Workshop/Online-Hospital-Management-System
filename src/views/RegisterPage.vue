@@ -274,38 +274,64 @@ export default {
     },
     nextStep() {
       if (this.step == 1) {
-        if (this.registerForm.name == "") {
-          this.$msgbox.alert("姓名不能为空");
-        } else if (this.registerForm.gender == "") {
-          this.$msgbox.alert("请选择性别");
-        } else if (this.registerForm.birthdate == "") {
-          this.$msgbox.alert("请选择出生日期");
-        } else {
+        if (this.registerForm.name == ''){
+          this.$msgbox.alert("姓名不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
+        }
+        else if (this.registerForm.gender == ''){
+          this.$msgbox.alert("请选择性别").catch(e => {
+              console.error("Error with message box:", e);
+          });
+        }
+        else if (this.registerForm.birthdate == ''){
+          this.$msgbox.alert("请选择出生日期").catch(e => {
+              console.error("Error with message box:", e);
+          });
+        }
+        else{
           this.step++;
         }
-      } else if (this.step == 2) {
-        if (this.registerForm.identity == "identity1") {
-          if (this.registerForm.patientId == "") {
-            this.$msgbox.alert("ID不能为空");
-          } else {
+      }
+
+      else if (this.step == 2) {
+        if (this.registerForm.identity == 'identity1') {
+          if (this.registerForm.patientId == ''){
+            this.$msgbox.alert("ID不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
+          }
+          else{
             this.step++;
           }
         }
-        if (this.registerForm.identity == "identity2") {
-          if (this.registerForm.doctorId == "") {
-            this.$msgbox.alert("ID不能为空");
-          } else if (this.registerForm.title == "") {
-            this.$msgbox.alert("职称不能为空");
-          } else if (this.registerForm.secondaryDepartment == "") {
-            this.$msgbox.alert("二级科室不能为空");
-          } else {
+        if (this.registerForm.identity == 'identity2') {
+          if (this.registerForm.doctorId == ''){
+            this.$msgbox.alert("ID不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
+          }
+          else if (this.registerForm.title == ''){
+            this.$msgbox.alert("职称不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
+          }
+          else if (this.registerForm.secondaryDepartment == ''){
+            this.$msgbox.alert("二级科室不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
+          }
+          else{
             this.step++;
           }
         }
-        if (this.registerForm.identity == "identity3") {
-          if (this.registerForm.administratorId == "") {
-            this.$msgbox.alert("ID不能为空");
-          } else {
+        if (this.registerForm.identity == 'identity3') {
+          if (this.registerForm.administratorId == ''){
+            this.$msgbox.alert("ID不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
+          }
+          else{
             this.step++;
           }
         }
@@ -427,8 +453,12 @@ export default {
               console.error(error);
             });
         }
-      } else {
-        this.$msgbox.alert("两次输入密码不一致");
+      } 
+      else {
+        this.$msgbox.alert("两次输入密码不一致")
+            .catch(e => {
+              console.error("Error with message box:", e);
+          });
       }
     },
     sendVerificationCode() {

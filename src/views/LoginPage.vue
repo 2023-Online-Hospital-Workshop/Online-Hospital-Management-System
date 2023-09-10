@@ -215,12 +215,19 @@ export default {
           } else {
             // 登录失败
             console.error("登录失败");
-            this.$msgbox.alert("用户名或密码错误，登录失败");
+            this.$msgbox.alert("用户名或密码错误，登录失败")
+            .catch(e => {
+                console.error("Error with message box:", e);
+            });
+
           }
         })
         .catch((error) => {
           console.error(error);
-          this.$msgbox.alert("用户名或密码错误，登录失败");
+          this.$msgbox.alert("用户名或密码错误，登录失败")
+            .catch(e => {
+              console.error("Error with message box:", e);
+          });
         });
     },
 
