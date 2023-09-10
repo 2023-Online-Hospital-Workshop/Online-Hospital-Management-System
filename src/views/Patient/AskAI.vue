@@ -14,7 +14,7 @@
              :src="require(`@/assets/${item.content}`)"
              :style="{ 'verticalAlign': 'top', 'marginTop': '-25px', 'width': item.width, 'height': item.height }" />
               <div  v-else class="con_r con_text">
-                <div style="font-family: AliRegular;">{{item.content}}</div>
+                <div style="font-family: AliRegular;white-space: pre-line;">{{item.content}}</div>
                 <div v-for="(item2,index) in item.question" :key="index">
                   <div class="con_que" @click="clickRobot(item2.content,item2.id)">
                     <div class="czkj-question-msg">
@@ -108,11 +108,13 @@ import RobotAI2 from "@/components/Robot2.vue"
             index: 4,
           },
           { id: 5, content: "错过了", index: 5 },
-          { id: 6, content: "喉咙痛喉咙难受喉咙疼嗓子痛嗓子疼嗓子难受", index: 5 },
-          { id: 7, content: "我头疼我头痛最近头", index: 5 },
-          { id: 8, content: "肚子痛腹部疼痛腹部痛？", index: 5 },
-          { id: 9, content: "小腿抽筋", index: 5 },
-          { id: 10, content: "心跳加速心跳快", index: 5 },
+          { id: 6, content: "喉咙痛喉咙难受喉咙疼嗓子痛嗓子疼嗓子难受咳嗽严重一直咳嗽", index: 6 },
+          { id: 7, content: "我头疼我头痛最近头", index: 7 },
+          { id: 8, content: "肚子痛腹部疼痛腹部痛？", index: 8 },
+          { id: 9, content: "小腿抽筋", index: 9 },
+          { id: 10, content: "心跳加速心跳快", index: 10 },
+          { id: 11, content: "挂什么科", index: 11 },
+          { id: 12, content: "科室位置", index: 12 },
         ],
         robotAnswer: [
           {
@@ -120,20 +122,37 @@ import RobotAI2 from "@/components/Robot2.vue"
             content:
               "如果您感到身体不适，建议您先询问小济。根据自检结果，我们会为您提供相应的建议，如是否需要及时就医、采取何种治疗方法等。",
             index: 1,
+            is_image: false,
           },
-          { id: 2, content: "您可以通过我们的在线预约系统选择您需要的专家类型并查看其可用时间，然后根据您的方便选择合适的时间进行预约。请确保您在预约的时间内到达，以便医生为您提供服务。", index: 2 },
-          { id: 3, content: "当然可以。我们鼓励病人在治疗过程中积极参与并提出疑问。如果您对诊断有任何疑虑，可以要求复查或请求转诊给另一位专家。", index: 3 },
+          { id: 2, content: "您可以通过我们的在线预约系统选择您需要的专家类型并查看其可用时间，然后根据您的方便选择合适的时间进行预约。请确保您在预约的时间内到达，以便医生为您提供服务。", index: 2, is_image: false},
+          { id: 3, content: "当然可以。我们鼓励病人在治疗过程中积极参与并提出疑问。如果您对诊断有任何疑虑，可以要求复查或请求转诊给另一位专家。", index: 3, is_image: false },
           {
             id: 4,
             content: "请确保您带上所有与您的症状和疾病史相关的文件，如早前的医疗报告、药物清单等。同时，请务必提前10分钟到达，这样我们可以为您安排所有必要的检查和服务。",
             index: 4,
+            is_image: false,
           },
-          { id: 5, content: "如果您错过了预约，建议您尽快联系我们的客户服务部门。我们将尝试为您重新安排预约时间或推荐其他可用时间。", index: 5 },
-          { id: 6, content: "对于喉咙痛，常见的原因可能是病毒或细菌感染、过度使用嗓子、吸烟等。您可以考虑增加水分摄入、避免冷饮、咽喉糖果、休息、避免刺激性食物和饮料。如果持续超过一周或伴随高烧、吞咽困难，请及时就医于耳鼻喉科。", index: 5 },
-          { id: 7, content: "头疼有多种原因，缺少睡眠确实可能是其中之一。其他可能的原因包括应激、脱水、长时间在电脑前、眼睛疲劳等。如果您觉得可能是因为睡眠不足，尝试调整您的作息时间和改善睡眠环境。若持续，请前往神经内科或疼痛科就诊。\n", index: 5 },
-          { id: 8, content: "腹部疼痛可能有很多原因，如胃炎、食物中毒、结肠炎、肠胃痉挛等。如果疼痛是轻微的并且短暂的，可能不必过于担心，但如果疼痛持续或增强，建议您咨询消化内科医生。", index: 5 },
-          { id: 9, content: "小腿抽筋可能由以下几点原因：脱水、电解质失衡（如钙、钾、镁缺乏）、过度劳累或运动、不当的坐、站或躺姿。确保摄入足够的水分和电解质，适当休息，如有需要，请前往神经内科或骨科咨询。", index: 5 },
-          { id: 10, content: "心跳加速可能与多种情况相关，如焦虑、恐惧、运动后、饮酒、咖啡因摄入过多、某些药物、疾病等。如果心跳加速是突然出现或者频繁发生，建议您前往心内科就诊。", index: 5 },
+          { id: 5, content: "如果您错过了预约，建议您尽快联系我们的客户服务部门。我们将尝试为您重新安排预约时间或推荐其他可用时间。", index: 5, is_image: false },
+          { id: 6, content: "咳嗽可以由多种原因引起。如果你的症状严重或持续存在，你应该立即咨询医生或其他医疗专家。以下是一些常见的咳嗽原因：" +
+                "\n" +
+                "感冒或流感：这是最常见的原因之一。\n" +
+                "支气管炎：长时间的咳嗽可能是由于支气管炎，特别是如果伴随有黄绿色的痰。\n" +
+                "哮喘：可以引起干咳，特别是在夜间或早晨。\n" +
+                "过敏：如花粉、尘螨或动物皮屑等过敏源引起的。\n" +
+                "肺部感染：例如肺炎或肺结核。\n" +
+                "胃酸反流病：胃酸流回食道可能导致咳嗽。\n" +
+                "其他原因：吸烟、某些药物的副作用、肺部疾病等都可能导致咳嗽。\n" +
+                "持续的、严重的咳嗽或伴随其他症状如胸痛、呼吸困难、发热、体重下降等，都应该尽快寻求医疗关注。特别是在流感季节或COVID-19等疾病流行期间，如果出现相关症状，应该尽快就医并遵循医生的建议。", index: 6, is_image: false },
+          { id: 7, content: "头疼有多种原因，缺少睡眠确实可能是其中之一。其他可能的原因包括应激、脱水、长时间在电脑前、眼睛疲劳等。如果您觉得可能是因为睡眠不足，尝试调整您的作息时间和改善睡眠环境。若持续，请前往神经内科或疼痛科就诊。\n", index: 7, is_image: false },
+          { id: 8, content: "腹部疼痛可能有很多原因，如胃炎、食物中毒、结肠炎、肠胃痉挛等。如果疼痛是轻微的并且短暂的，可能不必过于担心，但如果疼痛持续或增强，建议您咨询消化内科医生。", index: 8, is_image: false },
+          { id: 9, content: "小腿抽筋可能由以下几点原因：脱水、电解质失衡（如钙、钾、镁缺乏）、过度劳累或运动、不当的坐、站或躺姿。确保摄入足够的水分和电解质，适当休息，如有需要，请前往神经内科或骨科咨询。", index: 9, is_image: false },
+          { id: 10, content: "心跳加速可能与多种情况相关，如焦虑、恐惧、运动后、饮酒、咖啡因摄入过多、某些药物、疾病等。如果心跳加速是突然出现或者频繁发生，建议您前往心内科就诊。", index: 10, is_image: false },
+          { id: 11, content: "如果你时常咳嗽并且严重，建议你首先考虑去以下几个科室：\n" +
+                "呼吸内科：他们专门处理与肺部和呼吸有关的问题，如感冒、流感、支气管炎、哮喘、肺炎等。\n" +
+                "耳鼻喉科：如果咳嗽是由上呼吸道感染、鼻炎、喉炎等引起的，可以考虑这个科室。\n" +
+                "消化内科：如果你怀疑咳嗽与胃酸反流有关，那么消化内科可能更为合适。\n" +
+                "根据您的症状，建议您先去耳鼻喉科挂号，系统可以为您提供挂号预约服务。", index: 11, is_image: false },
+          { id: 12, content: "bg6.png", index: 12, is_image: true, width: '400px', height: '200px', },
         ],
       };
     },
@@ -170,6 +189,9 @@ import RobotAI2 from "@/components/Robot2.vue"
           text = text.trim();
           let answerText = "";
           let flag = false;
+          let is_image = false;
+          let width = '';
+          let height = '';
 
           for (let i = 0; i < this.keyWords.length; i++) {
               const question = this.keyWords[i].content;
@@ -182,6 +204,9 @@ import RobotAI2 from "@/components/Robot2.vue"
                   if (regex.test(question)) {                   // 检查是否匹配
                       flag = true;
                       answerText = answer;
+                      is_image = this.robotAnswer[i].is_image;
+                      width = this.robotAnswer[i].width;
+                      height = this.robotAnswer[i].height;
                       break;
                   }
               }
@@ -190,16 +215,32 @@ import RobotAI2 from "@/components/Robot2.vue"
           }
 
           if (flag) {
-              let obj = {
+            let obj = {}
+            if (is_image) {
+                obj = {
                   type: "leftinfo",
                   time: this.getTodayTime(),
                   name: "robot",
                   content: answerText,
                   question: [],
-                  is_image: false,
-              };
+                  is_image: is_image,
+                  width: width,
+                  height:height,
+                }
+              }
+              else {
+                obj = {
+                  type: "leftinfo",
+                  time: this.getTodayTime(),
+                  name: "robot",
+                  content: answerText,
+                  question: [],
+                  is_image: is_image,
+                }
+              }
               this.info.push(obj);
-          } else {
+          }
+          else {
               answerText = "您可能想问：";
               let obj = {
                   type: "leftinfo",
@@ -365,6 +406,7 @@ import RobotAI2 from "@/components/Robot2.vue"
             line-height: 20px;
             font-size: 16px;
             font-family: AliRegular;
+            vertical-align: top;
           }
           .time_r {
             margin-left: 20%;

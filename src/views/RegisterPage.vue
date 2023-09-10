@@ -1,4 +1,4 @@
-<template>
+<template style="font-family: AliRegular;">
   <div class="registercontent">
     <div class="centered-text">济康同行</div>
     <div class="centered-text-2">Online Hospital Management System</div>
@@ -14,7 +14,7 @@
       </div>
 
       <!-- Step 1: Name & Phone -->
-      <el-form v-if="step === 1" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px">
+      <el-form v-if="step === 1" ref="registerFormRef" :model="registerForm" label-position="left" label-width="80px" style="font-family: AliRegular;">
 
         <el-form-item label="姓名">
           <el-input type="text" v-model="registerForm.name" auto-complete="off" placeholder="请输入姓名"></el-input>
@@ -372,6 +372,7 @@ export default {
   font-size: 4em;
   font-weight: bold;
   z-index: 2;
+  font-family: AliRegular;
 }
 .centered-text-2 {
   position: absolute;
@@ -382,7 +383,7 @@ export default {
   font-size: 2em;
   font-weight: bold;
   z-index: 2;
-  font-family: '楷体', KaiTi, sans-serif;
+  font-family: AliRegular;
 }
 
 .registercontent {
@@ -496,9 +497,14 @@ export default {
   letter-spacing: 1px;
 }
 * {
+<<<<<<< HEAD
   font-family: AliRegular;
   --va-font-family: AliRegular;
   /* 应用字体 */
+=======
+    font-family: AliRegular;
+    --va-font-family: AliRegular;
+>>>>>>> f405cecbce986e8f11b1e689ebd1be14ab183766
 }
 
 </style>

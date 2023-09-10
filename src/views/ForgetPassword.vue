@@ -337,8 +337,8 @@ export default {
   letter-spacing: 1px;
 }
 * {
-  font-family: AliRegular;
-  --va-font-family: AliRegular;
-  /* 应用字体 */
+    font-family: AliRegular;
+    --va-font-family: AliRegular;
 }
+
 </style>
