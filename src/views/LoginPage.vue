@@ -293,7 +293,7 @@ export default {
   font-size: 2em;
   font-weight: bold;
   z-index: 2;
-  font-family: "楷体", KaiTi, sans-serif;
+  // font-family: "楷体", KaiTi, sans-serif;
 }
 .login-box {
   position: absolute;
@@ -315,7 +315,7 @@ export default {
 
     .login-title {
       text-align: center;
-      font-family: "Microsoft YaHei";
+      // font-family: "Microsoft YaHei";
       font-weight: bold;
       font-size: 25px;
       color: #002fa7; /* Klein Blue */
