@@ -12,7 +12,7 @@
               <img src="../../assets/talk.png" class="pic_r" />
               <img v-if="item.is_image"
              :src="require(`@/assets/${item.content}`)"
-             :style="{ 'verticalAlign': 'top', 'marginTop': '-25px', 'width': item.width, 'height': item.height }" />
+             :style="{ 'verticalAlign': 'top', 'marginTop': '-25px', 'width': item.width, 'height': item.height, 'margin-left': '30px' }" />
               <div  v-else class="con_r con_text">
                 <div style="font-family: AliRegular;white-space: pre-line;">{{item.content}}</div>
                 <div v-for="(item2,index) in item.question" :key="index">
@@ -114,7 +114,9 @@ import RobotAI2 from "@/components/Robot2.vue"
           { id: 9, content: "小腿抽筋", index: 9 },
           { id: 10, content: "心跳加速心跳快", index: 10 },
           { id: 11, content: "挂什么科", index: 11 },
-          { id: 12, content: "科室位置", index: 12 },
+          { id: 12, content: "科室位置在哪里", index: 12 },
+          { id: 13, content: "感冒发烧", index: 13 },
+          { id: 14, content: "就医流程", index: 14 },
         ],
         robotAnswer: [
           {
@@ -153,6 +155,15 @@ import RobotAI2 from "@/components/Robot2.vue"
                 "消化内科：如果你怀疑咳嗽与胃酸反流有关，那么消化内科可能更为合适。\n" +
                 "根据您的症状，建议您先去耳鼻喉科挂号，系统可以为您提供挂号预约服务。", index: 11, is_image: false },
           { id: 12, content: "bg6.png", index: 12, is_image: true, width: '500px', height: '200px', },
+          { id: 13, content: "很抱歉听说您不舒服。根据您提供的症状，您可能患有流感或其他上呼吸道感染。以下是一些建议的自我护理措施：\n" +
+                "1. 保持充足的休息。\n" +
+                "2. 多喝水和其他流质饮料，以保持水分。\n" +
+                "3. 服用退烧药，如扑热息痛或布洛芬，但请遵循包装上的说明，并确保没有其他医学上的禁忌。\n" +
+                "4. 如有咳嗽症状，可以考虑使用咳嗽药水。\n" +
+                "5. 保持良好的手部卫生，避免与他人接触以减少病毒传播的风险。\n" +
+                "6. 如果症状持续超过几天或恶化，请尽快咨询医生或医疗专家以获得进一步的建议。" + "\n" +
+                "此外，我为您提供的建议仅供参考，并不能替代医生的专业建议。", index: 13, is_image: false },
+          { id: 14, content: "bg5.png", index: 14, is_image: true, width: '600px', height: '300px', },
         ],
       };
     },
