@@ -788,7 +788,7 @@ export default {
 <style id="leaveNote" type="text/css">
 .leave-form {
   width: 400px;
-  height:120px;
+  height:180px;
   margin: 0 auto;
   border: 2px solid #000;
   padding: 20px;
