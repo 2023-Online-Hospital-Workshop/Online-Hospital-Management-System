@@ -131,7 +131,7 @@ export default {
       title_visible: false,
       searchKeyword: '', // 用于接收搜索框的数据
       departments: [], // 一级科室列表
-      selectedDepartment: '', // 选中的一级科室
+      selectedDepartment: 0, // 选中的一级科室
 
       filteredDoctors: [],
       value: 0,
@@ -234,7 +234,7 @@ export default {
             <div class="doctors-left">
               <div class="img-box">
                 <img :src="doctor.photoUrl" alt="Doctor Photo" />
-                <div class="btn">预约</div>
+                <va-button class="btn">预约</va-button>
               </div>
             </div>
             <div class="doctors-right">
@@ -532,6 +532,8 @@ header {
 }
 
 * {
-  font-family: AliMedium;
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+  /* 应用字体 */
 }
 </style>

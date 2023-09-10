@@ -148,7 +148,11 @@ a {
 }
 .max-w-sm{
   min-width: 70%;
-
+}
+* {
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+  /* 应用字体 */
 }
 
 </style>
@@ -284,7 +288,7 @@ export default {
   mounted() {
     // 在组件挂载时调用fetchData方法获取新闻数据
     this.fetchNewsData();
-    this.fetchDiseaseData('感冒');
+    this.fetchDiseaseData('口腔');
     
     
   }

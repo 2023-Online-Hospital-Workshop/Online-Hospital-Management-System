@@ -1,5 +1,14 @@
 <template style="font-family: AliRegular;">
   <!-- <chat-box v-if="chatShown" style="z-index: 999;"></chat-box> -->
+  <va-modal class="noteModal" v-model="lNoteShown" hide-default-actions="true">
+    <div class="leave-form">
+      <h1>准假信息</h1>
+      <p>{{ userID }} 请假成功！</p>
+      <p>请假起止时间为：</p>
+      <p>{{ leaveStart }} ~ {{ leaveEnd }}</p>
+      <img class="stamp" src="../../assets/zhang.png" alt="盖章图片">
+    </div>
+  </va-modal>
   <va-modal v-model="chatShown" hide-default-actions="true">
     <div style="width: 500px; height: 600px;">
       <div style="overflow: auto; height: 80%;">
@@ -116,26 +125,28 @@
           <va-button color="primary" class="button" :disabled="record.status != 1"
           @click="showChat(allRecords[realIndex(index)].diagnoseId, allRecords[realIndex(index)].doctorID)">
             在线复诊
-          </va-button>
-
-          <va-popover placement="left" trigger="click">
-            <va-button :disabled="record.status != 1 || leaveNotes[realIndex(index)].isSubmitted == true" color="primary"
-              class="feedback-button">
-              提交假条
+          </va-button>          
+            <va-popover placement="left" trigger="click" 
+            v-if="!shortlNoteList.includes(allRecords[realIndex(index)].diagnoseId) || record.status != 1">
+              <va-button :disabled="record.status != 1 || leaveNotes[realIndex(index)].isSubmitted == true" color="primary"
+                class="feedback-button">
+                提交假条
+              </va-button>
+              <template #body>
+                <div>
+                  <input v-model="leaveNotes[realIndex(index)].leaveNoteInput" type="number" placeholder="请输入请假天数"
+                    @click.stop />
+                </div>
+                <div>
+                  <va-button color="primary" @click="submitExcuse(realIndex(index))">
+                    提交假条
+                  </va-button>
+                </div>
+              </template>
+            </va-popover>
+            <va-button v-else color="success" @click="showLeaveNote(allRecords[realIndex(index)].diagnoseId)" class="feedback-button">
+              查看假条
             </va-button>
-            <template #body>
-              <div>
-                <input v-model="leaveNotes[realIndex(index)].leaveNoteInput" type="number" placeholder="请输入请假天数"
-                  @click.stop />
-              </div>
-              <div>
-                <va-button color="primary" @click="submitExcuse(realIndex(index))">
-                  提交假条
-                </va-button>
-              </div>
-            </template>
-          </va-popover>
-
 
         </va-card-content>
 
@@ -186,6 +197,16 @@ export default {
 
       // 当前诊断记录医生ID
       curDoctorId: "",
+
+      leaveNoteList: [],
+
+      shortlNoteList: [],
+
+      lNoteShown: false,
+
+      leaveStart: "",
+
+      leaveEnd: "",
     };
   },
   computed:
@@ -214,90 +235,109 @@ export default {
   },
   methods: {
       getData() {
-      axios.get(`http://124.223.143.21:4999/api/Registration/Patient/${this.userID}`)
-        .then((response) => {
-          console.log(response.data);
-          const newData = response.data; // 获取响应数据
-          // 将新数据转化为 record 对象并添加到 allRecords 数组中
-          this.allRecords = newData.map(item => ({
-            patient: item.patient.name,
-            // patientID: this.userID,
-            patientID: this.userID,
-            patientGender: item.patient.gender ? "男" : "女",
-            patientBirth: item.patient.birthDate,
-            doctor: item.doctor.name,
-            doctorID: item.doctor.doctorId,
-            date: item.date.split('T')[0],
-            appointmentTime: item.period,
-            waitingCount: item.queueCount,
-            status: item.state,
-            diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
-            payState: item.payState,
-          }));
-          this.allRecords.sort((record1, record2) => {
-            const date1 = new Date(record1.date);
-            const date2 = new Date(record2.date);
-            return date2 - date1; // 比较结果决定排序顺序
+        axios.get(`http://124.223.143.21:4999/api/Registration/Patient/${this.userID}`)
+          .then((response) => {
+            // console.log(response.data);
+            const newData = response.data; // 获取响应数据
+            // 将新数据转化为 record 对象并添加到 allRecords 数组中
+            this.allRecords = newData.map(item => ({
+              patient: item.patient.name,
+              // patientID: this.userID,
+              patientID: this.userID,
+              patientGender: item.patient.gender ? "男" : "女",
+              patientBirth: item.patient.birthDate,
+              doctor: item.doctor.name,
+              doctorID: item.doctor.doctorId,
+              date: item.date.split('T')[0],
+              time: item.orderTime,
+              appointmentTime: item.period,
+              waitingCount: item.queueCount,
+              status: item.state,
+              diagnoseId: `${item.date.replace('-', '').split('T')[0].replace('-', '')}${this.userID}${item.doctor.doctorId}${item.period}`,
+              payState: item.payState,
+            }));
+            this.allRecords.sort((record1, record2) => {
+              const date1 = new Date(record1.time);
+              const date2 = new Date(record2.time);
+              return date2 - date1; // 比较结果决定排序顺序
+            });
+            // console.log(this.allRecords);
+            this.feedbacks = this.allRecords.map(item => ({
+              diagnoseId: item.diagnoseId,
+              hoverRating: 0,
+              selectedRating: 0,
+              comment: '',
+              isSubmitted: false
+            }));
+            this.leaveNotes = this.allRecords.map(item => ({
+              diagnoseId: item.diagnoseId,
+              leaveNoteInput: '',
+              isSubmitted: false
+            }));
+            for (let i = 0; i < this.allRecords.length; i++) {
+              this.modalShown[i] = false;
+            }
+            axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+              params: {
+                PatientId: this.userID
+              }
+            })
+              .then((response) => {
+                for (let idData of response.data) {
+                  let tmp = idData.substring(0, idData.length - 3);
+                  let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
+                  if (selectedObject) {
+                    selectedObject.isSubmitted = true;
+                  }
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+            axios.get('http://124.223.143.21:4999/api/Comment/whether', {
+              params: {
+                PatientId: this.userID
+              }
+            })
+              .then((response) => {
+                for (let idData of response.data) {
+                  let tmp = idData;
+                  let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
+                  if (selectedObject) {
+                    selectedObject.isSubmitted = true;
+                  }
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          })
+          .catch((error) => {
+            console.log(error);
           });
-          console.log(this.allRecords);
-          this.feedbacks = this.allRecords.map(item => ({
-            diagnoseId: item.diagnoseId,
-            hoverRating: 0,
-            selectedRating: 0,
-            comment: '',
-            isSubmitted: false
-          }));
-          this.leaveNotes = this.allRecords.map(item => ({
-            diagnoseId: item.diagnoseId,
-            leaveNoteInput: '',
-            isSubmitted: false
-          }));
-          for (let i = 0; i < this.allRecords.length; i++) {
-            this.modalShown[i] = false;
+
+        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+          params: {
+            patientId: this.userID
           }
-          axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
-            params: {
-              PatientId: this.userID
-            }
-          })
-            .then((response) => {
-              for (let idData of response.data) {
-                let tmp = idData.substring(0, idData.length - 3);
-                let selectedObject = this.leaveNotes.find(leaveNote => leaveNote.diagnoseId === tmp);
-                if (selectedObject) {
-                  selectedObject.isSubmitted = true;
-                }
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-          axios.get('http://124.223.143.21:4999/api/Comment/whether', {
-            params: {
-              PatientId: this.userID
-            }
-          })
-            .then((response) => {
-              for (let idData of response.data) {
-                let tmp = idData;
-                let selectedObject = this.feedbacks.find(feedback => feedback.diagnoseId === tmp);
-                if (selectedObject) {
-                  selectedObject.isSubmitted = true;
-                }
-              }
-            })
-            .catch((error) => {
-              console.log(error);
-            });
         })
-        .catch((error) => {
-          console.log(error);
-        });
+          .then((response) => {
+            var data = response.data;
+            for (var i = 0; i < data.length; i++) {
+              var recordId = data[i].substring(0, 21);
+              this.shortlNoteList.push(recordId);
+              this.leaveNoteList.push(data[i]);
+            }
+          }) 
+          .catch((error) => {
+            console.error(error);
+          });   
+        console.log("list: ",this.leaveNoteList);
     },
     startDataRefreshTimer() {
       setInterval(() => {
         this.getData(); // 获取最新数据
-      }, 30000); // 定时器每隔30s轮询
+      }, 20000); // 定时器每隔20s轮询
     },
     payBill(record) {
       axios.get('http://124.223.143.21/api/DiagnosedHistory/payBill', {
@@ -307,7 +347,7 @@ export default {
       })
         .then((response) => {
           // Create a new window
-          console.log(response);
+          // console.log(response);
           const newWindow = window.open("", "_blank");
           const htmlString = response.data;
           // // Write the fetched HTML content into the new window
@@ -328,8 +368,8 @@ export default {
         "Time": record.date.replace(' ', 'T'),
         "Period": record.appointmentTime,
       };
-      console.log(inputModel);
-      console.log(index);
+      // console.log(inputModel);
+      // console.log(index);
       axios.put('http://124.223.143.21/api/Registration/cancel', inputModel)
         .then(response => {
           if (response.status === 200) {
@@ -348,8 +388,8 @@ export default {
       })
         .then((response) => {
           let prescriptionData = response.data;
-          console.log("prescriptionData");
-          console.log(prescriptionData);
+          // console.log("prescriptionData");
+          // console.log(prescriptionData);
           const PAGE_MARGIN = 5;
           const doc = new jsPDF({
             unit: "mm",
@@ -408,7 +448,7 @@ export default {
           });
           penHeight += 35;
           var tmpMedicines = prescriptionData.medicines;
-          console.log(tmpMedicines);
+          // console.log(tmpMedicines);
           // 打印基本信息
           doc.setFontSize(9);
           const info = "处方：";
@@ -418,7 +458,7 @@ export default {
             ["药品名称", "药品价格(元)", "药品数量(盒)", "服用剂量", "服用建议"],
           ];
           tmpMedicines.forEach(medicine => {
-            console.log(medicine);
+            // console.log(medicine);
             const medicationName = medicine.medicineName;
             const medicinePrice = medicine.medicinePrice;
             const medicineQuantity = medicine.quantity;
@@ -427,7 +467,7 @@ export default {
             medicineData.push([medicationName, medicinePrice, medicineQuantity, medicineDose, medicineAdvice]);
           });
           medicineData.push([`总价：${prescriptionData.totalPrice}`]);
-          console.log(medicineData);
+          // console.log(medicineData);
 
           const totalWidth = doc.internal.pageSize.width - PAGE_MARGIN * 2; // 获取页面宽度
           const columnWidth1 = totalWidth * 0.14; // 前四列宽度各14%
@@ -499,8 +539,8 @@ export default {
           evaluation: feedback.comment,
           treatmentScore: feedback.selectedRating,
         };
-        console.log("Feedback inputData");
-        console.log(inputData);
+        // console.log("Feedback inputData");
+        // console.log(inputData);
         axios.post('http://124.223.143.21/api/Comment', null, { params: inputData })
           .then(response => {
             console.log('POST request successful:', response.data);
@@ -510,7 +550,7 @@ export default {
             console.error(error);
           });
         console.log(`Index为 ${recordIndex} 的记录选了 ${feedback.selectedRating} 颗星星，评论内容：${feedback.comment}`);
-        this.modelShown[recordIndex] = false;
+        this.modalShown[recordIndex] = false;
       }
     },
     submitExcuse(recordIndex) {
@@ -573,7 +613,7 @@ export default {
             "timeStamp": new Date().toISOString(),
             "readStatus": 0
           });
-          console.log(raw);
+          // console.log(raw);
 
           var requestOptions = {
             method: 'POST',
@@ -598,8 +638,30 @@ export default {
               this.newMessage = "";
             });
           
-        }
+        },
+        showLeaveNote(recordId) {
+          this.lNoteShown = true;
+          console.log("rec: " + recordId);
+          for (var i = 0; i < this.leaveNoteList.length; i++) {
+            if (this.leaveNoteList[i].substring(0, 21) == recordId) {
+              this.leaveStart = this.leaveNoteList[i].slice(0, 8);
+              var startDate = new Date(
+                this.leaveStart.substring(0, 4), // 年
+                parseInt(this.leaveStart.substring(4, 6)) - 1, // 月份（注意月份是从0开始的，所以需要减1）
+                this.leaveStart.substring(6, 8) // 日
+              );
+
+              this.leaveStart = startDate.toLocaleDateString('zh-CN');
+              var duration = parseInt(this.leaveNoteList[i].substring(21, 24));
+              startDate.setDate(startDate.getDate() + duration);
+              this.leaveEnd = startDate.toLocaleDateString('zh-CN');
+            }
+          }
+          // console.log("start date: " + this.leaveStart);
+          // console.log("end date: " + this.leaveEnd);
+        },
     },
+    
     // components: { ChatBox }
 };
 </script>
@@ -721,5 +783,30 @@ export default {
   border: 10px solid;
   border-color: transparent transparent transparent #002fb0;
   float: right;
+}
+</style>
+<style id="leaveNote" type="text/css">
+.leave-form {
+  width: 400px;
+  height:120px;
+  margin: 0 auto;
+  border: 2px solid #000;
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+h1 {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+p {
+  /* text-align: justify; */
+  margin-bottom: 8px;
+}
+.stamp {
+  position: absolute;
+  bottom: 30px;
+  right: 30px;
+  width: 80px; /* 调整盖章图片的大小 */
 }
 </style>

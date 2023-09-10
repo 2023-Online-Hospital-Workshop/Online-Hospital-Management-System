@@ -15,5 +15,10 @@ export default {
 };
 </script>
   
-  <style scoped>
+<style scoped>
+* {
+  font-family: AliRegular;
+  --va-font-family: AliRegular;
+  /* 应用字体 */
+}
 </style>

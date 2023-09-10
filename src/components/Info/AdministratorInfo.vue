@@ -261,6 +261,7 @@ export default {
   position: absolute;
   top: 50px;
   transform: translateX(-50%);
+  font-family: AliRegular;
   .info-line {
     padding: 23px 23px;
     display: flex;

@@ -1170,20 +1170,8 @@ input {
         </el-input>
         <div class="title1">
           处方：
-          <el-select
-            v-model="select_medi"
-            @change="selectMedicine()"
-            filterable
-            placeholder="从药品库中选择药品"
-          >
-            <el-option
-              v-for="(item, index) in stocks"
-              :key="index"
-              :label="item"
-              :value="item"
-            >
-            </el-option>
-          </el-select>
+          <el-autocomplete v-model="select_medi" :fetch-suggestions="querySearch" clearable class="inline-input w-50"
+            placeholder="从药品库中选择药品" @select="selectMedicine" />
         </div>
 
         <el-table
@@ -1284,6 +1272,8 @@ import { reactive } from "vue";
 //import userInfo from "../../store/user.js";
 import DoctorInfo from "../../components/Info/DoctorInfo.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import PinyinMatch from 'pinyin-match'
+
 
 export default {
   name: 'App',
@@ -1361,6 +1351,7 @@ export default {
       //处方药品
       all_medicine: [], //药房中所有药品,包含medicineName和specification属性
       stocks: [], //在checkbox中选择药品，存储所有药品的全称
+      stockList: [],
       medicine: [], //辅助在表格前端显示，只有name和spec两个属性
       all_num: 0, //现在已有药品数量
       select_medi: "",
@@ -1448,6 +1439,21 @@ export default {
     this.nextPatient();
   },
   methods: {
+    querySearch(queryString, callback) {
+      const emailList = this.stockList;
+      let queryList = [];
+
+      emailList.forEach(item => {
+        const emailValue = item.value;
+        if (emailValue.includes(queryString)||PinyinMatch.match(emailValue, queryString)) {
+          queryList.push({ value: emailValue });
+        }
+      });
+
+      callback(queryList);
+      console.log(PinyinMatch); 
+    },
+
     openNewDrawer2() {
       this.drawer2 = !this.drawer2;
       if (this.drawer2) {
@@ -1579,6 +1585,7 @@ export default {
         this.all_medicine = data;
         for (let i = 0; i < data.length; i++) {
           this.stocks.push(data[i].medicineName);
+          this.stockList.push({ value: data[i].medicineName });
         }
       } catch (error) {
         console.error("Error:", error);
