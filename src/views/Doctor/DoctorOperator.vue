@@ -69,7 +69,7 @@
         color: #fff;
         align-items: center;
         margin-left: 20px;
-        font-size: 24px;
+        font-size: 20px;
         cursor: pointer;
       }
 
@@ -249,7 +249,7 @@
   /* 设置标题颜色为白色 */
 }
 
-.navbar-item-slot > a {
+.navbar-item-slot>a {
   border: 1px dashed var(--va-secondary);
   padding: 6px 10px;
   color: aliceblue;
@@ -505,7 +505,7 @@
   font-weight: bold;
 }
 
-.list__item + .list__item {
+.list__item+.list__item {
   margin-top: 20px;
 }
 
@@ -730,7 +730,7 @@ input {
 
     <header class="header1">
       <div class="header-left">
-        <img src="@/assets/logo.jpg" alt="Logo" class="logo" />
+        <!-- <img src="@/assets/logo.jpg" alt="Logo" class="logo" /> -->
         <div>济康同行</div>
       </div>
       <div class="header-right">
@@ -767,18 +767,10 @@ input {
                     结束时间：{{ i.leaveApplication.leaveEndDate }}
                   </div>
                   <div class="btns1">
-                    <va-button
-                      color="danger"
-                      class="mr-3 mb-2"
-                      @click="fail(i.leaveApplication.leaveNoteId)"
-                    >
+                    <va-button color="danger" class="mr-3 mb-2" @click="fail(i.leaveApplication.leaveNoteId)">
                       驳回
                     </va-button>
-                    <va-button
-                      icon-color="#ffffff50"
-                      class="mr-3 mb-2"
-                      @click="agree(i.leaveApplication.leaveNoteId)"
-                    >
+                    <va-button icon-color="#ffffff50" class="mr-3 mb-2" @click="agree(i.leaveApplication.leaveNoteId)">
                       同意
                     </va-button>
                   </div>
@@ -795,11 +787,7 @@ input {
 
           <el-collapse-transition>
             <div class="box box2" style="width: 400px" v-if="drawer2">
-              <div
-                v-for="(i, index) in treatmentChats"
-                :key="index"
-                class="qj-item qj-item1"
-              >
+              <div v-for="(i, index) in treatmentChats" :key="index" class="qj-item qj-item1">
                 <div class="line1"></div>
                 <div>
                   <div class="qj-item-top">
@@ -813,12 +801,8 @@ input {
                   </div>
 
                   <div class="btns1">
-                    <va-button
-                      icon-color="#ffffff50"
-                      class="mr-3 mb-2"
-                      @click="showChat(i.diagnoseId, i.patientID)"
-                      v-if="unreadPrompts[index]"
-                    >
+                    <va-button icon-color="#ffffff50" class="mr-3 mb-2" @click="showChat(i.diagnoseId, i.patientID)"
+                      v-if="unreadPrompts[index]">
                       解答
                     </va-button>
                   </div>
@@ -860,23 +844,15 @@ input {
           <el-collapse-transition>
             <div class="box box3" v-if="drawer3">
               <div class="mzBtns">
-                <div
-                  class="mzBtn"
-                  v-for="(buttonText, index) in template"
-                  :key="index"
-                  @click="handle(index)"
-                >
+                <div class="mzBtn" v-for="(buttonText, index) in template" :key="index" @click="handle(index)">
                   {{ buttonText }}
                 </div>
-                <div class="mzBtn mzBtn1">+</div>
+                <div class="mzBtn mzBtn1" @click="addTemplate()">+</div>
               </div>
 
               <div class="btns">
-                <div class="btn-item" @click="edit">
+                <div class="btn-item" @click="dialogVisible = true">
                   <i class="material-icons">edit</i>&nbsp;&nbsp;编辑
-                </div>
-                <div class="btn-item" @click="exit">
-                  <i class="material-icons">delete</i>&nbsp;&nbsp;删除
                 </div>
               </div>
             </div>
@@ -885,22 +861,73 @@ input {
       </div>
     </header>
 
+    <el-dialog v-model="dialogVisible" title="处方模板编辑" width="70%" :before-close="editClose">
+      <span>选择要编辑的模板：</span>
+      <el-select v-model="v_name" class="m-2" placeholder="选择要编辑的模板">
+        <el-option v-for="(item, index) in template" :key="item" :label="item" :value="index" />
+      </el-select>
+      <div class="title1">模板名称：</div>
+      <el-input type="textarea" :rows="4" class="textarea" placeholder="请输入" v-model="template[v_name]">
+      </el-input>
+      <div class="title1">主诉：</div>
+      <el-input type="textarea" :rows="4" class="textarea" placeholder="请输入" v-model="content[v_name].problem">
+      </el-input>
+      <div class="title1">现病史：</div>
+      <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入"
+        v-model="content[v_name].illness">
+      </el-input>
+      <div class="title1">既往史：</div>
+      <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入"
+        v-model="content[v_name].past_illness">
+      </el-input>
+      <div class="title1">体征：</div>
+      <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入"
+        v-model="content[v_name].symptom">
+      </el-input>
+      <div class="title1">门诊诊断：</div>
+      <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入"
+        v-model="content[v_name].diagnose">
+      </el-input>
+      <div class="title1">诊疗建议：</div>
+      <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入"
+        v-model="content[v_name].prescription">
+      </el-input>
+      <div class="title1">药品：</div>
+      增加药品：<el-select v-model="v_add" @change="temlapteAddMedcine()" filterable placeholder="从药品库中选择药品">
+        <el-option v-for="(item, index) in stocks" :key="index" :label="item" :value="item">
+        </el-option>
+      </el-select>
+      删除药品：<el-select v-model="v_delete" @change="temlapteDeleteMedcine()" filterable placeholder="选择要删除的药品">
+        <el-option v-for="(item, index) in content[v_name].medicine" :key="index" :label="item" :value="item">
+        </el-option>
+      </el-select>
+      <br />
+      已选择药品：
+      <li v-for="(medicine, index) in content[v_name].medicine" :key="index">{{ medicine }}</li>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button type="primary" @click="dialogVisible = false">
+            确认
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <va-modal v-model="chatShown" hide-default-actions="true">
+
+    </va-modal>
+
     <va-modal v-model="chatShown" hide-default-actions="true">
       <div style="width: 500px; height: 600px">
         <div style="overflow: auto; height: 80%">
           <div class="chat-box">
-            <table
-              class="chat-box"
-              style="margin-left: 5%; height: 70%; width: 90%"
-            >
+            <table class="chat-box" style="margin-left: 5%; height: 70%; width: 90%">
               <tr v-for="(message, index) in chatMessages" :key="index">
-                <div
-                  :class="{
-                    chatBox: true,
-                    'chatBox-left': message.senderType === 0,
-                    'chatBox-right': message.senderType !== 0,
-                  }"
-                >
+                <div :class="{
+                  chatBox: true,
+                  'chatBox-left': message.senderType === 0,
+                  'chatBox-right': message.senderType !== 0,
+                }">
                   <td>
                     {{ message.message }}
                   </td>
@@ -910,38 +937,23 @@ input {
             </table>
           </div>
         </div>
-        <va-input
-          v-model="newMessage"
-          class="mb-6"
-          type="textarea"
-          :min-rows="3"
-          :max-rows="3"
-          style="width: 100%"
-        >
+        <va-input v-model="newMessage" class="mb-6" type="textarea" :min-rows="3" :max-rows="3" style="width: 100%">
         </va-input>
         <va-button style="width: 100%" @click="sendMessage()"> 发送 </va-button>
       </div>
     </va-modal>
 
     <div class="container">
-      <va-button @click="nextPatient()"> 叫号 </va-button>
+      <va-button @click="nextPatient()"> </va-button>
       <div class="registe">
         <div class="title1">患者挂号信息</div>
         <div class="registe-list">
-          <div
-            class="registe-item"
-            v-for="(pt, index) in patients"
-            :key="index"
-            :id="'item' + index"
-          >
+          <div class="registe-item" v-for="(pt, index) in patients" :key="index" :id="'item' + index">
             <div class="line"></div>
             <img src="@/assets/icon11.png" alt="" />
             <div class="user-info">
               <div>{{ pt.number }}号：{{ pt.name }}</div>
-              <div
-                class="status"
-                :class="{ gh: pt.treatmentState === '未就诊' }"
-              >
+              <div class="status" :class="{ gh: pt.treatmentState === '未就诊' }">
                 {{ pt.treatmentState }}
               </div>
             </div>
@@ -1017,21 +1029,12 @@ input {
               <div class="base-item-title">初诊/复诊：</div>
               <div class="base-item-value">{{ isfirst }}</div>
             </div>
-            <div
-              id="isfirst_button"
-              class="base-btn base-btn1"
-              @click="showModal = !showModal"
-            >
+            <div id="isfirst_button" class="base-btn base-btn1" @click="showModal = !showModal">
               查看就诊历史
             </div>
           </div>
         </div>
-        <va-modal
-          v-model="showModal"
-          fullscreen
-          :message="message"
-          hide-default-actions
-        >
+        <va-modal v-model="showModal" fullscreen :message="message" hide-default-actions>
           <div class="diagnose">
             <h1 class="myh1">同济大学校医院病人就诊历史</h1>
             <label>日期：{{ his_rep.records[p].record.diagnoseTime }} </label>
@@ -1067,38 +1070,21 @@ input {
                 {{ his_rep.records[p].record.clinicdia }}
                 <br /><br />诊疗建议: {{ his_rep.records[p].record.advice }}
                 <br /><br />处方：
-                <el-table
-                  :data="his_rep.records[p].medicineDescriptions"
-                  stripe
-                  style="width: 100%"
-                  max-height="500"
-                >
+                <el-table :data="his_rep.records[p].medicineDescriptions" stripe style="width: 100%" max-height="500">
                   <el-table-column prop="medicineName" label="药品" width="100">
                   </el-table-column>
-                  <el-table-column
-                    prop="specification"
-                    label="规格"
-                    width="130"
-                  >
+                  <el-table-column prop="specification" label="规格" width="130">
                   </el-table-column>
                   <el-table-column prop="singledose" label="剂量" width="80">
                   </el-table-column>
                   <el-table-column prop="frequency" label="频率" width="80">
                   </el-table-column>
-                  <el-table-column
-                    prop="attention"
-                    label="注意事项"
-                    width="190"
-                  >
+                  <el-table-column prop="attention" label="注意事项" width="190">
                   </el-table-column>
                 </el-table>
               </div>
               <div class="example-pagination-block">
-                <el-pagination
-                  @current-change="changeReport"
-                  layout="prev, pager, next"
-                  :total="total_p"
-                />
+                <el-pagination @current-change="changeReport" layout="prev, pager, next" :total="total_p" />
               </div>
             </table>
             <label> </label>
@@ -1106,158 +1092,76 @@ input {
         </va-modal>
 
         <div class="title1">主诉：</div>
-        <el-input
-          type="textarea"
-          :rows="4"
-          class="textarea"
-          placeholder="请输入"
-          v-model="problem"
-        >
+        <el-input type="textarea" :rows="4" class="textarea" placeholder="请输入" v-model="problem">
         </el-input>
 
         <div class="title1">现病史：</div>
 
-        <el-input
-          type="textarea"
-          :rows="4"
-          class="textarea"
-          name="firstname"
-          placeholder="请输入"
-          v-model="illness"
-        >
+        <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入" v-model="illness">
         </el-input>
         <div class="title1">既往史：</div>
 
-        <el-input
-          type="textarea"
-          :rows="4"
-          class="textarea"
-          name="firstname"
-          placeholder="请输入"
-          v-model="past_illness"
-        >
+        <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入" v-model="past_illness">
         </el-input>
         <div class="title1">体征：</div>
 
-        <el-input
-          type="textarea"
-          :rows="4"
-          class="textarea"
-          name="firstname"
-          placeholder="请输入"
-          v-model="symptom"
-        >
+        <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入" v-model="symptom">
         </el-input>
         <div class="title1">门诊诊断：</div>
-        <el-input
-          type="textarea"
-          :rows="4"
-          class="textarea"
-          name="firstname"
-          placeholder="请输入"
-          v-model="diagnose"
-        >
+        <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入" v-model="diagnose">
         </el-input>
         <div class="title1">诊疗建议：</div>
-        <el-input
-          type="textarea"
-          :rows="4"
-          class="textarea"
-          name="firstname"
-          placeholder="请输入"
-          v-model="prescription"
-        >
+        <el-input type="textarea" :rows="4" class="textarea" name="firstname" placeholder="请输入" v-model="prescription">
         </el-input>
         <div class="title1">
           处方：
-          <el-autocomplete v-model="select_medi" :fetch-suggestions="querySearch" clearable class="inline-input w-50"
-            placeholder="从药品库中选择药品" @select="selectMedicine" />
+          <el-select v-model="select_medi" @change="selectMedicine()" filterable placeholder="从药品库中选择药品">
+            <el-option v-for="(item, index) in stocks" :key="index" :label="item" :value="item">
+            </el-option>
+          </el-select>
         </div>
 
-        <el-table
-          :data="medicine"
-          stripe
-          style="width: 100%; margin: 20px 0"
-          max-height="500"
-        >
+        <el-table :data="medicine" stripe style="width: 100%; margin: 20px 0" max-height="500">
           <el-table-column prop="name" label="药品"> </el-table-column>
           <el-table-column prop="spec" label="规格"> </el-table-column>
           <el-table-column label="单次剂量" width="120">
             <template #default="scope">
-              <el-input
-                type="textarea"
-                :rows="4"
-                class="textarea font"
-                name="firstname"
-                placeholder="请输入"
-                v-model="all_med[scope.$index].single"
-              ></el-input>
+              <el-input type="textarea" :rows="4" class="textarea font" name="firstname" placeholder="请输入"
+                v-model="all_med[scope.$index].single"></el-input>
             </template>
           </el-table-column>
           <el-table-column label="用法" width="70">
             <template #default="scope">
-              <input
-                class="input2"
-                type="text"
-                v-model="all_med[scope.$index].ad"
-                name="firstname"
-                placeholder=""
-              />
+              <input class="input2" type="text" v-model="all_med[scope.$index].ad" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="频率" width="100">
             <template #default="scope">
-              <input
-                class="input2"
-                type="text"
-                v-model="all_med[scope.$index].fre"
-                name="firstname"
-                placeholder=""
-              />
+              <input class="input2" type="text" v-model="all_med[scope.$index].fre" name="firstname" placeholder="" />
             </template>
           </el-table-column>
           <el-table-column label="数量" width="110">
             <template #default="scope">
-              <el-input-number
-                v-model="all_med[scope.$index].count"
-                :min="1"
-                :max="30"
-                size="large"
-                controls-position="right"
-                style="width: 70px"
-              ></el-input-number>
+              <el-input-number v-model="all_med[scope.$index].count" :min="1" :max="30" size="large"
+                controls-position="right" style="width: 70px"></el-input-number>
             </template>
           </el-table-column>
           <el-table-column label="注意事项" width="140">
             <template #default="scope">
-              <el-input
-                type="textarea"
-                :rows="4"
-                class="textarea font"
-                name="firstname"
-                placeholder="请输入"
-                v-model="all_med[scope.$index].tips"
-              ></el-input>
+              <el-input type="textarea" :rows="4" class="textarea font" name="firstname" placeholder="请输入"
+                v-model="all_med[scope.$index].tips"></el-input>
             </template>
           </el-table-column>
           <el-table-column label="编辑" width="80">
             <template #default="scope">
-              <el-button
-                size="small"
-                type="danger"
-                @click="handleDelete(scope.$index, scope.row)"
-                >删除</el-button
-              >
+              <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
-
+<!-- 
         <div class="title1" style="margin: 20px 0">
-          同意开具假条天数为：<el-input-number
-            v-model="leave_day"
-            class="mx-4"
-          />
-        </div>
+          同意开具假条天数为：<el-input-number v-model="leave_day" class="mx-4" />
+        </div> -->
         <el-button type="primary" @click="open">确认</el-button>
       </div>
 
@@ -1272,8 +1176,6 @@ import { reactive } from "vue";
 //import userInfo from "../../store/user.js";
 import DoctorInfo from "../../components/Info/DoctorInfo.vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import PinyinMatch from 'pinyin-match'
-
 
 export default {
   name: 'App',
@@ -1351,7 +1253,6 @@ export default {
       //处方药品
       all_medicine: [], //药房中所有药品,包含medicineName和specification属性
       stocks: [], //在checkbox中选择药品，存储所有药品的全称
-      stockList: [],
       medicine: [], //辅助在表格前端显示，只有name和spec两个属性
       all_num: 0, //现在已有药品数量
       select_medi: "",
@@ -1380,7 +1281,7 @@ export default {
       drawer3: false,
 
       //处方模板
-      template: ["感冒", "浅表性胃炎"],
+      template: ["感冒", "胀气", "浅表性胃炎",],
       content: [
         {
           problem: "喉咙痛，流鼻涕，打喷嚏，咳嗽，轻微头疼",
@@ -1401,7 +1302,20 @@ export default {
           prescription: "多吃蔬菜，少喝碳酸饮料，少食多餐，避免吞气",
           medicine: ["酪酸梭菌活菌胶囊"],
         },
+        {
+          problem: "中腹部隐痛，持续一天，排便正常，无恶心症状",
+          illness: "无",
+          past_illness: "体健",
+          symptom: "无",
+          diagnose: "浅表性胃炎",
+          prescription: "不吃刺激性食物，不吃生凉，注意保暖，注意休息，少食多餐",
+          medicine: [],
+        },
       ],
+      dialogVisible: false,
+      v_name: 0,
+      v_add: "",
+      v_delete: "",
 
       //今日日期
       date: "",
@@ -1439,21 +1353,6 @@ export default {
     this.nextPatient();
   },
   methods: {
-    querySearch(queryString, callback) {
-      const emailList = this.stockList;
-      let queryList = [];
-
-      emailList.forEach(item => {
-        const emailValue = item.value;
-        if (emailValue.includes(queryString)||PinyinMatch.match(emailValue, queryString)) {
-          queryList.push({ value: emailValue });
-        }
-      });
-
-      callback(queryList);
-      console.log(PinyinMatch); 
-    },
-
     openNewDrawer2() {
       this.drawer2 = !this.drawer2;
       if (this.drawer2) {
@@ -1492,9 +1391,8 @@ export default {
         ].appointmentDate
           .replace("-", "")
           .split("T")[0]
-          .replace("-", "")}${this.treatmentRecords[i].patientID}${
-          this.doctorId
-        }${this.treatmentRecords[i].period}`;
+          .replace("-", "")}${this.treatmentRecords[i].patientID}${this.doctorId
+          }${this.treatmentRecords[i].period}`;
         // this.getMessages(this.treatmentRecords[i].diagnoseId);
 
         const url =
@@ -1585,7 +1483,6 @@ export default {
         this.all_medicine = data;
         for (let i = 0; i < data.length; i++) {
           this.stocks.push(data[i].medicineName);
-          this.stockList.push({ value: data[i].medicineName });
         }
       } catch (error) {
         console.error("Error:", error);
@@ -1648,9 +1545,8 @@ export default {
         ].appointmentDate
           .replace("-", "")
           .split("T")[0]
-          .replace("-", "")}${this.treatmentRecords[i].patientID}${
-          this.doctorId
-        }${this.treatmentRecords[i].period}`;
+          .replace("-", "")}${this.treatmentRecords[i].patientID}${this.doctorId
+          }${this.treatmentRecords[i].period}`;
         // this.getMessages(this.treatmentRecords[i].diagnoseId);
 
         const url =
@@ -1811,8 +1707,11 @@ export default {
       const item = document.getElementById("item" + j);
       item.style.color = "red";
       console.log(this.num);
+      if(this.num-2>=0){
+        this.patients[this.num - 2].treatmentState = "已就诊";
+      }
       //把正在就诊的病人状态改为已就诊
-      this.patients[this.num - 1].treatmentState = "已就诊";
+      this.patients[this.num - 1].treatmentState = "正在就诊";
 
       //显示当前就诊病人信息
       i = i - 1;
@@ -2155,6 +2054,34 @@ export default {
 
       console.log(index);
     },
+
+    temlapteAddMedcine() {
+      const i = this.v_name;
+      this.content[i].medicine.push(this.v_add);
+      const originalArray = this.content[i].medicine;
+      // 使用Set对象去除重复元素
+      this.content[i].medicine = [...new Set(originalArray)];
+    },
+
+    temlapteDeleteMedcine() {
+      const i = this.v_name;
+      this.content[i].medicine = this.content[i].medicine.filter(item => item !== this.v_delete);
+    },
+
+    addTemplate() {
+      const a = {
+        problem: '',
+        illness: '',
+        past_illness: '',
+        symptom: '',
+        diagnose: '',
+        prescription:
+          '',
+        medicine: [],
+      }
+      this.content.push(a);
+      this.template.push("新建模板");
+    }
   },
 };
 </script>

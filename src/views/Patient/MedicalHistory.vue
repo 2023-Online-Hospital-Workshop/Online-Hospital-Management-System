@@ -316,7 +316,7 @@ export default {
             console.log(error);
           });
 
-        axios.get('http://124.223.143.21:4999/api/Leave/leaveApplications', {
+        axios.get('http://124.223.143.21:4999/api/Leave/audited', {
           params: {
             patientId: this.userID
           }

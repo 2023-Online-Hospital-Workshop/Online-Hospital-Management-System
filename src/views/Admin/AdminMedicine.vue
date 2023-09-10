@@ -39,8 +39,17 @@
           <!-- 新建区 -->
           <template v-if="curTab == 0" #headerAppend>
             <tr class="table-curd__slot">
-              <th v-for="col in stockColumns.slice(0, -3)" :key="col">
-                <va-input style="width:99%" v-model="createdItem[col]" :placeholder="col" />
+              <th>
+                <va-input style="width:99%" v-model='createdItem["药品名"]' placeholder="药品名" />
+              </th>
+              <th>
+                <va-input style="width:99%" v-model='createdItem["生产单位"]' placeholder="生产单位" />
+              </th>
+              <th>
+                <va-input style="width:99%" v-model='createdItem["生产日期"]' placeholder="生产日期" />
+              </th>
+              <th>
+                <va-input style="width:99%" readonly />
               </th>
               <th>
                 <va-input style="width:99%" v-model='createdItem["库存"]' placeholder="库存" mask="numeral" />
@@ -86,8 +95,7 @@
         <va-input v-model="editedStock" />
       </va-modal>
 
-      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消"
-        @ok="deleteItem(deletedRow)">
+      <va-modal v-model="showConfirm" ok-text="确认" cancel-text="取消" @ok="deleteItem(deletedRow)">
         <span>确定删除吗？</span>
       </va-modal>
       <!-- 弹窗 -->
@@ -105,7 +113,7 @@ export default {
       { id: 1, name: "查看清理记录" },
     ];
     const checkboxLabel = "仅查看预警药品";
-    const stockColumns = ["药品名", "生产单位", "生产日期", "库存", "阈值", "预警"];
+    const stockColumns = ["药品名", "生产单位", "生产日期", "过期日期", "库存", "阈值", "预警"];
     const recordColumns = ["药品名", "生产单位", "生产日期", "清理日期", "清理负责管理员"];
 
     return {
@@ -216,6 +224,13 @@ export default {
       }
     },
 
+    // 计算到期日期
+    calcDate(str, m) {
+      let d = new Date(str);
+      let res = new Date(d.setMonth(d.getMonth() + m));
+      return `${res.getFullYear()}-${(res.getMonth()+1).toString().padStart(2, '0')}-${res.getDate().toString().padStart(2, '0')} ${res.getHours().toString().padStart(2, '0')}:${res.getMinutes().toString().padStart(2, '0')}:${res.getSeconds().toString().padStart(2, '0')}`;
+    },
+
     // 筛选函数
     filterFunction(source) {
       if (source) {
@@ -255,7 +270,8 @@ export default {
             this.tableItems.push({ // 填入表项
               "药品名": result[i].medicineName,
               "生产单位": result[i].manufacturer,
-              "生产日期": result[i].productionDate,
+              "生产日期": result[i].productionDate.slice(0, 10),
+              "过期日期": this.calcDate(result[i].productionDate.replace("T", " "), result[i].medicineShelflife).slice(0, 10),
               "库存": result[i].medicineAmount,
               "阈值": result[i].thresholdValue,
               "预警": flag ? "是" : "否",
@@ -386,7 +402,6 @@ export default {
     // 初始化表项
     this.toStock();
     this.filteredCount = this.tableItems.length;
-    console.log("adminID:", sessionStorage.getItem('userID'));
   },
 
   watch: {
