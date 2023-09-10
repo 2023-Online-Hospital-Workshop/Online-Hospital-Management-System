@@ -307,7 +307,7 @@ import RobotAI2 from "@/components/Robot2.vue"
         let happyEnding = {
           type: "leftinfo",
           time: this.getTodayTime(),
-          content: "退下吧",
+          content: "很高兴为您服务！有什么问题可以继续咨询小济",
           question: [],
         };
         this.info.push(happyEnding);

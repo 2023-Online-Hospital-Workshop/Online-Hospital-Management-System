@@ -98,7 +98,9 @@ export default {
     nextStep() {
       if (this.step == 1) {
         if (this.registerForm.ID == '') {
-          this.$msgbox.alert("ID不能为空")
+          this.$msgbox.alert("ID不能为空").catch(e => {
+              console.error("Error with message box:", e);
+          });
         } else {
           this.step++;
         }
